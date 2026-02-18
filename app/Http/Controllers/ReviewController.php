@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Review;
+use Inertia\Inertia;
 
 class ReviewController extends Controller
 {
@@ -29,7 +30,8 @@ class ReviewController extends Controller
         $graph = $graphType ? $graphType->courses : collect();
         $ict = $ictType ? $ictType->courses : collect();
         $address = \App\Models\Address::all();
-        return view('frontend_section.reviews', compact('reviews', 'rating', 'sort', 'prog', 'graph', 'ict', 'address'));
+        
+        return inertia('Reviews', compact('reviews', 'rating', 'sort', 'prog', 'graph', 'ict', 'address'));
     }
 
     // For homepage (static call)

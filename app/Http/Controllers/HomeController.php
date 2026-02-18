@@ -11,6 +11,7 @@ use App\Models\StudentProject;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Review;
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
@@ -197,9 +198,20 @@ class HomeController extends Controller
         $prog = $progType ? $progType->courses : collect();
         $graph = $graphType ? $graphType->courses : collect();
         $ict = $ictType ? $ictType->courses : collect();
-        return view('frontend_section.homepage', compact(
-            'abouts', 'aboutDesc', 'address', 'monthies', 'events', 'projects', 'homeReviews', 'sliders', 'teacher',
-            'prog', 'graph', 'ict'
-        ));
+        
+        return inertia('Homepage', [
+            'abouts' => $abouts,
+            'aboutDesc' => $aboutDesc,
+            'address' => $address,
+            'monthies' => $monthies,
+            'events' => $events,
+            'projects' => $projects,
+            'homeReviews' => $homeReviews,
+            'sliders' => $sliders,
+            'teacher' => $teacher,
+            'prog' => $prog,
+            'graph' => $graph,
+            'ict' => $ict
+        ]);
     }
 }

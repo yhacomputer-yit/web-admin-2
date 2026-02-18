@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class FrontendSectionController extends Controller
 {
@@ -75,9 +76,9 @@ class FrontendSectionController extends Controller
 
         $data = $this->share();
 
-        return view("frontend_section.courses", [
+        return inertia('Courses', [
             'monthies' => $monthies
-        ], $data);
+        ]);
 
     }
     public function project($c_id = 1){
@@ -102,17 +103,23 @@ class FrontendSectionController extends Controller
         }
          $data = $this->share();
 
-        return view("frontend_section.project", [
+        return inertia('Projects', [
             'projects' => $projects,
-        ], $data);
+        ]);
     }
 
+    public function gallery()
+    {
+        $data = $this->share();
+        
+        return inertia('Gallery', []);
+    }
 
     // about us section
 
  public function about(Request $request){
      $data = $this->share();
-    return view ('frontend_section.about' , $data);
+     return inertia('About', []);
  }
 
 
@@ -125,12 +132,11 @@ class FrontendSectionController extends Controller
 
         $events = Event::orderBy('edate', 'desc')->paginate(6);
 
-        return view("frontend_section.event", [
+        return inertia('Events', [
             'events' => $events,
             'name' => $name,
             'phone' => $phone,
-
-        ], $data);
+        ]);
     }
 
 
@@ -140,10 +146,11 @@ class FrontendSectionController extends Controller
 
         $details = EventDetail::where('event_id',$id)->get();
         $event = Event::where('id', $id)->first();
-        return view('frontend_section.eventDetail', [
+        
+        return inertia('EventDetail', [
             'details' => $details,
             'event' => $event
-        ],$data);
+        ]);
     }
 
     public function course(Request $request, $id){
@@ -162,14 +169,13 @@ class FrontendSectionController extends Controller
 
         $subjects = ClassModel::where('course_id', $id)->get();
         $course = Course::where('id', $id)->first();
-        return view("frontend_section.course", [
+        
+        return inertia('CourseDetail', [
             'ict' => $ict,
             'course' => $course,
             'subjects' => $subjects,
             'address' => $address,
         ]);
-
-
     }
 //return view("frontend_section.course");
 
@@ -202,9 +208,9 @@ class FrontendSectionController extends Controller
 
         $project = Project::with('course')->findOrFail($id);
 
-        return view('frontend_section.projectDetail', [
+        return inertia('ProjectDetail', [
             'project' => $project
-        ], $data);
+        ]);
     }
 
     // pos
@@ -237,7 +243,7 @@ class FrontendSectionController extends Controller
 
 
     public function student_signup(){
-        return view('frontend_section.stu_signup');
+        return inertia('StudentSignup');
     }
 
     public function getPhone(Request $request){
@@ -433,7 +439,7 @@ class FrontendSectionController extends Controller
         View::share('prog', $prog);
         View::share('graph', $graph);
 
-        return view('frontend_section.monthly_course', [
+        return inertia('MonthlyCourse', [
             'courses' => $courses,
             'address' => $address,
             'monthies' => $monthies
