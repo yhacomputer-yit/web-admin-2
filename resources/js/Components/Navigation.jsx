@@ -89,6 +89,9 @@ export default function Navigation({ prog, graph, ict }) {
                     <a className="nav-link" href="/reviews"><i className="fa-solid fa-star"></i> Reviews</a>
                 </li>
                 <li className="nav-item">
+                    <a className="nav-link" href="/gallery"><i className="fa-solid fa-images"></i> Gallery</a>
+                </li>
+                <li className="nav-item">
                     <a className="nav-link" href="/yha/about"><i className="fa-solid fa-circle-info"></i> About Us</a>
                 </li>
             </ul>
