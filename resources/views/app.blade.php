@@ -22,6 +22,7 @@
         <link rel="stylesheet" href="{{ asset('css/f_home.css') }}">
         <link rel="stylesheet" href="{{ asset('css/f_course_menu.css') }}">
         <link rel="stylesheet" href="{{ asset('css/f_footer.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/homepage.css') }}">
 
         <!-- Vite Scripts -->
         @viteReactRefresh

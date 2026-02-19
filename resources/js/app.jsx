@@ -1,4 +1,8 @@
 import './bootstrap';
+import '../css/homepage.css'
+import '../css/home.css'
+import '../css/master.css'
+import '../css/f_footer.css'
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 

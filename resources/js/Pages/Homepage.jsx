@@ -39,7 +39,7 @@ export default function Homepage({
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
-            
+
             {/* Hero Slider Section */}
             <section id="home">
                 <div className="container">
