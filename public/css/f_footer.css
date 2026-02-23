@@ -224,3 +224,52 @@
     }
 }
 
+ .edu-footer {
+          background: linear-gradient(120deg, #181c24 60%, #23272f 100%);
+          color: #eee;
+          font-size: 1rem;
+          margin-top: 0;
+        }
+        .footer-brand img { height: 48px; }
+        .footer-desc { color: #bbb; font-size: 1rem; margin-bottom: 0.5rem; }
+        .footer-title { color: #ff6b01; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+        .footer-links, .footer-contact { list-style: none; padding: 0; margin: 0; }
+        .footer-links li, .footer-contact li { margin-bottom: 0.5rem; }
+        .footer-links a { color: #eee; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #ff6b01; }
+        .footer-contact i { color: #ff6b01; margin-right: 0.5em; }
+        .footer-social {
+          display: flex;
+          gap: 0.7em;
+          justify-content: center;
+          margin-bottom: 0.5em;
+        }
+        .footer-social a {
+          display: flex; align-items: center; justify-content: center;
+          color: #fff; background: #23272f; border-radius: 50%;
+          width: 36px; height: 36px; font-size: 1.2rem;
+          transition: background 0.2s, color 0.2s;
+        }
+        .footer-social a:hover { background: #ff6b01; color: #23272f; }
+        .footer-cta {
+          display: inline-block; background: #ff6b01; color: #fff; padding: 0.5em 1.2em;
+          border-radius: 20px; font-weight: 600; text-decoration: none; transition: background 0.2s, color 0.2s;
+          margin-top: 0.5em;
+        }
+        .footer-cta:hover { background: #fff; color: #ff6b01; }
+        .footer-divider { border-color: #333; }
+        .footer-links, .footer-contact, .footer-title, .footer-cta { width: 100%; }
+        @media (max-width: 991.98px) {
+          .edu-footer .row > div { margin-bottom: 1.5rem; }
+          .footer-brand img { height: 40px; }
+          .footer-social { justify-content: center; }
+          .footer-title, .footer-links, .footer-contact, .footer-cta { text-align: center !important; }
+        }
+        @media (max-width: 576px) {
+          .footer-title { font-size: 1rem; }
+          .footer-links a, .footer-contact li { font-size: 0.98rem; }
+          .footer-cta { font-size: 0.98rem; }
+        }
+
+
+        

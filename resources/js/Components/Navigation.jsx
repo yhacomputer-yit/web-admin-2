@@ -28,7 +28,7 @@ export default function Navigation({ prog, graph, ict }) {
         <nav className="glass-navbar">
             <a className="logo" href="/">
                 <img style={{width: '100px', height: '100px'}} src="/image/logo/logo.png" alt="YHA Logo" />
-                <span><h1 className="fw-bold">YHA</h1><h6 style={{letterSpacing: '2px'}}>Computer</h6></span>
+                {/* <span><h1 className="fw-bold">YHA</h1><h6 style={{letterSpacing: '2px'}}>Computer</h6></span> */}
             </a>
 
             <div className="hamburger" id="hamburger-menu">
@@ -87,9 +87,6 @@ export default function Navigation({ prog, graph, ict }) {
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" href="/reviews"><i className="fa-solid fa-star"></i> Reviews</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="/gallery"><i className="fa-solid fa-images"></i> Gallery</a>
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" href="/yha/about"><i className="fa-solid fa-circle-info"></i> About Us</a>
