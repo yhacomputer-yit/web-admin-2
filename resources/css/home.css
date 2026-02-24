@@ -1217,3 +1217,36 @@
       .contact-card-light, .map-card-light { border-radius: 10px; }
       .map-responsive-light, .map-responsive-light iframe { border-radius: 10px; }
     }
+
+/* FAQ Section Styles */
+#faq {
+  margin-top: 2rem;
+}
+
+#faq .accordion-button {
+  font-weight: 600;
+  color: #ff6b01;
+  background: #fff7f0;
+}
+
+#faq .accordion-button:not(.collapsed) {
+  background: #ffe0c2;
+  color: #e65b00;
+}
+
+#faq .accordion-body {
+  background: #fff;
+  color: #333;
+}
+
+#faq .accordion-item {
+  border-radius: 12px !important;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 2px 8px rgba(255,107,1,0.07);
+  border: 1px solid #ffe5d0;
+  overflow: hidden;
+}
+
+#faq .accordion-item:last-child {
+  margin-bottom: 0;
+}
