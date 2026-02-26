@@ -258,9 +258,9 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
 
             <section className="main">
                 <div className="container">
-                    {events && events.data && events.data.length > 0 ? (
+                    {events && events.length > 0 ? (
                         <>
-                            {events.data.map((event, index) => (
+                            {events.map((event) => (
                                 <div key={event.id} className="event-card">
                                     <div className="row g-0 align-items-center">
                                         {index % 2 === 0 ? (

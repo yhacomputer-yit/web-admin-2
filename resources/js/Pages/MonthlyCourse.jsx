@@ -8,107 +8,165 @@ export default function MonthlyCourse({ prog, graph, ict, address, monthies }) {
             <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
-                .monthly-hero {
+                .course-hero {
                     background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%);
-                    padding: 80px 0;
                     color: white;
+                    padding: 60px 0 30px 0;
                     text-align: center;
                 }
 
-                .monthly-content {
-                    padding: 80px 0;
-                    background: #f8f9fa;
+                .main {
+                    width: 100%;
+                    margin-top: 0;
                 }
 
-                .placeholder {
-                    text-align: center;
-                    padding: 4rem 2rem;
-                    background: white;
-                    border-radius: 20px;
-                    border: 2px dashed #dee2e6;
+                .monthly-course-card {
+                    background: #fff;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    border: none;
+                    border-radius: 0.5rem;
                 }
 
-                .placeholder i {
-                    font-size: 4rem;
-                    color: #ff6b01;
-                    margin-bottom: 1rem;
+                .monthly-course-list-group-item {
+                    border: none;
+                    padding-left: 0;
+                }
+
+                .monthly-enroll-btn {
+                    background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
+                    color: #fff !important;
+                    box-shadow: 0 2px 8px rgba(255,107,1,0.10);
+                    border: none;
+                    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+                }
+
+                .monthly-enroll-btn:hover {
+                    background: linear-gradient(90deg, #ffb347 0%, #ff6b01 100%);
+                    color: #fff !important;
+                    transform: translateY(-2px) scale(1.04);
+                    box-shadow: 0 6px 18px rgba(255,107,1,0.18);
+                }
+
+                .monthly-contact-btn {
+                    background: #fff;
+                    color: #ff6b01 !important;
+                    border: 2px solid #ff6b01;
+                    transition: background 0.2s, color 0.2s, border 0.2s, transform 0.2s;
+                }
+
+                .monthly-contact-btn:hover {
+                    background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
+                    color: #fff !important;
+                    border-color: #ff6b01;
+                    transform: translateY(-2px) scale(1.04);
+                }
+
+                @media (max-width: 991.98px) {
+                    .card {
+                        margin-bottom: 1.5rem;
+                    }
+                }
+
+                @media (max-width: 767.98px) {
+                    .main .card.h-100 {
+                        margin-top: 1.2rem;
+                    }
                 }
             `}</style>
 
-            <section className="monthly-hero">
+            {/* Hero/Header Section */}
+            <section className="course-hero">
                 <div className="container">
-                    <h1>Monthly Course Details</h1>
-                    <p>Comprehensive information about our monthly course programs</p>
+                    <h1 className="fw-bold mb-2" style={{fontSize: '2.2rem'}}>Monthly Courses Detail</h1>
+                    <p style={{opacity: 0.9, maxWidth: '600px', margin: '0 auto'}}>Explore our monthly courses with flexible schedules and hands-on learning. Find the right course for you and enroll today!</p>
                 </div>
             </section>
 
-            <section className="monthly-content">
+            <div className="main w-100 mt-0">
                 <div className="container">
                     {monthies && monthies.length > 0 ? (
-                        <div className="row">
-                            {monthies.map((monthly) => (
-                                <div key={monthly.id} className="col-lg-8 col-md-10 mx-auto">
-                                    <div className="card shadow-sm mb-4">
-                                        <div className="card-body">
-                                            <div className="row align-items-center">
-                                                <div className="col-md-4">
-                                                    {monthly.m_img && (
-                                                        <img 
-                                                            src={`/storage/${monthly.m_img}`} 
-                                                            alt={monthly.course?.name}
-                                                            className="img-fluid rounded"
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div className="col-md-8">
-                                                    <h3 className="card-title">{monthly.course?.name}</h3>
-                                                    <p className="text-muted">{monthly.course?.description}</p>
-                                                    
-                                                    <div className="row mt-3">
-                                                        <div className="col-md-6">
-                                                            <strong>Monthly Fee:</strong>
-                                                            <div className="text-primary h5">
-                                                                Ks {Number(monthly.course?.normal_price || 0).toLocaleString()}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <strong>Duration:</strong>
-                                                            <div className="text-info">4 Weeks</div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="mt-3">
-                                                        <Link 
-                                                            href={`/yha/courses/monthl`} 
-                                                            className="btn btn-primary me-2"
-                                                        >
-                                                            <i className="fas fa-arrow-left"></i> Back to Courses
-                                                        </Link>
-                                                        {monthly.section && (
-                                                            <span className="badge bg-success ms-2">
-                                                                {monthly.section.name}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
+                        monthies.map((monthly) => (
+                            <div key={monthly.id} className="row w-100 mb-5 d-flex justify-content-between align-items-center">
+                                {/* course image */}
+                                <div className="col-12 col-lg-6 mb-4">
+                                    <div className="monthly-course-card shadow-sm border-0 rounded-4 h-100">
+                                        {monthly.m_img && (
+                                            <img 
+                                                className="w-100 rounded-4" 
+                                                src={`/storage/${monthly.m_img}`}
+                                                alt=""
+                                                style={{objectFit: 'cover', maxHeight: '340px'}}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* course detail */}
+                                <div className="col-12 col-lg-6">
+                                    <div className="monthly-course-card shadow-sm border-0 rounded-4 p-4 h-100">
+                                        <h2 className="fw-bold mb-3" style={{color: '#ff6b01'}}>{monthly.course?.name}</h2>
+                                        <ul className="list-unstyled mb-4">
+                                            <li className="mb-2">
+                                                <i className="fa-solid fa-money-bill-wave me-2" style={{color: '#ff6b01'}}></i> 
+                                                <strong>Price:</strong> Ks {Number(monthly.course?.normal_price || 0).toLocaleString()}
+                                            </li>
+                                            <li className="mb-2">
+                                                <i className="fa-solid fa-calendar-days me-2" style={{color: '#ff6b01'}}></i> 
+                                                <strong>Date:</strong> {monthly.start_date} / {monthly.end_date}
+                                            </li>
+                                            <li className="mb-2">
+                                                <i className="fa-solid fa-clock me-2" style={{color: '#ff6b01'}}></i> 
+                                                <strong>Time:</strong> {monthly.section?.start} - {monthly.section?.end} ({monthly.section?.name})
+                                            </li>
+                                            <li className="mb-2">
+                                                <i className="fa-solid fa-users me-2" style={{color: '#ff6b01'}}></i> 
+                                                <strong>Limited Seat:</strong> {monthly.limited_seat} Student
+                                            </li>
+                                        </ul>
+                                        
+                                        <div className="mb-4">
+                                            <h5 className="fw-bold mb-2" style={{color: '#ff6b01'}}>Subjects</h5>
+                                            <ul className="list-group list-group-flush">
+                                                {monthly.course?.subjects && monthly.course.subjects.length > 0 ? (
+                                                    monthly.course.subjects.map((subject) => (
+                                                        <li key={subject.id} className="monthly-course-list-group-item">{subject.name}</li>
+                                                    ))
+                                                ) : (
+                                                    <li className="monthly-course-list-group-item text-muted">No subjects available.</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div className="d-flex gap-3 align-items-center justify-content-center mt-3 flex-wrap">
+                                            <a href="#" className="monthly-enroll-btn px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2">
+                                                <i className="fa-solid fa-user-plus"></i> Enroll Now
+                                            </a>
+                                            <a href="#" className="monthly-contact-btn px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2">
+                                                <i className="fa-solid fa-phone"></i> Contact Us
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))
                     ) : (
-                        <div className="placeholder">
-                            <i className="fas fa-calendar-alt"></i>
-                            <h2>No Course Details Available</h2>
-                            <p>Monthly course information is not available at the moment.</p>
-                            <Link href="/yha/courses/monthl" className="btn btn-primary mt-3">
-                                <i className="fas fa-arrow-left"></i> Back to Courses
-                            </Link>
+                        <div className="row w-100 mb-5 d-flex justify-content-between align-items-center">
+                            <div className="col-12">
+                                <div className="monthly-course-card shadow-sm border-0 rounded-4 p-4 h-100">
+                                    <h2 className="fw-bold mb-3" style={{color: '#ff6b01'}}>No Course Details Available</h2>
+                                    <p>Monthly course information is not available at the moment.</p>
+                                    <div className="d-flex gap-3 align-items-center justify-content-center mt-3 flex-wrap">
+                                        <a href="/yha/courses/monthl" className="monthly-enroll-btn px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2">
+                                            <i className="fa-solid fa-arrow-left"></i> Back to Courses
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
+                    <hr className="d-block" />
                 </div>
-            </section>
+            </div>
             <Footer address={address} />
         </div>
     );

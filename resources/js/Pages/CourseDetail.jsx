@@ -125,10 +125,10 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
 
                     <div className="row">
                         {subjects && subjects.length > 0 ? (
-                            subjects.map((subject, index) => (
+                            subjects.map((subject) => (
                                 <div key={subject.id} className="mb-4 col-lg-4 col-md-6">
                                     <div className="subject-card">
-                                        <div className="subject-number">{index + 1}</div>
+                                        <div className="subject-number">{subjects.indexOf(subject) + 1}</div>
                                         <div className="subject-content">
                                             <h3 className="subject-title">{subject.subject?.name}</h3>
                                         </div>
