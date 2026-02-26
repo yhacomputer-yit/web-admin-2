@@ -1,10 +1,11 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
+import Footer from '../Components/Footer';
 
-export default function Events({ events, name, phone }) {
+export default function Events({ events, name, phone, prog, graph, ict, address }) {
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+            <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
                 /* Modern Event Page Styles */
@@ -343,6 +344,7 @@ export default function Events({ events, name, phone }) {
                     )}
                 </div>
             </section>
+            <Footer address={address} />
         </div>
     );
 }

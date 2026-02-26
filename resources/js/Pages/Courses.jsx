@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
-export default function Courses({ monthies }) {
+export default function Courses({ monthies, prog, graph, ict, address }) {
     const getCategoryIcon = (type) => {
         switch(type) {
             case 1: return { icon: 'fas fa-code', label: 'Programming' };
@@ -13,7 +13,8 @@ export default function Courses({ monthies }) {
     };
 
     return (
-        <>
+        <div className="frontend-page">
+            <Navigation prog={prog} graph={graph} ict={ict} />
             {/* Hero Section */}
             <section className="courses-hero">
                 <div className="container">
@@ -134,7 +135,7 @@ export default function Courses({ monthies }) {
                 </div>
             </section>
 
-            <Footer address={[]} />
-        </>
+            <Footer address={address} />
+        </div>
     );
 }

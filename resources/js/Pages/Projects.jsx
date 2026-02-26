@@ -1,10 +1,11 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
+import Footer from '../Components/Footer';
 
-export default function Projects({ projects }) {
+export default function Projects({ projects, prog, graph, ict, address }) {
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+            <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
                 /* Modern Projects Page Styles */
@@ -372,6 +373,7 @@ export default function Projects({ projects }) {
                     )}
                 </div>
             </section>
+            <Footer address={address} />
         </div>
     );
 }

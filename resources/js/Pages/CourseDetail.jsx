@@ -1,14 +1,15 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
+import Footer from '../Components/Footer';
 
-export default function CourseDetail({ course, subjects }) {
+export default function CourseDetail({ course, subjects, prog, graph, ict, address }) {
     const ctaCourseUrl = course?.links && !course.links.startsWith('http') 
         ? `https://${course.links}` 
         : course?.links;
 
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+            <Navigation prog={prog} graph={graph} ict={ict} />
             
             {/* Hero Section */}
             <section className="course-hero">
@@ -562,6 +563,7 @@ export default function CourseDetail({ course, subjects }) {
                     }
                 }
             `}</style>
+            <Footer address={address} />
         </div>
     );
 }

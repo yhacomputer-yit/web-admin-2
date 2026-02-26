@@ -1,10 +1,11 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
+import Footer from '../Components/Footer';
 
-export default function About() {
+export default function About({ prog, graph, ict, address }) {
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+            <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
                 .about-hero {
@@ -55,6 +56,7 @@ export default function About() {
                     </div>
                 </div>
             </section>
+            <Footer address={address} />
         </div>
     );
 }

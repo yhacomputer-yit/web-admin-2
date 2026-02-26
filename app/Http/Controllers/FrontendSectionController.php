@@ -8,6 +8,7 @@ use App\Models\About;
 use App\Models\Event;
 use App\Models\Address;
 use App\Models\Course;
+use App\Models\course_type;
 use App\Models\Monthly;
 use App\Models\Payment;
 use App\Models\Project;
@@ -31,14 +32,18 @@ use Inertia\Inertia;
 class FrontendSectionController extends Controller
 {
     private function share(){
-        // Fetch all courses
+        // Fetch course types and their relationships
+        $progType = course_type::where('name', 'Programming')->first();
+        $graphType = course_type::where('name', 'Graphic Design')->first();
+        $ictType = course_type::where('name', 'ICT')->first();
+        
         $courses = Course::all();
         $address = Address::get();
 
-        // Define specific data for each type
-        $ict = $courses->where('type', '3');
-        $prog = $courses->where('type', '1');
-        $graph = $courses->where('type', '2');
+        // Define specific data for each type using relationships
+        $prog = $progType ? $progType->courses : collect();
+        $graph = $graphType ? $graphType->courses : collect();
+        $ict = $ictType ? $ictType->courses : collect();
 
         return compact('ict', 'prog', 'graph', 'courses', 'address');
     }
@@ -72,12 +77,15 @@ class FrontendSectionController extends Controller
     public function courses(){
 
         $monthies = Monthly::with('course')->paginate(6, ['*'], 'monthly');
-        // dd($monthies);
 
         $data = $this->share();
 
         return inertia('Courses', [
-            'monthies' => $monthies
+            'monthies' => $monthies,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
+            'address' => $data['address'],
         ]);
 
     }
@@ -105,21 +113,34 @@ class FrontendSectionController extends Controller
 
         return inertia('Projects', [
             'projects' => $projects,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
+            'address' => $data['address'],
         ]);
     }
 
     public function gallery()
     {
         $data = $this->share();
-        
-        return inertia('Gallery', []);
+
+        return inertia('Gallery', [
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
+        ]);
     }
 
     // about us section
 
  public function about(Request $request){
      $data = $this->share();
-     return inertia('About', []);
+     return inertia('About', [
+         'prog' => $data['prog'],
+         'graph' => $data['graph'],
+         'ict' => $data['ict'],
+         'address' => $data['address'],
+     ]);
  }
 
 
@@ -136,6 +157,10 @@ class FrontendSectionController extends Controller
             'events' => $events,
             'name' => $name,
             'phone' => $phone,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
+            'address' => $data['address'],
         ]);
     }
 
@@ -146,35 +171,29 @@ class FrontendSectionController extends Controller
 
         $details = EventDetail::where('event_id',$id)->get();
         $event = Event::where('id', $id)->first();
-        
+
         return inertia('EventDetail', [
             'details' => $details,
-            'event' => $event
+            'event' => $event,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
         ]);
     }
 
     public function course(Request $request, $id){
-        $courses = Course::all();
-        $address = Address::get();
-        // dd($address);
-
-        // Define specific data for each type
-        $ict = $courses->where('type', '3');
-        $prog = $courses->where('type', '1');
-        $graph = $courses->where('type', '2');
-
-        View::share('ict', $ict);
-        View::share('prog', $prog);
-        View::share('graph', $graph);
+        $data = $this->share();
 
         $subjects = ClassModel::where('course_id', $id)->get();
         $course = Course::where('id', $id)->first();
-        
+
         return inertia('CourseDetail', [
-            'ict' => $ict,
+            'ict' => $data['ict'],
             'course' => $course,
             'subjects' => $subjects,
-            'address' => $address,
+            'address' => $data['address'],
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
         ]);
     }
 //return view("frontend_section.course");
@@ -209,7 +228,10 @@ class FrontendSectionController extends Controller
         $project = Project::with('course')->findOrFail($id);
 
         return inertia('ProjectDetail', [
-            'project' => $project
+            'project' => $project,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
         ]);
     }
 
@@ -425,29 +447,16 @@ class FrontendSectionController extends Controller
 
     // get the monthly course
     public function monthly_courses($id){
-        $courses = Course::all();
-        $address = Address::get();
+        $data = $this->share();
         $monthies = Monthly::with(['course', 'section'])->where('id', $id)->get();
-        // dd($monthies);
-        // Define specific data for each type
-        $ict = $courses->where('type', '3');
-        $prog = $courses->where('type', '1');
-        $graph = $courses->where('type', '2');
-
-        // Share data with views
-        View::share('ict', $ict);
-        View::share('prog', $prog);
-        View::share('graph', $graph);
 
         return inertia('MonthlyCourse', [
-            'courses' => $courses,
-            'address' => $address,
-            'monthies' => $monthies
+            'courses' => $data['courses'],
+            'address' => $data['address'],
+            'monthies' => $monthies,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
         ]);
     }
-
-
-
 }
-
-

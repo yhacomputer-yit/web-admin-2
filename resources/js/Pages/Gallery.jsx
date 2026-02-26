@@ -1,10 +1,10 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 
-export default function Gallery() {
+export default function Gallery({ prog, graph, ict }) {
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+            <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
                 .gallery-hero {
