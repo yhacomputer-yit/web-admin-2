@@ -563,7 +563,7 @@ export default function Courses({ monthies, prog, graph, ict, address }) {
                             <p className="hero-subtitle">Master new skills with our comprehensive monthly course programs designed for your success</p>
                             <div className="hero-stats">
                                 <div className="stat-item">
-                                    <span className="stat-number">{monthies?.length || count(monthies) || 0}+</span>
+                                    <span className="stat-number">{monthies?.data?.length || 0}+</span>
                                     <span className="stat-label">Courses Available</span>
                                 </div>
                                 <div className="stat-item">
@@ -663,13 +663,10 @@ export default function Courses({ monthies, prog, graph, ict, address }) {
             {/* CTA Section */}
             <section className="cta-section">
                 <div className="container">
-                    <div className="cta-content">
+                    <div className="cta-content text-center">
                         <h2>Ready to Start Your Learning Journey?</h2>
                         <p>Join thousands of students who have transformed their careers with our courses</p>
-                        <Link href="/yha/courses/monthl" className="btn-cta">
-                            <i className="fas fa-rocket"></i>
-                            <span>Explore All Courses</span>
-                        </Link>
+                        <a href="#" className="btn-cta">Get Started Today</a>
                     </div>
                 </div>
             </section>
