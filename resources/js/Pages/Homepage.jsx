@@ -18,15 +18,16 @@ export default function Homepage({
     ict
 }) {
     const [typedText, setTypedText] = useState('');
+    const [typingKey, setTypingKey] = useState(0);
     const fullText = "Unlock your full potential through curiosity";
     const { url } = usePage();
 
     useEffect(() => {
-        // Reset typing effect when component mounts or URL changes
+        // Force restart typing effect
+        setTypingKey(prev => prev + 1);
         setTypedText('');
         let index = 0;
         
-        // Clear any existing timers
         const timer = setInterval(() => {
             if (index < fullText.length) {
                 setTypedText(fullText.slice(0, index + 1));
@@ -34,13 +35,12 @@ export default function Homepage({
             } else {
                 clearInterval(timer);
             }
-        }, 80); // Slightly slower for better visibility
+        }, 80);
         
-        // Cleanup function
         return () => {
             clearInterval(timer);
         };
-    }, [url, fullText]); // Re-run when URL changes or fullText changes
+    }, [url]);
 
     // Get address data
     const addr = address && address.length > 0 ? address[0] : null;
@@ -88,7 +88,7 @@ export default function Homepage({
                 <div className="container">
                     <div className="mb-4">
                         <h3 className="typewriter-heading">
-                            <span id="typewriter-text">{typedText}</span>
+                            <span id="typewriter-text" key={typingKey}>{typedText}<span className="typing-cursor">|</span></span>
                         </h3>
                     </div>
                     <div className="flex-wrap row justify-content-center align-items-center g-5 flex-lg-nowrap">

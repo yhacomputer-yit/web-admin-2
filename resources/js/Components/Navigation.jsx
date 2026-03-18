@@ -1,7 +1,15 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 
 export default function Navigation({ prog, graph, ict }) {
+    const { url } = usePage();
+
+    const isActive = (path) => {
+        if (path === '/') {
+            return url === '/' || url === '';
+        }
+        return url.startsWith(path);
+    };
     useEffect(() => {
         // Hamburger menu toggle
         const hamburger = document.getElementById('hamburger-menu');
@@ -38,10 +46,10 @@ export default function Navigation({ prog, graph, ict }) {
             </div>
             <ul className="nav-menu" id="main-nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" href="/"><i className="fa-solid fa-house"></i> Home</Link>
+                    <Link className={`nav-link ${isActive('/') ? 'active' : ''}`} href="/"><i className="fa-solid fa-house"></i> Home</Link>
                 </li>
                 <li className="nav-item has-sub">
-                    <Link className="nav-link" href="#"><i className="fa-solid fa-code"></i> Programming <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
+                    <Link className={`nav-link ${isActive('/yha/course') ? 'active' : ''}`} href="#"><i className="fa-solid fa-code"></i> Programming <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
                     <ul className="sub-menu">
                         {prog && prog.map((course) => (
                             <li key={course.id}>
@@ -53,7 +61,7 @@ export default function Navigation({ prog, graph, ict }) {
                     </ul>
                 </li>
                 <li className="nav-item has-sub">
-                    <Link className="nav-link" href="#"><i className="fa-solid fa-pen-nib"></i> Graphic Design <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
+                    <Link className={`nav-link ${isActive('/yha/course') ? 'active' : ''}`} href="#"><i className="fa-solid fa-pen-nib"></i> Graphic Design <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
                     <ul className="sub-menu">
                         {graph && graph.map((course) => (
                             <li key={course.id}>
@@ -65,7 +73,7 @@ export default function Navigation({ prog, graph, ict }) {
                     </ul>
                 </li>
                 <li className="nav-item has-sub">
-                    <Link className="nav-link" href="#"><i className="fa-solid fa-network-wired"></i> ICT <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
+                    <Link className={`nav-link ${isActive('/yha/course') ? 'active' : ''}`} href="#"><i className="fa-solid fa-network-wired"></i> ICT <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i></Link>
                     <ul className="sub-menu">
                         {ict && ict.map((course) => (
                             <li key={course.id}>
@@ -77,19 +85,19 @@ export default function Navigation({ prog, graph, ict }) {
                     </ul>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" href="/yha/courses/monthl"><i className="fa-solid fa-calendar-days"></i> Monthly Courses</Link>
+                    <Link className={`nav-link ${isActive('/yha/courses') ? 'active' : ''}`} href="/yha/courses/monthl"><i className="fa-solid fa-calendar-days"></i> Monthly Courses</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" href="/yha/project"><i className="fa-solid fa-diagram-project"></i> Projects</Link>
+                    <Link className={`nav-link ${isActive('/yha/project') ? 'active' : ''}`} href="/yha/project"><i className="fa-solid fa-diagram-project"></i> Projects</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" href="/yha/event"><i className="fa-solid fa-bolt"></i> Events</Link>
+                    <Link className={`nav-link ${isActive('/yha/event') ? 'active' : ''}`} href="/yha/event"><i className="fa-solid fa-bolt"></i> Events</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" href="/reviews"><i className="fa-solid fa-star"></i> Reviews</Link>
+                    <Link className={`nav-link ${isActive('/reviews') ? 'active' : ''}`} href="/reviews"><i className="fa-solid fa-star"></i> Reviews</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" href="/yha/about"><i className="fa-solid fa-circle-info"></i> About Us</Link>
+                    <Link className={`nav-link ${isActive('/yha/about') ? 'active' : ''}`} href="/yha/about"><i className="fa-solid fa-circle-info"></i> About Us</Link>
                 </li>
             </ul>
         </nav>
