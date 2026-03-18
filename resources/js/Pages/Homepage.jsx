@@ -22,29 +22,31 @@ export default function Homepage({
     const { url } = usePage();
 
     useEffect(() => {
-        // Reset and start typing effect when on homepage
+        // Reset typing effect when component mounts or URL changes
         setTypedText('');
         let index = 0;
+        
+        // Clear any existing timers
         const timer = setInterval(() => {
-            if (index <= fullText.length) {
-                setTypedText(fullText.slice(0, index));
+            if (index < fullText.length) {
+                setTypedText(fullText.slice(0, index + 1));
                 index++;
             } else {
                 clearInterval(timer);
             }
-        }, 60);
+        }, 80); // Slightly slower for better visibility
         
         // Cleanup function
         return () => {
             clearInterval(timer);
         };
-    }, [url]); // Re-run when URL changes (navigation)
+    }, [url, fullText]); // Re-run when URL changes or fullText changes
 
     // Get address data
     const addr = address && address.length > 0 ? address[0] : null;
 
     return (
-        <div className="frontend-page">
+        <div className="frontend-page" key={url}>
             <Navigation prog={prog} graph={graph} ict={ict} />
 
             {/* Hero Slider Section */}
