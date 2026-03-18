@@ -184,7 +184,7 @@ class FrontendSectionController extends Controller
     public function course(Request $request, $id){
         $data = $this->share();
 
-        $subjects = ClassModel::where('course_id', $id)->get();
+        $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
         $course = Course::where('id', $id)->first();
 
         return inertia('CourseDetail', [

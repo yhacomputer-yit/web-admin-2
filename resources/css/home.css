@@ -500,18 +500,20 @@
   gap: 0.7rem;
 }
 .edu-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px var(--shadow-orange);
   overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
+  border: 1px solid rgba(255, 107, 1, 0.08);
 }
 .edu-card:hover {
-  box-shadow: 0 6px 32px rgba(255,107,1,0.13);
-  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 48px var(--shadow-orange);
+  transform: translateY(-6px) scale(1.03);
+  border-color: var(--primary-orange);
 }
 .edu-card-img {
   width: 100%;
@@ -540,8 +542,9 @@
   margin-top: auto;
 }
 .edu-card-price {
-  font-weight: 600;
-  color: #ff6b01;
+  font-weight: 700;
+  color: var(--primary-orange);
+  text-shadow: 0 1px 2px var(--shadow-orange);
 }
 .edu-btn {
   background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
@@ -676,23 +679,30 @@
 
 /* From Uiverse.io by SujitAdroja */
 .btn-uiverse {
-    color: var(--maincolor);
+    color: var(--primary-orange);
     text-transform: uppercase;
     text-decoration: none;
-    border: 2px solid var(--maincolor);
-    padding: 10px 20px;
-    font-size: 17px;
+    border: 2px solid var(--primary-orange);
+    padding: 12px 28px;
+    font-size: 16px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
     background: transparent;
     position: relative;
-    transition: all 1s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
-    display: inline-block;
-    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px var(--shadow-orange);
   }
   .btn-uiverse:hover {
-    color: white;
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px var(--shadow-orange);
   }
   .btn-uiverse::before {
     content: "";
@@ -702,9 +712,9 @@
     top: 0;
     left: -40px;
     transform: skewX(45deg);
-    background-color: var(--maincolor);
+    background: linear-gradient(90deg, var(--orange-dark) 0%, var(--primary-orange) 100%);
     z-index: -1;
-    transition: all 1s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-uiverse:hover::before {
     width: 160%;
@@ -736,7 +746,7 @@
   display: none;
 }
 #typewriter-text {
-  background-image: linear-gradient(90deg, var(--maincolor) 0%, #ffb347 100%);
+  background-image: linear-gradient(90deg, var(--primary-orange) 0%, var(--orange-light) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -750,8 +760,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80px;   /* or 150px if you want it tall */
+  min-height: 80px;
   line-height: 1.2;
+  filter: drop-shadow(0 2px 8px var(--shadow-orange));
 }
 @keyframes textclip {
   to {
@@ -1218,28 +1229,37 @@
       .map-responsive-light, .map-responsive-light iframe { border-radius: 10px; }
     }
 
-/* FAQ Section Styles */
-#faq {
-  margin-top: 2rem;
-}
-
-#faq .accordion-button {
+/* FAQ Section Styles - Bootstrap Compatible */
+section#faq .faq-button {
   font-weight: 600;
-  color: #ff6b01;
-  background: #fff7f0;
+  color: #2c3e50 !important;
+  background: #fff7f0 !important;
 }
 
-#faq .accordion-button:not(.collapsed) {
-  background: #ffe0c2;
-  color: #e65b00;
+section#faq .faq-button:not(.collapsed) {
+  background: #ffe0c2 !important;
+  color: #1a252f !important;
 }
 
-#faq .accordion-body {
-  background: #fff;
-  color: #333;
+section#faq .faq-button:focus {
+  color: #2c3e50 !important;
+  background: #fff7f0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 1, 0.25) !important;
 }
 
-#faq .accordion-item {
+section#faq .faq-button:hover {
+  color: #1a252f !important;
+  background: #ffe0c2 !important;
+}
+
+section#faq .faq-body {
+  background: #fff !important;
+  color: #2c3e50 !important;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+section#faq .accordion-item {
   border-radius: 12px !important;
   margin-bottom: 0.7rem;
   box-shadow: 0 2px 8px rgba(255,107,1,0.07);
@@ -1247,6 +1267,55 @@
   overflow: hidden;
 }
 
-#faq .accordion-item:last-child {
+section#faq .accordion-item:last-child {
   margin-bottom: 0;
+}
+
+/* FAQ heading and subtitle text colors */
+section#faq .edu-glass-heading h3 {
+  color: #2c3e50 !important;
+}
+
+section#faq .edu-subtitle {
+  color: #6c757d !important;
+}
+
+/* Ensure FAQ text is always visible */
+section#faq .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232c3e50'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+section#faq .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231a252f'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Additional FAQ fixes for better visibility and interaction */
+section#faq .accordion-button {
+  font-size: 1.1rem !important;
+  padding: 1rem 1.25rem !important;
+  text-align: left !important;
+}
+
+section#faq .accordion-body {
+  padding: 1.25rem !important;
+  font-size: 1rem !important;
+}
+
+section#faq .accordion-collapse.collapse {
+  transition: height 0.35s ease !important;
+}
+
+/* Force text visibility in all states */
+section#faq .accordion-button,
+section#faq .accordion-button:not(.collapsed),
+section#faq .accordion-body {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Ensure proper contrast for accessibility */
+section#faq .accordion-button:focus,
+section#faq .accordion-button:hover {
+  text-decoration: none !important;
 }

@@ -1,16 +1,30 @@
 
-    :root {
-        --maincolor: #ff6b01;
-        --side-orange: #ff852d;
-        --white: #ffffff;
-        --sec-white: #222;
-        --ab_bg: #333;
-        --footer-link: #bbb;
-        --footer-link-hover: #ff6b01;
-        --glass-bg: rgba(255,255,255,0.75);
-        --glass-blur: blur(16px);
-        --navbar-gradient: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
+:root {
+        --primary-orange: #FF6B01;
+        --orange-light: #FFB347;
+        --orange-dark: #E65B00;
+        --white: #FFFFFF;
+        --black: #111111;
+        --gray-dark: #222222;
+        --gray-light: #F9F9F9;
+        --shadow-orange: rgba(255, 107, 1, 0.15);
+        --maincolor: #FF6B01;
+        --side-orange: #FF852D;
+        --sec-white: #222222;
+        --ab_bg: #333333;
+        --footer-link: #BBBBBB;
+        --footer-link-hover: #FF6B01;
+        --glass-bg: rgba(255,255,255,0.85);
+        --glass-blur: blur(20px);
+        --navbar-gradient: linear-gradient(90deg, var(--primary-orange) 0%, var(--orange-light) 100%);
     }
+
+    /* New theme classes for inline replacements */
+    .text-orange-primary { color: var(--primary-orange) !important; }
+    .text-orange-light { color: var(--orange-light) !important; }
+    .bg-gray-light { background-color: var(--gray-light) !important; }
+    .border-orange-glow { border-left: 4px solid var(--primary-orange); box-shadow: 0 0 20px var(--shadow-orange); }
+    .shadow-orange-glow { box-shadow: 0 8px 32px var(--shadow-orange); }
 
     body {
         background: var(--white);
@@ -105,17 +119,24 @@
     }
 
     .glass-navbar .nav-link {
-        color: #222;
+        color: var(--gray-dark);
         font-size: 15px;
         font-weight: 500;
         padding: 0.5rem 0.7rem;
         border-radius: 7px;
         text-decoration: none;
-        transition: background 0.2s, color 0.2s;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         display: flex;
         align-items: center;
         gap: 0.4rem;
         cursor: pointer;
+    }
+
+    .glass-navbar .nav-link:hover, .glass-navbar .nav-link.active {
+        background: var(--shadow-orange);
+        color: var(--primary-orange);
+        box-shadow: var(--shadow-orange);
+        transform: translateY(-1px);
     }
 
     .glass-navbar .nav-link i {

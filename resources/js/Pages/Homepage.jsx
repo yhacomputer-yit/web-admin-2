@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
@@ -19,8 +19,11 @@ export default function Homepage({
 }) {
     const [typedText, setTypedText] = useState('');
     const fullText = "Unlock your full potential through curiosity";
+    const { url } = usePage();
 
     useEffect(() => {
+        // Reset and start typing effect when on homepage
+        setTypedText('');
         let index = 0;
         const timer = setInterval(() => {
             if (index <= fullText.length) {
@@ -30,8 +33,12 @@ export default function Homepage({
                 clearInterval(timer);
             }
         }, 60);
-        return () => clearInterval(timer);
-    }, []);
+        
+        // Cleanup function
+        return () => {
+            clearInterval(timer);
+        };
+    }, [url]); // Re-run when URL changes (navigation)
 
     // Get address data
     const addr = address && address.length > 0 ? address[0] : null;
@@ -41,7 +48,7 @@ export default function Homepage({
             <Navigation prog={prog} graph={graph} ict={ict} />
 
             {/* Hero Slider Section */}
-            <section id="home">
+            <section id="home" className="pb-4">
                 <div className="container">
                     <div id="carouselExample" className="carousel slide hero-slider" data-bs-ride="carousel">
                         <div className="carousel-inner">
@@ -75,7 +82,7 @@ export default function Homepage({
             </section>
 
             {/* About Section */}
-            <section id="about1">
+            <section id="about1" className="py-5">
                 <div className="container">
                     <div className="mb-4">
                         <h3 className="typewriter-heading">
@@ -107,8 +114,8 @@ export default function Homepage({
                 </div>
             </section>
 
-            {/* Student Numbers Section */}
-            <section id="stu_number">
+            {/* Student Numbers Section - Hidden */}
+            {/* <section id="stu_number">
                 <div className="container">
                     <div className="row">
                         <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 justify-content-end">
@@ -139,10 +146,10 @@ export default function Homepage({
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Monthly Courses Section */}
-            <section className="edu-section" id="course">
+            <section className="edu-section mt-5 mb-5" id="course">
                 <div className="container">
                     <h2 className="edu-section-title">
                         <i className="fa-solid fa-book-open"></i> Monthly Courses
@@ -157,7 +164,7 @@ export default function Homepage({
                                         <p className="edu-card-desc">{monthly.course?.description}</p>
                                         <div className="edu-card-footer">
                                             <span className="edu-card-price">
-                                                <span style={{color: 'orangered'}}>Ks /-</span> {monthly.course?.normal_price}
+<span className="text-orange-primary">Ks /-</span> {monthly.course?.normal_price}
                                             </span>
                                             <Link href={`/yha/courses/monthly/${monthly.id}`} className="btn-uiverse">View More</Link>
                                         </div>
@@ -194,7 +201,7 @@ export default function Homepage({
                                     <div className="edu-card-body">
                                         <h6 className="edu-card-title">{event.title}</h6>
                                         <div className="mb-2 event-date">
-                                            <i className="fa-solid fa-calendar-alt" style={{color: '#ff6b01'}}></i>
+<i className="fa-solid fa-calendar-alt text-orange-primary"></i>
                                             <span style={{fontSize: '14px', color: '#666'}}>
                                                 {new Date(event.edate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                             </span>
@@ -236,8 +243,8 @@ export default function Homepage({
                                     <div className="edu-card-body">
                                         <h5 className="edu-card-title">{project.title}</h5>
                                         <div className="mb-2 project-course">
-                                            <i className="fa-solid fa-graduation-cap" style={{color: '#ff6b01'}}></i>
-                                            <span style={{color: '#ff6b01', fontWeight: '600'}}>{project.course?.name || 'Unknown Course'}</span>
+    <i className="fa-solid fa-graduation-cap text-orange-primary"></i>
+<span className="text-orange-primary font-bold">{project.course?.name || 'Unknown Course'}</span>
                                         </div>
                                         <p className="edu-card-desc clamped-text">{project.desc}</p>
                                         <div className="gap-2 mb-3 project-links d-flex justify-content-center">
@@ -278,7 +285,7 @@ export default function Homepage({
             </section>
 
             {/* FAQ Section */}
-            <section id="faq" className="py-5" style={{background: '#f9f9f9', borderTop: '2px solid #f3f3f3'}}>
+            <section id="faq" className="py-5 bg-gray-light" style={{borderTop: '2px solid #f3f3f3'}}>
                 <div className="container">
                     <div className="mb-4 edu-glass-heading">
                         <span className="edu-icon"><i className="fa-solid fa-question-circle"></i></span>
@@ -288,60 +295,60 @@ export default function Homepage({
                     <div className="accordion" id="faqAccordion">
                         <div className="accordion-item">
                             <h2 className="accordion-header" id="faq1">
-                                <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true">
+                                <button className="accordion-button faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true">
                                     What courses does YHA offer?
                                 </button>
                             </h2>
                             <div id="collapse1" className="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body">
+                                <div className="accordion-body faq-body">
                                     We offer a wide range of courses including programming, web development, graphic design, and ICT skills for all levels.
                                 </div>
                             </div>
                         </div>
                         <div className="accordion-item">
                             <h2 className="accordion-header" id="faq2">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false">
+                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false">
                                     How can I enroll in a course?
                                 </button>
                             </h2>
                             <div id="collapse2" className="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body">
+                                <div className="accordion-body faq-body">
                                     You can enroll online through our website or visit our center for in-person registration.
                                 </div>
                             </div>
                         </div>
                         <div className="accordion-item">
                             <h2 className="accordion-header" id="faq3">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false">
+                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false">
                                     Are there any prerequisites for joining?
                                 </button>
                             </h2>
                             <div id="collapse3" className="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body">
+                                <div className="accordion-body faq-body">
                                     Most beginner courses require no prior experience. Advanced courses may have prerequisites.
                                 </div>
                             </div>
                         </div>
                         <div className="accordion-item">
                             <h2 className="accordion-header" id="faq4">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false">
+                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false">
                                     Do you provide certificates?
                                 </button>
                             </h2>
                             <div id="collapse4" className="accordion-collapse collapse" aria-labelledby="faq4" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body">
+                                <div className="accordion-body faq-body">
                                     Yes, we provide certificates upon successful completion of each course.
                                 </div>
                             </div>
                         </div>
                         <div className="accordion-item">
                             <h2 className="accordion-header" id="faq5">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false">
+                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false">
                                     How can I contact support?
                                 </button>
                             </h2>
                             <div id="collapse5" className="accordion-collapse collapse" aria-labelledby="faq5" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body">
+                                <div className="accordion-body faq-body">
                                     You can contact us via phone, email, or visit our center.
                                 </div>
                             </div>
@@ -405,7 +412,7 @@ export default function Homepage({
             )}
 
             {/* Contact Section */}
-            <section id="contact" className="py-5" style={{background: '#fff', borderTop: '2px solid #f3f3f3'}}>
+            <section id="contact" className="py-5 bg-white" style={{borderTop: '2px solid #f3f3f3'}}>
                 <div className="container">
                     <div className="row g-4 align-items-stretch">
                         <div className="mb-4 col-lg-6 col-12">
@@ -465,19 +472,17 @@ export default function Homepage({
 
             {/* Go to Top Button */}
             <button id="goToTopBtn" title="Go to top"
-                style={{
+                className="shadow-orange-glow text-white text-xl" style={{
                     display:'none',
                     position:'fixed',
                     bottom:'32px',
                     right:'32px',
                     zIndex:9999,
-                    background:'#ff6b01',
-                    color:'#fff',
+                    background: 'var(--primary-orange)',
                     border:'none',
                     borderRadius:'50%',
                     width:'48px',
                     height:'48px',
-                    boxShadow:'0 2px 8px rgba(255,107,1,0.18)',
                     fontSize:'1.7rem',
                     cursor:'pointer'
                 }}
