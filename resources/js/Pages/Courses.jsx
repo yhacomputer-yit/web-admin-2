@@ -563,7 +563,10 @@ export default function Courses({ monthies, prog, graph, ict, address }) {
                             <p className="hero-subtitle">Master new skills with our comprehensive monthly course programs designed for your success</p>
                             <div className="hero-stats">
                                 <div className="stat-item">
-                                    <span className="stat-number">{monthies?.data?.length || 0}+</span>
+                                    <span className="stat-number">{(() => {
+                            const coursesData = Array.isArray(monthies) ? monthies : (monthies?.data || []);
+                            return coursesData.length || 0;
+                        })()}+</span>
                                     <span className="stat-label">Courses Available</span>
                                 </div>
                                 <div className="stat-item">
@@ -593,66 +596,71 @@ export default function Courses({ monthies, prog, graph, ict, address }) {
                     </div>
 
                     <div className="row">
-                        {monthies && monthies.data && monthies.data.map((monthly) => {
-                            const category = getCategoryIcon(monthly.course?.type);
-                            return (
-                                <div key={monthly.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
-                                    <div className="course-card">
-                                        <div className="course-image">
-                                            <img src={`/storage/${monthly.m_img}`} alt={monthly.course?.name} className="w-100" />
-                                            <div className="course-badge">
-                                                <span className="badge-text">Monthly</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="course-content">
-                                            <div className="course-category">
-                                                <i className={category.icon}></i>
-                                                <span>{category.label}</span>
-                                            </div>
-
-                                            <h3 className="course-title">{monthly.course?.name}</h3>
-
-                                            <p className="course-description">{monthly.course?.description}</p>
-
-                                            <div className="course-features">
-                                                <div className="feature-item">
-                                                    <i className="fas fa-clock"></i>
-                                                    <span>4 Weeks</span>
-                                                </div>
-                                                <div className="feature-item">
-                                                    <i className="fas fa-users"></i>
-                                                    <span>Live Classes</span>
-                                                </div>
-                                                <div className="feature-item">
-                                                    <i className="fas fa-certificate"></i>
-                                                    <span>Certificate</span>
-                                                </div>
-                                            </div>
-
-                                            <div className="course-footer">
-                                                <div className="price-section">
-                                                    <span className="price-label">Monthly Fee</span>
-                                                    <div className="price">
-                                                        <span className="currency">Ks</span>
-                                                        <span className="amount">{Number(monthly.course?.normal_price || 0).toLocaleString()}</span>
+                        {(() => {
+                            const coursesData = Array.isArray(monthies) ? monthies : (monthies?.data || []);
+                            return coursesData && coursesData.length > 0 ? (
+                                coursesData.map((monthly) => {
+                                    const category = getCategoryIcon(monthly.course?.type);
+                                    return (
+                                        <div key={monthly.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+                                            <div className="course-card">
+                                                <div className="course-image">
+                                                    <img src={`/storage/${monthly.m_img}`} alt={monthly.course?.name} className="w-100" />
+                                                    <div className="course-badge">
+                                                        <span className="badge-text">Monthly</span>
                                                     </div>
                                                 </div>
 
-                                                <Link href={`/yha/courses/monthly/${monthly.id}`} className="btn-enroll">
-                                                    <span>View Details</span>
-                                                    <i className="fas fa-arrow-right"></i>
-                                                </Link>
+                                                <div className="course-content">
+                                                    <div className="course-category">
+                                                        <i className={category.icon}></i>
+                                                        <span>{category.label}</span>
+                                                    </div>
+
+                                                    <h3 className="course-title">{monthly.course?.name}</h3>
+
+                                                    <p className="course-description">{monthly.course?.description}</p>
+
+                                                    <div className="course-features">
+                                                        <div className="feature-item">
+                                                            <i className="fas fa-clock"></i>
+                                                            <span>4 Weeks</span>
+                                                        </div>
+                                                        <div className="feature-item">
+                                                            <i className="fas fa-users"></i>
+                                                            <span>Live Classes</span>
+                                                        </div>
+                                                        <div className="feature-item">
+                                                            <i className="fas fa-certificate"></i>
+                                                            <span>Certificate</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="course-footer">
+                                                        <div className="price-section">
+                                                            <span className="price-label">Monthly Fee</span>
+                                                            <div className="price">
+                                                                <span className="currency">Ks</span>
+                                                                <span className="amount">{Number(monthly.course?.normal_price || 0).toLocaleString()}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <Link href={`/yha/courses/monthly/${monthly.id}`} className="btn-enroll">
+                                                            <span>View Details</span>
+                                                            <i className="fas fa-arrow-right"></i>
+                                                        </Link>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                    );
+                                })
+                            ) : null;
+                        })()}
                     </div>
 
                     {/* Pagination */}
-                    {monthies?.links && (
+                    {monthies && (monthies.links || (typeof monthies === 'object' && monthies !== null && 'links' in monthies)) && (
                         <div className="pagination-wrapper">
                             <div dangerouslySetInnerHTML={{ __html: monthies.links }} />
                         </div>

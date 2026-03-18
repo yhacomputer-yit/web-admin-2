@@ -137,7 +137,7 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
                     color: white;
                     transform: translateY(-2px) scale(1.03);
                     box-shadow: 0 4px 15px rgba(255,107,1,0.18);
-                    text-decoration: none;
+                    text-decorativdson: none;
                 }
 
                 .event-content .event-btn-row {

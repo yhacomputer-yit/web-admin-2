@@ -315,61 +315,64 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                     </div>
 
                     <div className="row" id="projects-container">
-                        {projects && projects.data && projects.data.length > 0 ? (
-                            projects.data.map((project) => (
-                                <div key={project.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                                    <div className="project-card">
-                                        <img src={`/storage/${project.image}`} className="project-image" alt={project.title} />
-                                        <div className="project-content">
-                                            <h5 className="project-title">
-                                                <Link href={`/yha/project/detail/${project.id}`} className="project-title-link">{project.title}</Link>
-                                            </h5>
-                                            <div className="project-course">
-                                                <i className="fa-solid fa-graduation-cap"></i>
-                                                <span>{project.course?.name}</span>
-                                            </div>
-                                            <p className="project-description">{project.desc}</p>
-                                            <div className="project-links">
-                                                {project.github ? (
-                                                    <a href={project.github} className="project-link github-link" target="_blank" rel="noopener noreferrer">
-                                                        <i className="fa-brands fa-github"></i>
-                                                        <span>GitHub</span>
-                                                    </a>
-                                                ) : (
-                                                    <span className="project-link github-link disabled">
-                                                        <i className="fa-brands fa-github"></i>
-                                                        <span>GitHub</span>
-                                                    </span>
-                                                )}
-                                                {project.demo ? (
-                                                    <a href={project.demo} className="project-link demo-link" target="_blank" rel="noopener noreferrer">
-                                                        <i className="fa-solid fa-play"></i>
-                                                        <span>Live Demo</span>
-                                                    </a>
-                                                ) : (
-                                                    <span className="project-link demo-link disabled">
-                                                        <i className="fa-solid fa-play"></i>
-                                                        <span>Live Demo</span>
-                                                    </span>
-                                                )}
+                        {(() => {
+                            const projectsData = Array.isArray(projects) ? projects : (projects?.data || []);
+                            return projectsData && projectsData.length > 0 ? (
+                                projectsData.map((project) => (
+                                    <div key={project.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                                        <div className="project-card">
+                                            <img src={`/storage/${project.image}`} className="project-image" alt={project.title} />
+                                            <div className="project-content">
+                                                <h5 className="project-title">
+                                                    <Link href={`/yha/project/detail/${project.id}`} className="project-title-link">{project.title}</Link>
+                                                </h5>
+                                                <div className="project-course">
+                                                    <i className="fa-solid fa-graduation-cap"></i>
+                                                    <span>{project.course?.name}</span>
+                                                </div>
+                                                <p className="project-description">{project.desc}</p>
+                                                <div className="project-links">
+                                                    {project.github ? (
+                                                        <a href={project.github} className="project-link github-link" target="_blank" rel="noopener noreferrer">
+                                                            <i className="fa-brands fa-github"></i>
+                                                            <span>GitHub</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="project-link github-link disabled">
+                                                            <i className="fa-brands fa-github"></i>
+                                                            <span>GitHub</span>
+                                                        </span>
+                                                    )}
+                                                    {project.demo ? (
+                                                        <a href={project.demo} className="project-link demo-link" target="_blank" rel="noopener noreferrer">
+                                                            <i className="fa-solid fa-play"></i>
+                                                            <span>Live Demo</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="project-link demo-link disabled">
+                                                            <i className="fa-solid fa-play"></i>
+                                                            <span>Live Demo</span>
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="col-12">
+                                    <div className="empty-state">
+                                        <i className="fa-solid fa-code-branch"></i>
+                                        <h3>Coming Soon!</h3>
+                                        <p>We're working on some amazing projects. Check back soon to see what our students have been creating!</p>
+                                    </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div className="col-12">
-                                <div className="empty-state">
-                                    <i className="fa-solid fa-code-branch"></i>
-                                    <h3>Coming Soon!</h3>
-                                    <p>We're working on some amazing projects. Check back soon to see what our students have been creating!</p>
-                                </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
 
                     {/* Pagination */}
-                    {projects && projects.links && (
+                    {projects && (projects.links || (typeof projects === 'object' && projects !== null && 'links' in projects)) && (
                         <div className="pagination-container">
                             <div dangerouslySetInnerHTML={{ __html: projects.links }} />
                         </div>
