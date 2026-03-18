@@ -6,7 +6,7 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
-            
+
             <style jsx>{`
                 /* Modern Event Page Styles */
                 .events-hero {
@@ -258,9 +258,9 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
 
             <section className="main">
                 <div className="container">
-                    {events && events.length > 0 ? (
+{events?.data?.length > 0 ? (
                         <>
-                            {events.map((event) => (
+                            {events.data.map((event, index) => (
                                 <div key={event.id} className="event-card">
                                     <div className="row g-0 align-items-center">
                                         {index % 2 === 0 ? (
@@ -275,10 +275,10 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
                                                             <h3 className="event-title">{event.title}</h3>
                                                             <div className="event-date">
                                                                 <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                                {new Date(event.edate).toLocaleDateString('en-US', { 
-                                                                    year: 'numeric', 
-                                                                    month: 'short', 
-                                                                    day: 'numeric' 
+                                                                {new Date(event.edate).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric'
                                                                 })}
                                                             </div>
                                                         </div>
@@ -306,10 +306,10 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
                                                             <h3 className="event-title">{event.title}</h3>
                                                             <div className="event-date">
                                                                 <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                                {new Date(event.edate).toLocaleDateString('en-US', { 
-                                                                    year: 'numeric', 
-                                                                    month: 'short', 
-                                                                    day: 'numeric' 
+                                                                {new Date(event.edate).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric'
                                                                 })}
                                                             </div>
                                                         </div>
@@ -330,8 +330,26 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
                                 </div>
                             ))}
 
-                            <div className="pagination-container">
-                                <div dangerouslySetInnerHTML={{ __html: events.links }} />
+                            <div className="pagination-container mb-3">
+                                {events.links && events.links.length > 0 ? (
+                                    <nav aria-label="Events pagination">
+                                        <ul className="pagination">
+                                            {events.links.map((link, index) => (
+                                                <li key={index} className={`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}>
+                                                    {link.url ? (
+                                                        <Link href={link.url} className="page-link">
+                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="page-link">
+                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </nav>
+                                ) : null}
                             </div>
                         </>
                     ) : (

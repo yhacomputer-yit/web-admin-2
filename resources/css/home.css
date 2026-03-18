@@ -680,6 +680,47 @@
       margin-top: 2rem !important;
     }
   }
+/* Review Page Filter Buttons */
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 0.5rem 1.2rem;
+  border: 2px solid #ffe5d0;
+  background: rgba(255,255,255,0.95);
+  color: #ff6b01;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(255,107,1,0.06);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
+  color: white;
+  border-color: #ff6b01;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255,107,1,0.18);
+}
+
+@media (max-width: 767.98px) {
+  .filter-buttons {
+    gap: 0.5rem;
+  }
+  .filter-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
 /* Force Tawk.to widget/button to always float at bottom right */
 .tawk-min-container, .tawk-button {
   position: fixed !important;

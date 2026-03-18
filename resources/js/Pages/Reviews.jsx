@@ -8,79 +8,118 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
             <Navigation prog={prog} graph={graph} ict={ict} />
             
             <style jsx>{`
+                /* Modern Review Page Styles - Matching Event Page */
                 .reviews-hero {
                     background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%);
-                    padding: 80px 0;
+                    padding: 3rem 0;
+                    margin-bottom: 3rem;
+                    border-radius: 0 0 30px 30px;
                     color: white;
                     text-align: center;
                 }
 
-                .reviews-content {
-                    padding: 80px 0;
-                    background: #f8f9fa;
+                .reviews-hero h1 {
+                    font-size: 2.5rem;
+                    font-weight: 800;
+                    margin-bottom: 1rem;
+                    letter-spacing: 1px;
+                }
+
+                .reviews-hero p {
+                    font-size: 1.1rem;
+                    opacity: 0.9;
+                    max-width: 600px;
+                    margin: 0 auto;
                 }
 
                 .review-card {
-                    background: white;
-                    border-radius: 15px;
-                    padding: 2rem;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    background: #fff;
+                    border-radius: 20px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    overflow: hidden;
+                    transition: all 0.3s ease;
                     margin-bottom: 2rem;
-                    transition: transform 0.3s ease;
+                    border: 1px solid rgba(255,107,1,0.1);
+                    position: relative;
                 }
 
                 .review-card:hover {
-                    transform: translateY(-5px);
+                    transform: translateY(-8px) scale(1.01);
+                    box-shadow: 0 12px 40px rgba(255,107,1,0.15);
                 }
 
-                .review-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    margin-bottom: 1.5rem;
+                .review-avatar-section {
+                    padding: 2rem;
+                    background: linear-gradient(135deg, rgba(255,107,1,0.05) 0%, rgba(255,179,71,0.05) 100%);
+                    text-align: center;
+                    border-bottom: 1px solid rgba(255,107,1,0.1);
                 }
 
                 .review-avatar {
-                    width: 60px;
-                    height: 60px;
+                    width: 80px;
+                    height: 80px;
                     border-radius: 50%;
                     object-fit: cover;
-                    background: #f8f9fa;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.5rem;
-                    color: #ff6b01;
-                }
-
-                .review-info h4 {
-                    margin: 0;
-                    color: #2c3e50;
-                    font-size: 1.1rem;
-                }
-
-                .review-rating {
-                    color: #ffd700;
-                    margin-bottom: 0.5rem;
-                }
-
-                .review-text {
-                    color: #495057;
-                    line-height: 1.6;
+                    border: 3px solid #fff;
+                    box-shadow: 0 4px 16px rgba(255,107,1,0.2);
                     margin-bottom: 1rem;
                 }
 
+                .review-name {
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    color: #333;
+                    margin: 0;
+                    margin-bottom: 0.5rem;
+                }
+
+                .review-rating {
+                    color: #ffb347;
+                    font-size: 1.1rem;
+                    margin-bottom: 0.5rem;
+                }
+
                 .review-date {
-                    color: #6c757d;
+                    color: #666;
                     font-size: 0.9rem;
+                    background: rgba(255,107,1,0.1);
+                    padding: 0.3rem 0.8rem;
+                    border-radius: 15px;
+                    display: inline-block;
+                }
+
+                .review-content {
+                    padding: 2rem 1.5rem;
+                }
+
+                .review-text {
+                    color: #555;
+                    line-height: 1.6;
+                    font-size: 1.05rem;
+                    margin-bottom: 1.5rem;
+                    font-style: italic;
+                    position: relative;
+                    padding-left: 2rem;
+                }
+
+                .review-text::before {
+                    content: '"';
+                    position: absolute;
+                    left: 0;
+                    top: -10px;
+                    font-size: 3rem;
+                    color: #ffb347;
+                    opacity: 0.3;
+                    font-family: Georgia, serif;
                 }
 
                 .filter-section {
-                    background: white;
-                    border-radius: 15px;
-                    padding: 2rem;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    background: rgba(255,255,255,0.95);
+                    border-radius: 20px;
+                    padding: 1.5rem 2rem;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
                     margin-bottom: 3rem;
+                    border: 1px solid rgba(255,107,1,0.1);
                 }
 
                 .filter-buttons {
@@ -88,37 +127,61 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                     gap: 1rem;
                     flex-wrap: wrap;
                     justify-content: center;
+                    align-items: center;
                 }
 
                 .filter-btn {
-                    padding: 0.5rem 1rem;
-                    border: 2px solid #e9ecef;
-                    background: #f8f9fa;
-                    color: #495057;
+                    padding: 0.6rem 1.2rem;
+                    border: 2px solid #ffe5d0;
+                    background: #fff;
+                    color: #ff6b01;
                     border-radius: 20px;
                     text-decoration: none;
                     transition: all 0.3s ease;
+                    font-weight: 500;
+                    font-size: 0.95rem;
                 }
 
                 .filter-btn:hover,
                 .filter-btn.active {
-                    background: #ff6b01;
+                    background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
                     color: white;
                     border-color: #ff6b01;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 16px rgba(255,107,1,0.18);
                 }
 
-                .pagination {
+                .pagination-container {
                     display: flex;
                     justify-content: center;
                     margin-top: 3rem;
                 }
 
+                .pagination .page-link {
+                    color: #ff6b01;
+                    border: 1px solid #ff6b01;
+                    margin: 0 0.2rem;
+                    border-radius: 8px;
+                }
+
+                .pagination .page-item.active .page-link {
+                    background: #ff6b01;
+                    border-color: #ff6b01;
+                    color: white;
+                }
+
+                .pagination .page-link:hover {
+                    background: #ff6b01;
+                    color: white;
+                }
+
                 .empty-state {
                     text-align: center;
                     padding: 4rem 2rem;
-                    background: white;
-                    border-radius: 15px;
-                    border: 2px dashed #dee2e6;
+                    background: rgba(255,255,255,0.95);
+                    border-radius: 20px;
+                    border: 2px dashed #ffe5d0;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
                 }
 
                 .empty-state i {
@@ -126,75 +189,191 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                     color: #ff6b01;
                     margin-bottom: 1rem;
                 }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .reviews-hero {
+                        padding: 2rem 0;
+                        border-radius: 0 0 20px 20px;
+                    }
+
+                    .reviews-hero h1 {
+                        font-size: 2rem;
+                    }
+
+                    .reviews-hero p {
+                        font-size: 1rem;
+                    }
+
+                    .review-card {
+                        border-radius: 14px;
+                    }
+
+                    .review-avatar-section {
+                        padding: 1.5rem 1rem;
+                    }
+
+                    .review-avatar {
+                        width: 60px;
+                        height: 60px;
+                    }
+
+                    .review-name {
+                        font-size: 1.1rem;
+                    }
+
+                    .review-content {
+                        padding: 1.5rem 1rem;
+                    }
+
+                    .review-text {
+                        font-size: 1rem;
+                        padding-left: 1.5rem;
+                    }
+
+                    .filter-section {
+                        padding: 1rem 1.5rem;
+                        margin-bottom: 2rem;
+                    }
+
+                    .filter-btn {
+                        padding: 0.5rem 1rem;
+                        font-size: 0.85rem;
+                    }
+                }
+
+                @media (max-width: 576px) {
+                    .reviews-hero h1 {
+                        font-size: 1.5rem;
+                    }
+
+                    .review-name {
+                        font-size: 1rem;
+                    }
+
+                    .review-text {
+                        font-size: 0.95rem;
+                    }
+                }
             `}</style>
 
+            {/* Hero Section - Matching Event Page Style */}
             <section className="reviews-hero">
                 <div className="container">
                     <h1>Student Reviews</h1>
-                    <p>See what our students have to say about their learning experience</p>
+                    <p>Discover what our students have to say about their learning experience and journey with YHA Computer Training Center.</p>
                 </div>
             </section>
 
-            <section className="reviews-content">
+            {/* Reviews Content */}
+            <section className="main">
                 <div className="container">
-                    <div className="filter-section">
-                        <div className="filter-buttons">
-                            <Link href="/reviews" className={`filter-btn ${!rating ? 'active' : ''}`}>
-                                All Reviews
-                            </Link>
-                            <Link href="/reviews?rating=5" className={`filter-btn ${rating == 5 ? 'active' : ''}`}>
-                                ⭐⭐⭐⭐⭐
-                            </Link>
-                            <Link href="/reviews?rating=4" className={`filter-btn ${rating == 4 ? 'active' : ''}`}>
-                                ⭐⭐⭐⭐
-                            </Link>
-                            <Link href="/reviews?rating=3" className={`filter-btn ${rating == 3 ? 'active' : ''}`}>
-                                ⭐⭐⭐
-                            </Link>
-                        </div>
-                    </div>
-
                     {reviews && reviews.data && reviews.data.length > 0 ? (
                         <>
-                            {reviews.data.map((review) => (
+                            {reviews.data.map((review, index) => (
                                 <div key={review.id} className="review-card">
-                                    <div className="review-header">
-                                        <div className="review-avatar">
-                                            {review.photo ? (
-                                                <img src={`/storage/${review.photo}`} alt={review.name} />
-                                            ) : (
-                                                <i className="fas fa-user"></i>
-                                            )}
-                                        </div>
-                                        <div className="review-info">
-                                            <h4>{review.name}</h4>
-                                            <div className="review-rating">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <i key={i} className={`fas fa-star ${i < review.rating ? '' : 'text-muted'}`}></i>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="review-text">{review.review}</div>
-                                    <div className="review-date">
-                                        {new Date(review.created_at).toLocaleDateString()}
+                                    <div className="row g-0 align-items-center">
+                                        {index % 2 === 0 ? (
+                                            <>
+                                                {/* First, third items... avatar left, content right */}
+                                                <div className="col-lg-4">
+                                                    <div className="review-avatar-section">
+                                                        {review.photo ? (
+                                                            <img src={`/storage/${review.photo}`} className="review-avatar" alt={review.name} />
+                                                        ) : (
+                                                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffb347&color=fff&size=80`} className="review-avatar" alt={review.name} />
+                                                        )}
+                                                        <h3 className="review-name">{review.name}</h3>
+                                                        <div className="review-rating">
+                                                            {[1,2,3,4,5].map((star) => (
+                                                                <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                                                            ))}
+                                                        </div>
+                                                        <div className="review-date">
+                                                            <i className="fa-solid fa-calendar-alt me-2"></i>
+                                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
+                                                                year: 'numeric', 
+                                                                month: 'short', 
+                                                                day: 'numeric' 
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-8">
+                                                    <div className="review-content">
+                                                        <div className="review-text">{review.review}</div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                {/* Second, fourth items... content left, avatar right */}
+                                                <div className="col-lg-8 order-lg-2">
+                                                    <div className="review-content">
+                                                        <div className="review-text">{review.review}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-4 order-lg-1">
+                                                    <div className="review-avatar-section">
+                                                        {review.photo ? (
+                                                            <img src={`/storage/${review.photo}`} className="review-avatar" alt={review.name} />
+                                                        ) : (
+                                                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffb347&color=fff&size=80`} className="review-avatar" alt={review.name} />
+                                                        )}
+                                                        <h3 className="review-name">{review.name}</h3>
+                                                        <div className="review-rating">
+                                                            {[1,2,3,4,5].map((star) => (
+                                                                <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                                                            ))}
+                                                        </div>
+                                                        <div className="review-date">
+                                                            <i className="fa-solid fa-calendar-alt me-2"></i>
+                                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
+                                                                year: 'numeric', 
+                                                                month: 'short', 
+                                                                day: 'numeric' 
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             ))}
 
-                            <div className="pagination">
-                                <div dangerouslySetInnerHTML={{ __html: reviews.links }} />
+                            <div className="pagination-container mb-3">
+                                {reviews.links && reviews.links.length > 0 ? (
+                                    <nav aria-label="Reviews pagination">
+                                        <ul className="pagination">
+                                            {reviews.links.map((link, index) => (
+                                                <li key={index} className={`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}>
+                                                    {link.url ? (
+                                                        <Link href={link.url} className="page-link">
+                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="page-link">
+                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </nav>
+                                ) : null}
                             </div>
                         </>
                     ) : (
                         <div className="empty-state">
-                            <i className="fas fa-star"></i>
+                            <i className="fa-solid fa-star"></i>
                             <h3>No Reviews Yet</h3>
                             <p>Be the first to share your experience with us!</p>
                         </div>
                     )}
                 </div>
             </section>
+            
             <Footer address={address} />
         </div>
     );
