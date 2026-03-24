@@ -258,7 +258,7 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
 
             <section className="main">
                 <div className="container">
-{events?.data?.length > 0 ? (
+                    {events?.data?.length > 0 ? (
                         <>
                             {events.data.map((event, index) => (
                                 <div key={event.id} className="event-card">

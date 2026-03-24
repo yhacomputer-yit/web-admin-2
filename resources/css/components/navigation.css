@@ -1,0 +1,42 @@
+.glass-navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 107, 1, 0.18);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+.glass-navbar.scrolled {
+    padding: 0.5rem 0;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+}
+
+.frontend-page section.main {
+    padding-top: 120px !important;
+}
+
+@media (max-width: 768px) {
+    .glass-navbar {
+        padding: 0.8rem 0;
+    }
+
+    .frontend-page .main {
+        padding-top: 100px !important;
+    }
+}
+
+.nav-menu.open {
+    transform: translateX(0);
+}
+
+/* Ensure all frontend pages have proper top padding */
+.frontend-page > *:first-child:not(.glass-navbar) {
+    margin-top: 120px;
+}

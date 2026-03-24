@@ -6,7 +6,7 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
-            
+
             <style jsx>{`
                 /* Modern Review Page Styles - Matching Event Page */
                 .reviews-hero {
@@ -291,10 +291,10 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                                                         </div>
                                                         <div className="review-date">
                                                             <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
-                                                                year: 'numeric', 
-                                                                month: 'short', 
-                                                                day: 'numeric' 
+                                                            {new Date(review.created_at).toLocaleDateString('en-US', {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric'
                                                             })}
                                                         </div>
                                                     </div>
@@ -328,10 +328,10 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                                                         </div>
                                                         <div className="review-date">
                                                             <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
-                                                                year: 'numeric', 
-                                                                month: 'short', 
-                                                                day: 'numeric' 
+                                                            {new Date(review.created_at).toLocaleDateString('en-US', {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric'
                                                             })}
                                                         </div>
                                                     </div>
@@ -373,7 +373,7 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                     )}
                 </div>
             </section>
-            
+
             <Footer address={address} />
         </div>
     );

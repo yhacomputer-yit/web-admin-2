@@ -9,6 +9,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/homepage.css',
+                'resources/css/components/navigation.css',
                 'resources/js/app.jsx',
             ],
             refresh: true,
