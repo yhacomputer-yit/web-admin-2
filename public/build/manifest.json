@@ -1,0 +1,29 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-CfbMBLiB.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/css/homepage.css": {
+    "file": "assets/homepage-Daidjpc-.css",
+    "src": "resources/css/homepage.css",
+    "isEntry": true,
+    "name": "homepage",
+    "names": [
+      "homepage.css"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-k_rcxrsN.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "css": [
+      "assets/app-C4l-8_ag.css"
+    ]
+  }
+}
