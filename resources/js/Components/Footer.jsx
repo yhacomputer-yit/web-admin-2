@@ -14,9 +14,8 @@ export default function Footer({ address }) {
                         <h5 className="footer-title">Quick Links</h5>
                         <ul className="p-0 m-0 footer-links">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/yha/courses/monthl">Courses</a></li>
-                            <li><a href="/yha/event">Events</a></li>
-                            <li><a href="#contact">Contact</a></li>
+                            <li><a href="/courses/monthl">Courses</a></li>
+                            <li><a href="/event">Events</a></li>
                         </ul>
                     </div>
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">

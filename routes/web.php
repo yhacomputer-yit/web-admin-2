@@ -25,7 +25,7 @@ use App\Http\Controllers\FrontendSectionController;
 
 // Homepage route
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('user.home');
-Route::prefix('yha')->group(function() {
+
 
     // consumer will see first this routes
     Route::get('/courses/monthl', [FrontendSectionController::class, 'courses'])->name('user.courses');
@@ -40,7 +40,6 @@ Route::prefix('yha')->group(function() {
         Route::get('/about', [FrontendSectionController::class, 'about'])->name('user.about');
     // user register and login middleware
 
-});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
@@ -105,9 +104,10 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('teacher')->group(function () {
             Route::get('/createPage', [TeacherController::class, 'createPage'])->name('teacher.createPage');
             Route::post('/create', [TeacherController::class, 'create'])->name('teacher.create');
-            Route::get('/edit/{id}', [TeacherCOntroller::class, 'edit'])->name('teacher.edit');
-            Route::post('/update', [TeacherCOntroller::class, 'update'])->name('teacher.update');
+            Route::get('/edit/{id}', [TeacherController::class, 'edit'])->name('teacher.edit');
+            Route::post('/update', [TeacherController::class, 'update'])->name('teacher.update');
             Route::get('/delete/{id}', [TeacherController::class, 'delete'])->name('teacher.delete');
+
         });
 
         // position section
@@ -196,8 +196,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/create', [EventController::class, 'create'])->name('event.create');
             Route::post('/store', [EventController::class, 'store'])->name('events.store');
             Route::get('/delete/{id}', [EventController::class, 'delete'])->name('event.delete');
-            Route::get('/update/{id}', [EventController::class, 'update_form'])->name('events.update');
+            Route::get('/update/{id}', [EventController::class, 'update_form'])->name('event.update.form');
             Route::put('/update/{id}', [EventController::class, 'update'])->name('events.update');
+
         });
 
         // for timetable
@@ -245,7 +246,7 @@ Route::post('/datasend', [PrinterController::class, 'datasend'])->name('datasend
 
 Route::prefix('system')->group(function() {
     Route::get('/pos', [FrontendSectionController::class, 'pos'])->name('pos');
-    Route::get('/invoice', [FrontendSectionController::class, 'invoice'])->name('invoice');
+    Route::get('/invoice', [FrontendSectionController::class, 'invoice'])->name('system.invoice');
 
     Route::get('/income_list', [FrontendSectionController::class, 'income_list'])->name('income_list');
     Route::get('/final_pay', [FrontendSectionController::class, 'final_pay'])->name('final_pay');
@@ -258,7 +259,7 @@ Route::post('/insertdata', [FrontendSectionController::class, 'insertData'])->na
 Route::get('/fetch-projects/{courseId}', [FrontendSectionController::class, 'fetchProjects']);
 
 // for course type in navbar
-Route::get('user', 'UserController@index')->name('user');
+// Route::get('user', 'UserController@index')->name('user');
 
 // Admin Review CRUD
 Route::resource('admin/review', App\Http\Controllers\Admin\ReviewController::class)->names('admin.review');
