@@ -1,0 +1,6 @@
+
+RewriteOptions inherit
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^(.*)$ "https\:\/\/yha\-edu\.tech\/$1" [R=301,L]

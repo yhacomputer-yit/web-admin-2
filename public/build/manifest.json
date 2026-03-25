@@ -8,6 +8,15 @@
       "app.css"
     ]
   },
+  "resources/css/components/navigation.css": {
+    "file": "assets/navigation-DSjpvpwt.css",
+    "src": "resources/css/components/navigation.css",
+    "isEntry": true,
+    "name": "navigation",
+    "names": [
+      "navigation.css"
+    ]
+  },
   "resources/css/homepage.css": {
     "file": "assets/homepage-Daidjpc-.css",
     "src": "resources/css/homepage.css",
@@ -18,12 +27,12 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-k_rcxrsN.js",
+    "file": "assets/app-BeaIx_2e.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "css": [
-      "assets/app-C4l-8_ag.css"
+      "assets/app-BS6WLxZU.css"
     ]
   }
 }
