@@ -1,3 +1,5 @@
+import { Link } from '@inertiajs/react';
+
 export default function Footer({ address }) {
     const footerAddr = address && address.length > 0 ? address[0] : null;
 
@@ -13,9 +15,9 @@ export default function Footer({ address }) {
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
                         <h5 className="footer-title">Quick Links</h5>
                         <ul className="p-0 m-0 footer-links">
-                            <li><a href="/">Home</a></li>
-                            <li><a href="/courses/monthl">Courses</a></li>
-                            <li><a href="/event">Events</a></li>
+                            <li><Link href="/">Home</Link></li>
+                            <li><Link href="/courses/monthl">Courses</Link></li>
+                            <li><Link href="/event">Events</Link></li>
                         </ul>
                     </div>
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">

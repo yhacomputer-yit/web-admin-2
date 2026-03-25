@@ -1,7 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 
-
 export default function Navigation({ prog, graph, ict }) {
     const [scrolled, setScrolled] = useState(false);
 
@@ -31,7 +30,7 @@ export default function Navigation({ prog, graph, ict }) {
     }, []);
 
     const handleSubLinkClick = useCallback((e) => {
-        if (window.innerWidth < 992) {
+        if (e.currentTarget.getAttribute('href') === '#' && window.innerWidth < 992) {
             e.preventDefault();
             const parent = e.currentTarget.parentElement;
             parent.classList.toggle('open');
@@ -47,8 +46,10 @@ export default function Navigation({ prog, graph, ict }) {
             hamburger.addEventListener('click', handleHamburgerClick);
         }
 
-        subLinks.forEach((link) => {
-            link.addEventListener('click', handleSubLinkClick);
+        subLinks.forEach((link, index) => {
+            if (link && link.querySelector('a[href=\"#\"]')) {
+                link.addEventListener('click', handleSubLinkClick);
+            }
         });
 
         return () => {
@@ -56,7 +57,9 @@ export default function Navigation({ prog, graph, ict }) {
                 hamburger.removeEventListener('click', handleHamburgerClick);
             }
             subLinks.forEach((link) => {
-                link.removeEventListener('click', handleSubLinkClick);
+                if (link) {
+                    link.removeEventListener('click', handleSubLinkClick);
+                }
             });
         };
     }, [handleHamburgerClick, handleSubLinkClick]);
@@ -65,7 +68,6 @@ export default function Navigation({ prog, graph, ict }) {
         <nav className={`glass-navbar ${scrolled ? 'scrolled' : ''}`}>
             <Link className="logo" href="/">
                 <img style={{width: '100px', height: '100px'}} src="/image/logo/logo.png" alt="YHA Logo" />
-                {/* <span><h1 className="fw-bold">YHA</h1><h6 style={{letterSpacing: '2px'}}>Computer</h6></span> */}
             </Link>
 
             <div ref={hamburgerRef} className="hamburger" id="hamburger-menu">
@@ -132,3 +134,4 @@ export default function Navigation({ prog, graph, ict }) {
         </nav>
     );
 }
+
