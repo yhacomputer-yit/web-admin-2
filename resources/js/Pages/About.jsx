@@ -3,9 +3,16 @@ import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
 export default function About({ prog, graph, ict, address }) {
+    // Get address data
+    const addr = address && address.length > 0 ? address[0] : null;
+    
     return (
         <div className="frontend-page">
-            <Navigation prog={prog} graph={graph} ict={ict} />
+            <Navigation prog={prog} graph={graph} ict={ict} contactInfo={{ 
+                address: addr?.address || '123 University Street, Tech City',
+                phone: addr?.yphNo || '+1 (555) 123-4567',
+                email: addr?.yEmail || 'info@yhauniversity.edu'
+            }} />
             
             <style jsx>{`
                 .about-hero {

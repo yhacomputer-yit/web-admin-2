@@ -47,7 +47,11 @@ export default function Homepage({
 
     return (
         <div className="frontend-page" key={url}>
-            <Navigation prog={prog} graph={graph} ict={ict} />
+            <Navigation prog={prog} graph={graph} ict={ict} contactInfo={{ 
+    address: addr?.address || '123 University Street, Tech City',
+    phone: addr?.yphNo || '+1 (555) 123-4567',
+    email: addr?.yEmail || 'info@yhauniversity.edu'
+ }} />
 
             {/* Hero Slider Section */}
             <section id="home" className="pb-4">
