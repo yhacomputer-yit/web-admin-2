@@ -27,7 +27,7 @@ export default function Homepage({
         setTypingKey(prev => prev + 1);
         setTypedText('');
         let index = 0;
-        
+
         const timer = setInterval(() => {
             if (index < fullText.length) {
                 setTypedText(fullText.slice(0, index + 1));
@@ -36,7 +36,7 @@ export default function Homepage({
                 clearInterval(timer);
             }
         }, 80);
-        
+
         return () => {
             clearInterval(timer);
         };
@@ -184,7 +184,7 @@ export default function Homepage({
             </section>
 
             {/* Events Section */}
-            <section className="mt-5 mb-5" id="event">
+            {/* <section className="mt-5 mb-5" id="event">
                 <div className="container">
                     <div className="edu-glass-heading">
                         <span className="edu-icon">
@@ -223,7 +223,7 @@ export default function Homepage({
                         )}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Student Projects Section */}
             <section className="mt-5 mb-5" id="projects">
