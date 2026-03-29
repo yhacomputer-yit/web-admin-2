@@ -778,64 +778,131 @@ export default function Homepage({
                 </div>
             </section>
 
-            {/* Reviews Section - Modern Design */}
+            {/* Reviews Section - Website-Inspired Design */}
             {homeReviews && homeReviews.length > 0 && (
-                <section className="modern-reviews-section py-5" id="reviews">
+                <section className="web-reviews-section py-5" id="reviews">
                     <div className="container">
                         {/* Section Header */}
                         <div className="text-center mb-5">
-                            <div className="hit-badge">
-                                <i className="fas fa-star"></i>
-                                <span>STUDENT REVIEWS</span>
+                            <div className="web-badge">
+                                <i className="fas fa-heart"></i>
+                                <span>STUDENT SUCCESS</span>
                             </div>
-                            <div className="title-underline"></div>
-                            <p className="hit-subtitle">
-                                Real voices. Real experiences. See what our students say!
+                            <h2 className="web-title">What Our Students Say</h2>
+                            <p className="web-subtitle">
+                                Real stories from real students who transformed their careers
                             </p>
                         </div>
 
-                        {/* Reviews Grid */}
-                        <div className="reviews-grid">
-                            {homeReviews.slice(0, 6).map((review) => (
-                                <div key={review.id} className="modern-review-card">
-                                    <div className="review-header">
-                                        <div className="review-avatar">
-                                            {review.photo ? (
-                                                <img src={`/storage/${review.photo}`} alt={review.name} />
-                                            ) : (
-                                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
-                                            )}
-                                        </div>
-                                        <div className="review-info">
-                                            <h4 className="review-name">{review.name}</h4>
-                                            <div className="review-rating">
-                                                {[1,2,3,4,5].map((star) => (
-                                                    <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
-                                                ))}
+                        {/* Reviews Container */}
+                        <div className="web-reviews-wrapper">
+                            <div className="web-reviews-grid">
+                                {homeReviews.slice(0, 3).map((review, index) => (
+                                    <div key={review.id} className="web-review-card" data-index={index}>
+                                        <div className="web-review-header">
+                                            <div className="web-avatar-section">
+                                                <div className="web-avatar">
+                                                    {review.photo ? (
+                                                        <img src={`/storage/${review.photo}`} alt={review.name} />
+                                                    ) : (
+                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
+                                                    )}
+                                                </div>
+                                                <div className="web-verified-badge">
+                                                    <i className="fas fa-check-circle"></i>
+                                                </div>
+                                            </div>
+                                            <div className="web-review-meta">
+                                                <h4 className="web-student-name">{review.name}</h4>
+                                                <div className="web-rating-wrapper">
+                                                    <div className="web-stars">
+                                                        {[1,2,3,4,5].map((star) => (
+                                                            <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
+                                                        ))}
+                                                    </div>
+                                                    <span className="web-rating-text">{review.rating}.0</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="review-quote-icon">
-                                            <i className="fas fa-quote-right"></i>
+                                        
+                                        <div className="web-review-content">
+                                            <div className="web-quote-icon">
+                                                <i className="fas fa-quote-left"></i>
+                                            </div>
+                                            <p className="web-review-text">{review.review}</p>
+                                        </div>
+                                        
+                                        <div className="web-review-footer">
+                                            <div className="web-course-info">
+                                                <i className="fas fa-graduation-cap"></i>
+                                                <span>Completed Course</span>
+                                            </div>
+                                            <div className="web-date-info">
+                                                <i className="fas fa-clock"></i>
+                                                <span>Recently</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="review-content">
-                                        <p className="review-text">{review.review}</p>
-                                    </div>
-                                    <div className="review-footer">
-                                        <div className="review-date">
-                                            <i className="fas fa-calendar"></i>
-                                            <span>Recent Student</span>
+                                ))}
+                            </div>
+                            
+                            {/* Additional Reviews Row */}
+                            <div className="web-reviews-grid web-reviews-offset">
+                                {homeReviews.slice(3, 6).map((review, index) => (
+                                    <div key={review.id} className="web-review-card" data-index={index + 3}>
+                                        <div className="web-review-header">
+                                            <div className="web-avatar-section">
+                                                <div className="web-avatar">
+                                                    {review.photo ? (
+                                                        <img src={`/storage/${review.photo}`} alt={review.name} />
+                                                    ) : (
+                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
+                                                    )}
+                                                </div>
+                                                <div className="web-verified-badge">
+                                                    <i className="fas fa-check-circle"></i>
+                                                </div>
+                                            </div>
+                                            <div className="web-review-meta">
+                                                <h4 className="web-student-name">{review.name}</h4>
+                                                <div className="web-rating-wrapper">
+                                                    <div className="web-stars">
+                                                        {[1,2,3,4,5].map((star) => (
+                                                            <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
+                                                        ))}
+                                                    </div>
+                                                    <span className="web-rating-text">{review.rating}.0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="web-review-content">
+                                            <div className="web-quote-icon">
+                                                <i className="fas fa-quote-left"></i>
+                                            </div>
+                                            <p className="web-review-text">{review.review}</p>
+                                        </div>
+                                        
+                                        <div className="web-review-footer">
+                                            <div className="web-course-info">
+                                                <i className="fas fa-graduation-cap"></i>
+                                                <span>Completed Course</span>
+                                            </div>
+                                            <div className="web-date-info">
+                                                <i className="fas fa-clock"></i>
+                                                <span>Recently</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
-                        {/* View All Reviews Button */}
+                        {/* View All Button */}
                         <div className="text-center mt-5">
-                            <Link href="/reviews" className="modern-view-all">
-                                <span>View All Reviews</span>
-                                <i className="fas fa-star"></i>
+                            <Link href="/reviews" className="web-view-all">
+                                <span>View All Success Stories</span>
+                                <i className="fas fa-arrow-right"></i>
                             </Link>
                         </div>
                     </div>
