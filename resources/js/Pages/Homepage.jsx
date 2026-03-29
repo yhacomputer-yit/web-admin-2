@@ -42,48 +42,141 @@ export default function Homepage({
         };
     }, [url]);
 
+    // Hero Slider Functionality
+    useEffect(() => {
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+
+        if (totalSlides === 0) return;
+
+        const showSlide = (index) => {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        };
+
+        const nextSlide = () => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        };
+
+        const prevSlide = () => {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        };
+
+        // Auto-play slider
+        const slideInterval = setInterval(nextSlide, 5000);
+
+        // Indicator clicks
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+                clearInterval(slideInterval);
+            });
+        });
+
+        return () => {
+            clearInterval(slideInterval);
+        };
+    }, [sliders]);
+
     // Get address data
     const addr = address && address.length > 0 ? address[0] : null;
-
     return (
-        <div className="frontend-page" key={url}>
-            <Navigation prog={prog} graph={graph} ict={ict} contactInfo={{ 
-    address: addr?.address || '123 University Street, Tech City',
-    phone: addr?.yphNo || '+1 (555) 123-4567',
-    email: addr?.yEmail || 'info@yhauniversity.edu'
- }} />
 
-            {/* Hero Slider Section */}
-            <section id="home" className="pb-4">
-                <div className="container">
-                    <div id="carouselExample" className="carousel slide hero-slider" data-bs-ride="carousel">
-                        <div className="carousel-inner">
-                            {sliders && sliders.map((slider, index) => (
-                                <div key={slider.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
-                                    <img
-                                        src={`/storage/${slider.image}`}
-                                        className="d-block w-100"
-                                        alt={`Slide ${index + 1}`}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="hero-glass-overlay"></div>
-                        <div className="hero-caption">
-                            <img className="hero-logo" src="/image/logo/logo.png" alt="YHA Logo" />
-                            <h1>Build Your Future With <span style={{whiteSpace:'nowrap'}}>Technology</span></h1>
-                            <p>Join YHA Computer Training Center to learn programming, design, and ICT skills from the best instructors. Start your journey today!</p>
-                            <Link href="/yha/courses/monthl" className="btn-uiverse">Explore Courses</Link>
-                        </div>
-                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Previous</span>
-                        </button>
-                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Next</span>
-                        </button>
+        <div className="frontend-page" key={url}>
+                      <Navigation prog={prog} graph={graph} ict={ict} contactInfo={{
+                            address: addr?.address || '123 University Street, Tech City',
+                            phone: addr?.yphNo || '+1 (555) 123-4567',
+                            email: addr?.yEmail || 'info@yhauniversity.edu'
+                        }} />
+            {/* Modern Tech University Hero Section */}
+            <section id="home" className="tech-university-hero">
+                {/* Video Background */}
+                <div className="hero-video-background">
+                    <div className="video-overlay"></div>
+                    <div className="animated-particles">
+                        {[...Array(20)].map((_, i) => (
+                            <div key={i} className={`particle particle-${i + 1}`}></div>
+                        ))}
                     </div>
+                </div>
+
+                {/* Slider Content */}
+                <div className="hero-slider-container">
+                    <div className="hero-slider">
+                        {sliders && sliders.map((slider, index) => (
+                            <div key={slider.id} className={`hero-slide ${index === 0 ? 'active' : ''}`}>
+                                <div className="slide-background">
+                                    <img src={`/storage/${slider.image}`} alt={`Slide ${index + 1}`} />
+                                    <div className="slide-gradient"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+
+
+                {/* Hero Content */}
+                <div className="hero-content">
+                    <div className="container">
+                        <div className="hero-text-content">
+                            <h1 className="hero-title">
+                                <span className="title-line">YHA Academy of Technology</span>
+                                {/* <span className="title-line highlight">With Technology</span> */}
+                            </h1>
+
+                            <p className="hero-description">
+                                Join YHA Computer Training Center to master programming, design, and ICT skills from industry experts.
+                                Transform your career with cutting-edge technology education.
+                            </p>
+
+                            <div className="hero-actions">
+                                <Link href="/yha/courses/monthl" className="hero-btn primary">
+                                    <span className="btn-text">Explore Courses</span>
+                                    <i className="fas fa-arrow-right"></i>
+                                </Link>
+                                <Link href="/about" className="hero-btn secondary">
+                                    <i className="fas fa-play-circle"></i>
+                                    <span className="btn-text">Learn More</span>
+                                </Link>
+                            </div>
+
+                            {/* <div className="hero-stats">
+                                <div className="stat-item">
+                                    <span className="stat-number">20+</span>
+                                    <span className="stat-label">Courses</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-number">1000+</span>
+                                    <span className="stat-label">Students</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-number">50+</span>
+                                    <span className="stat-label">Batches</span>
+                                </div>
+                            </div> */}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Slider Indicators */}
+                <div className="slider-indicators">
+                    {sliders && sliders.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`indicator ${index === 0 ? 'active' : ''}`}
+                            data-slide={index}
+                        ></button>
+                    ))}
                 </div>
             </section>
 
@@ -119,6 +212,8 @@ export default function Homepage({
                     </div>
                 </div>
             </section>
+
+
 
             {/* Student Numbers Section - Hidden */}
             {/* <section id="stu_number">
@@ -170,7 +265,7 @@ export default function Homepage({
                                         <p className="edu-card-desc">{monthly.course?.description}</p>
                                         <div className="edu-card-footer">
                                             <span className="edu-card-price">
-<span className="text-orange-primary">Ks /-</span> {monthly.course?.normal_price}
+                                            <span className="text-orange-primary">Ks /-</span> {monthly.course?.normal_price}
                                             </span>
                                             <Link href={`/yha/courses/monthly/${monthly.id}`} className="btn-uiverse">View More</Link>
                                         </div>

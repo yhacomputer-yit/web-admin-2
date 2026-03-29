@@ -79,35 +79,7 @@ export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
         <>
             {/* Main Navigation */}
             <nav className={`tech-university-navbar ${scrolled ? 'scrolled' : ''}`}>
-                <div className="logo-contact-section">
-                    <Link className="logo" href="/">
-                        <img style={{width: '100px', height: '100px'}} src="/image/logo/logo.png" alt="YHA Logo" />
-                    </Link>
-
-                    {/* Contact Info beside logo */}
-                    <div className="inline-contact-info">
-                        <div className="contact-item">
-                            <i className="fas fa-map-marker-alt"></i>
-                            <span>{contactData.address}</span>
-                        </div>
-                        <div className="contact-item">
-                            <i className="fas fa-phone"></i>
-                            <span>{contactData.phone}</span>
-                        </div>
-                        <div className="contact-item">
-                            <i className="fas fa-envelope"></i>
-                            <span>{contactData.email}</span>
-                        </div>
-                    </div>
-
-                      {/* Login Button on Right */}
-                    <div className="right-login-section">
-                        <Link href="/login" className="login-btn">
-                            <i className="fas fa-sign-in-alt"></i>
-                            <span>Login</span>
-                        </Link>
-                    </div>
-                </div>
+               
 
             <div ref={hamburgerRef} className="hamburger" id="hamburger-menu">
                 <span></span>
@@ -115,6 +87,12 @@ export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
                 <span></span>
             </div>
             <ul ref={navRef} className="nav-menu" id="main-nav">
+
+                     <li className="nav-item">
+                 <Link className="logo" href="/">
+                        <img style={{width: '100px', height: '100px'}} src="/image/logo/logo.png" alt="YHA Logo" />
+                    </Link>
+                    </li>
                 <li className="nav-item">
                     <Link className={`nav-link ${isActive('/') ? 'active' : ''}`} href="/"> Home</Link>
                 </li>
@@ -166,6 +144,12 @@ export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
                 <li className="nav-item">
                     <Link className={`nav-link ${isActive('/about') ? 'active' : ''}`} href="/about"> About Us</Link>
                 </li>
+                    <li className="nav-item">
+                         <Link href="/login" className="login-btn">
+                                <i className="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </Link>
+                    </li>
             </ul>
         </nav>
         </>

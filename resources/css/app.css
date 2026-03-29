@@ -1,8 +1,18 @@
 @import './components/navigation.css';
+@import './components/tech-hero.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 [x-cloak] {
     display: none;
+}
+
+/* Frontend page layout fixes */
+.frontend-page {
+    padding-top: 0;
+}
+
+.frontend-page .tech-university-hero + * {
+    margin-top: 0;
 }
