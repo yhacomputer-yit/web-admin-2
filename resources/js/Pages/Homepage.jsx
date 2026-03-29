@@ -19,8 +19,114 @@ export default function Homepage({
 }) {
     const [typedText, setTypedText] = useState('');
     const [typingKey, setTypingKey] = useState(0);
+    const [activeFilter, setActiveFilter] = useState('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const projectsPerPage = 6;
     const fullText = "Unlock your full potential through curiosity";
     const { url } = usePage();
+
+    // Combine all navigation courses for display with real database data
+    const monthliesData = [];
+
+    // Add Programming courses with real data
+    if (prog && prog.length > 0) {
+        prog.forEach((course, index) => {
+            monthliesData.push({
+                id: course.id,
+                course: {
+                    name: course.name || course.title || course.course_name,
+                    description: course.description || course.desc || course.about || `Learn ${course.name || course.title || course.course_name} with expert instructors and hands-on projects`,
+                    normal_price: course.price || course.fee || course.cost || course.normal_price || course.special_price,
+                    duration: course.duration || course.period || '3 Months',
+                    level: course.level || course.difficulty || (index % 3 === 0 ? 'Beginner' : index % 3 === 1 ? 'Intermediate' : 'Advanced')
+                },
+                m_img: course.image || course.img || course.photo || `courses/programming-${index + 1}.jpg`,
+                instructor: course.instructor || course.teacher || 'Expert Instructor',
+                category: 'programming'
+            });
+        });
+    }
+
+    // Add Graphic Design courses with real data
+    if (graph && graph.length > 0) {
+        graph.forEach((course, index) => {
+            monthliesData.push({
+                id: course.id + 1000, // Different ID to avoid conflicts
+                course: {
+                    name: course.name || course.title || course.course_name,
+                    description: course.description || course.desc || course.about || `Master ${course.name || course.title || course.course_name} with industry-standard tools and techniques`,
+                    normal_price: course.price || course.fee || course.cost || course.normal_price || course.special_price,
+                    duration: course.duration || course.period || '3 Months',
+                    level: course.level || course.difficulty || (index % 3 === 0 ? 'Beginner' : index % 3 === 1 ? 'Intermediate' : 'Advanced')
+                },
+                m_img: course.image || course.img || course.photo || `courses/design-${index + 1}.jpg`,
+                instructor: course.instructor || course.teacher || 'Expert Instructor',
+                category: 'graphic'
+            });
+        });
+    }
+
+    // Add ICT courses with real data
+    if (ict && ict.length > 0) {
+        ict.forEach((course, index) => {
+            monthliesData.push({
+                id: course.id + 2000, // Different ID to avoid conflicts
+                course: {
+                    name: course.name || course.title || course.course_name,
+                    description: course.description || course.desc || course.about || `Become proficient in ${course.name || course.title || course.course_name} for career advancement`,
+                    normal_price: course.price || course.fee || course.cost || course.normal_price || course.special_price,
+                    duration: course.duration || course.period || '3 Months',
+                    level: course.level || course.difficulty || (index % 3 === 0 ? 'Beginner' : index % 3 === 1 ? 'Intermediate' : 'Advanced')
+                },
+                m_img: course.image || course.img || course.photo || `courses/ict-${index + 1}.jpg`,
+                instructor: course.instructor || course.teacher || 'Expert Instructor',
+                category: 'ict'
+            });
+        });
+    }
+
+    // Filter courses based on active filter
+    const filteredCourses = monthliesData.filter(course => {
+        if (activeFilter === 'all') return true;
+        return course.category === activeFilter;
+    });
+
+    // Get course counts for each category
+    const getCourseCount = (category) => {
+        if (category === 'all') return monthliesData.length;
+        return monthliesData.filter(course => course.category === category).length;
+    };
+
+    // Pagination logic for projects
+    const indexOfLastProject = currentPage * projectsPerPage;
+    const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+    const currentProjects = projects ? projects.slice(indexOfFirstProject, indexOfLastProject) : [];
+    const totalPages = projects ? Math.ceil(projects.length / projectsPerPage) : 0;
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // FAQ Accordion functionality
+    const toggleFaq = (index) => {
+        const faqItems = document.querySelectorAll('.faq-item');
+        const clickedItem = faqItems[index];
+
+        if (clickedItem.classList.contains('active')) {
+            clickedItem.classList.remove('active');
+        } else {
+            // Close all other items
+            faqItems.forEach(item => item.classList.remove('active'));
+            // Open clicked item
+            clickedItem.classList.add('active');
+        }
+    };
+
+    // Category tabs functionality
+    const switchCategory = (category) => {
+        const categoryBtns = document.querySelectorAll('.faq-category-btn');
+        categoryBtns.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        // Here you could filter FAQs by category
+    };
 
     useEffect(() => {
         // Force restart typing effect
@@ -181,7 +287,7 @@ export default function Homepage({
             </section>
 
             {/* About Section */}
-            <section id="about1" className="py-5">
+            {/* <section id="about1" className="py-5">
                 <div className="container">
                     <div className="mb-4">
                         <h3 className="typewriter-heading">
@@ -211,7 +317,7 @@ export default function Homepage({
                         )}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
 
 
@@ -249,33 +355,118 @@ export default function Homepage({
                 </div>
             </section> */}
 
-            {/* Monthly Courses Section */}
-            <section className="edu-section mt-5 mb-5" id="course">
+            {/* HIT Myanmar Style Course Section */}
+            <section className="hit-courses-section py-5" id="course">
                 <div className="container">
-                    <h2 className="edu-section-title">
-                        <i className="fa-solid fa-book-open"></i> Monthly Courses
-                    </h2>
+                    {/* Section Header */}
+                    <div className="text-center mb-5">
+                        <div className="hit-badge">
+                            <i className="fas fa-code"></i>
+                            <span>OUR COURSES</span>
+                        </div>
+                        <div className="title-underline"></div>
+                        <p className="hit-subtitle">
+                            To master your skills of tomorrow, join our innovative e-learning platform today
+                        </p>
+                    </div>
+
+                    {/* Course Filter */}
+                    <div className="course-filter-container">
+                        <div className="course-filter-buttons">
+                            <button
+                                className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+                                onClick={() => setActiveFilter('all')}
+                                data-count={getCourseCount('all')}
+                            >
+                                <span>All</span>
+                            </button>
+                            <button
+                                className={`filter-btn ${activeFilter === 'programming' ? 'active' : ''}`}
+                                onClick={() => setActiveFilter('programming')}
+                                data-count={getCourseCount('programming')}
+                            >
+                                <span>Programming</span>
+                            </button>
+                            <button
+                                className={`filter-btn ${activeFilter === 'graphic' ? 'active' : ''}`}
+                                onClick={() => setActiveFilter('graphic')}
+                                data-count={getCourseCount('graphic')}
+                            >
+                                <span>Graphic</span>
+                            </button>
+                            <button
+                                className={`filter-btn ${activeFilter === 'ict' ? 'active' : ''}`}
+                                onClick={() => setActiveFilter('ict')}
+                                data-count={getCourseCount('ict')}
+                            >
+                                <span>ICT</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Modern Courses Grid */}
                     <div className="row g-4">
-                        {monthies && monthies.map((monthly) => (
-                            <div key={monthly.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                                <div className="edu-card">
-                                    <img className="edu-card-img" src={`/storage/${monthly.m_img}`} alt={monthly.course?.name} />
-                                    <div className="edu-card-body">
-                                        <h5 className="edu-card-title">{monthly.course?.name}</h5>
-                                        <p className="edu-card-desc">{monthly.course?.description}</p>
-                                        <div className="edu-card-footer">
-                                            <span className="edu-card-price">
-                                            <span className="text-orange-primary">Ks /-</span> {monthly.course?.normal_price}
-                                            </span>
-                                            <Link href={`/yha/courses/monthly/${monthly.id}`} className="btn-uiverse">View More</Link>
+                        {filteredCourses && filteredCourses.length > 0 ? (
+                            filteredCourses.map((monthly, index) => (
+                                <div key={monthly.id} className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="modern-course-card">
+                                        {/* Course Image */}
+                                        <div className="modern-image-container">
+                                            <img
+                                                src={`/storage/${monthly.m_img}`}
+                                                alt={monthly.course?.name}
+                                                className="modern-course-image"
+                                            />
+                                            <div className="modern-overlay">
+                                                <div className="modern-category">
+                                                    {monthly.category === 'programming' ? 'Programming' :
+                                                     monthly.category === 'graphic' ? 'Graphic' : 'ICT'}
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        {/* Course Content */}
+                                        <div className="modern-course-content">
+                                            <h3 className="modern-course-title">{monthly.course?.name}</h3>
+                                            <p className="modern-course-description">
+                                                {monthly.course?.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Course Meta */}
+                                        <div className="modern-course-meta">
+                                            <div className="modern-price-info">
+                                                <span className="modern-price-label">Course Fee</span>
+                                                <div className="modern-price-amount">
+                                                    <span className="modern-currency">Ks</span>
+                                                    {monthly.course?.normal_price ? monthly.course.normal_price.toLocaleString() : 'Contact for price'}
+                                                </div>
+                                            </div>
+                                            <Link
+                                                href={`/course/${monthly.id}`}
+                                                className="modern-action-btn"
+                                            >
+                                                <span>More Detail</span>
+                                                <i className="fas fa-arrow-right"></i>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {monthies && monthies.length > 3 && (
-                            <div className="mt-4 text-center">
-                                <Link href="/yha/courses/monthl" className="btn-uiverse">View More</Link>
+                            ))
+                        ) : (
+                            <div className="col-12">
+                                <div className="modern-no-courses">
+                                    <div className="modern-no-courses-icon">
+                                        <i className="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <h3>Courses Coming Soon</h3>
+                                    <p>We're preparing amazing courses for you. Check back later!</p>
+                                    <Link href="/course" className="modern-browse-btn">
+                                        <i className="fas fa-th-large"></i>
+                                        <span>Browse All Courses</span>
+                                    </Link>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -324,189 +515,328 @@ export default function Homepage({
                 </div>
             </section> */}
 
-            {/* Student Projects Section */}
-            <section className="mt-5 mb-5" id="projects">
+            {/* Projects Section - Modern Design */}
+            <section className="modern-projects-section py-5" id="projects">
                 <div className="container">
-                    <div className="edu-glass-heading">
-                        <span className="edu-icon">
-                            <i className="fa-solid fa-code"></i>
-                        </span>
-                        <h3>Student Projects</h3>
-                        <div className="edu-subtitle">
+                    {/* Section Header */}
+                    <div className="text-center mb-5">
+                        <div className="hit-badge">
+                            <i className="fas fa-rocket"></i>
+                            <span>STUDENT PROJECTS</span>
+                        </div>
+                        <div className="title-underline"></div>
+                        <p className="hit-subtitle">
                             Showcasing innovative projects created by our talented students
-                        </div>
+                        </p>
                     </div>
-                    <div className="m-auto w-100 row">
-                        {projects && projects.slice(0, 3).map((project) => (
-                            <div key={project.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                                <div className="edu-card project-card">
-                                    <img src={`/storage/${project.image}`} className="edu-card-img" alt={project.title} />
-                                    <div className="edu-card-body">
-                                        <h5 className="edu-card-title">{project.title}</h5>
-                                        <div className="mb-2 project-course">
-    <i className="fa-solid fa-graduation-cap text-orange-primary"></i>
-<span className="text-orange-primary font-bold">{project.course?.name || 'Unknown Course'}</span>
-                                        </div>
-                                        <p className="edu-card-desc clamped-text">{project.desc}</p>
-                                        <div className="gap-2 mb-3 project-links d-flex justify-content-center">
-                                            {project.github ? (
-                                                <a href={project.github} className="project-link github-link btn-uiverse" target="_blank" rel="noopener noreferrer">
-                                                    <i className="fa-brands fa-github"></i>
-                                                    <span>GitHub</span>
-                                                </a>
-                                            ) : (
-                                                <span className="project-link github-link disabled" style={{opacity: 0.5, cursor: 'not-allowed'}}>
-                                                    <i className="fa-brands fa-github"></i>
-                                                    <span>GitHub</span>
-                                                </span>
-                                            )}
-                                            {project.demo ? (
-                                                <a href={project.demo} className="project-link demo-link btn-uiverse" target="_blank" rel="noopener noreferrer">
-                                                    <i className="fa-solid fa-play"></i>
-                                                    <span>Live Demo</span>
-                                                </a>
-                                            ) : (
-                                                <span className="project-link demo-link disabled" style={{opacity: 0.5, cursor: 'not-allowed'}}>
-                                                    <i className="fa-solid fa-play"></i>
-                                                    <span>Live Demo</span>
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        {projects && projects.length > 3 && (
-                            <div className="mt-4 text-center">
-                                <Link href="/yha/project" className="btn-uiverse">View All Projects</Link>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
 
-            {/* FAQ Section */}
-            <section id="faq" className="py-5 bg-gray-light" style={{borderTop: '2px solid #f3f3f3'}}>
-                <div className="container">
-                    <div className="mb-4 edu-glass-heading">
-                        <span className="edu-icon"><i className="fa-solid fa-question-circle"></i></span>
-                        <h3>Frequently Asked Questions</h3>
-                        <div className="edu-subtitle">Find answers to common questions about our courses and center</div>
-                    </div>
-                    <div className="accordion" id="faqAccordion">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header" id="faq1">
-                                <button className="accordion-button faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true">
-                                    What courses does YHA offer?
-                                </button>
-                            </h2>
-                            <div id="collapse1" className="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body faq-body">
-                                    We offer a wide range of courses including programming, web development, graphic design, and ICT skills for all levels.
-                                </div>
-                            </div>
-                        </div>
-                        <div className="accordion-item">
-                            <h2 className="accordion-header" id="faq2">
-                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false">
-                                    How can I enroll in a course?
-                                </button>
-                            </h2>
-                            <div id="collapse2" className="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body faq-body">
-                                    You can enroll online through our website or visit our center for in-person registration.
-                                </div>
-                            </div>
-                        </div>
-                        <div className="accordion-item">
-                            <h2 className="accordion-header" id="faq3">
-                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false">
-                                    Are there any prerequisites for joining?
-                                </button>
-                            </h2>
-                            <div id="collapse3" className="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body faq-body">
-                                    Most beginner courses require no prior experience. Advanced courses may have prerequisites.
-                                </div>
-                            </div>
-                        </div>
-                        <div className="accordion-item">
-                            <h2 className="accordion-header" id="faq4">
-                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false">
-                                    Do you provide certificates?
-                                </button>
-                            </h2>
-                            <div id="collapse4" className="accordion-collapse collapse" aria-labelledby="faq4" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body faq-body">
-                                    Yes, we provide certificates upon successful completion of each course.
-                                </div>
-                            </div>
-                        </div>
-                        <div className="accordion-item">
-                            <h2 className="accordion-header" id="faq5">
-                                <button className="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false">
-                                    How can I contact support?
-                                </button>
-                            </h2>
-                            <div id="collapse5" className="accordion-collapse collapse" aria-labelledby="faq5" data-bs-parent="#faqAccordion">
-                                <div className="accordion-body faq-body">
-                                    You can contact us via phone, email, or visit our center.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Reviews Section */}
-            {homeReviews && homeReviews.length > 0 && (
-                <section id="reviews" className="py-5 review-section-modern position-relative">
-                    <div className="container review-section-modern-container">
-                        <div className="mb-5 text-center review-modern-heading">
-                            <span className="review-modern-icon"><i className="fa-solid fa-star"></i></span>
-                            <h2 className="review-modern-title">Student Reviews</h2>
-                            <div className="review-modern-accent"></div>
-                            <div className="review-modern-subtitle">Real voices. Real experiences. See what our students say!</div>
-                        </div>
-                        <div id="reviewSlider" className="carousel slide review-modern-carousel" data-bs-ride="carousel" data-bs-interval="5000">
-                            <div className="carousel-inner">
-                                {homeReviews.map((review, index) => (
-                                    <div key={review.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
-                                        <div className="d-flex justify-content-center">
-                                            <div className="text-center review-modern-card">
-                                                <div className="review-modern-avatar-wrap">
-                                                    {review.photo ? (
-                                                        <img src={`/storage/${review.photo}`} className="review-modern-avatar" alt={review.name} />
-                                                    ) : (
-                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffb347&color=fff`} className="review-modern-avatar" alt={review.name} />
-                                                    )}
-                                                </div>
-                                                <div className="review-modern-quote"><i className="fa-solid fa-quote-left"></i></div>
-                                                <div className="review-modern-text">{review.review}</div>
-                                                <div className="gap-2 mt-3 mb-1 d-flex align-items-center justify-content-center">
-                                                    <span className="review-modern-name">{review.name}</span>
-                                                    <span className="review-modern-stars">
-                                                        {[1,2,3,4,5].map((star) => (
-                                                            <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
-                                                        ))}
-                                                    </span>
+                    {/* Modern Projects Grid */}
+                    <div className="row g-4">
+                        {currentProjects && currentProjects.length > 0 ? (
+                            currentProjects.map((project) => (
+                                <div key={project.id} className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="modern-project-card">
+                                        {/* Project Image */}
+                                        <div className="modern-project-image-container">
+                                            <img
+                                                src={`/storage/${project.image}`}
+                                                alt={project.title}
+                                                className="modern-project-image"
+                                            />
+                                            <div className="modern-project-overlay">
+                                                <div className="modern-project-category">
+                                                    {project.course?.name || 'Student Work'}
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Project Content */}
+                                        <div className="modern-project-content">
+                                            <h3 className="modern-project-title">{project.title}</h3>
+                                            <p className="modern-project-description">
+                                                {project.desc}
+                                            </p>
+                                        </div>
+
+                                        {/* Project Footer */}
+                                        <div className="modern-project-meta">
+                                            <div className="project-actions">
+                                                {project.github && (
+                                                    <a href={project.github} className="modern-project-btn github-btn" target="_blank" rel="noopener noreferrer">
+                                                        <i className="fab fa-github"></i>
+                                                        <span>Code</span>
+                                                    </a>
+                                                )}
+                                                {project.demo && (
+                                                    <a href={project.demo} className="modern-project-btn demo-btn" target="_blank" rel="noopener noreferrer">
+                                                        <i className="fas fa-play"></i>
+                                                        <span>Live</span>
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-12">
+                                <div className="modern-no-courses">
+                                    <div className="modern-no-courses-icon">
+                                        <i className="fas fa-code"></i>
+                                    </div>
+                                    <h3>Projects Coming Soon</h3>
+                                    <p>Our students are working on amazing projects. Check back later!</p>
+                                    <Link href="/yha/project" className="modern-browse-btn">
+                                        <i className="fas fa-folder-open"></i>
+                                        <span>Browse All Projects</span>
+                                    </Link>
+                                </div>
                             </div>
-                            <button className="carousel-control-prev review-modern-arrow" type="button" data-bs-target="#reviewSlider" data-bs-slide="prev">
-                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span className="visually-hidden">Previous</span>
-                            </button>
-                            <button className="carousel-control-next review-modern-arrow" type="button" data-bs-target="#reviewSlider" data-bs-slide="next">
-                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span className="visually-hidden">Next</span>
-                            </button>
+                        )}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="projects-pagination">
+                            <div className="pagination-container">
+                                <button
+                                    className="pagination-btn"
+                                    onClick={() => paginate(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                >
+                                    <i className="fas fa-chevron-left"></i>
+                                </button>
+
+                                <div className="pagination-numbers">
+                                    {[...Array(totalPages)].map((_, index) => (
+                                        <button
+                                            key={index + 1}
+                                            className={`pagination-number ${currentPage === index + 1 ? 'active' : ''}`}
+                                            onClick={() => paginate(index + 1)}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    className="pagination-btn"
+                                    onClick={() => paginate(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <i className="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+
+                            <div className="pagination-info">
+                                <span>Showing {indexOfFirstProject + 1}-{Math.min(indexOfLastProject, projects?.length || 0)} of {projects?.length || 0} projects</span>
+                            </div>
                         </div>
-                        <div className="mt-4 text-center">
-                            <Link href="/reviews" className="btn-uiverse">View All Reviews</Link>
+                    )}
+                </div>
+            </section>
+
+            {/* FAQ Section - Modern Design */}
+            <section className="modern-faq-section py-5" id="faq">
+                <div className="container">
+                    {/* Section Header */}
+                    <div className="text-center mb-5">
+                        <div className="hit-badge">
+                            <i className="fas fa-question-circle"></i>
+                            <span>FAQ</span>
+                        </div>
+                        <div className="title-underline"></div>
+                        <p className="hit-subtitle">
+                            Find answers to common questions about our courses and services
+                        </p>
+                    </div>
+
+                    {/* Modern FAQ Accordion */}
+                    <div className="modern-faq-container">
+                        <div className="faq-item active">
+                            <div className="faq-question" onClick={() => toggleFaq(0)}>
+                                <div className="faq-question-content">
+                                    <h4>What courses does YHA offer?</h4>
+                                    <p>We offer comprehensive courses in programming, web development, graphic design, and ICT skills.</p>
+                                </div>
+                                <div className="faq-toggle">
+                                    <i className="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <div className="faq-answer">
+                                <div className="faq-answer-content">
+                                    <p>We offer a wide range of courses designed to meet different skill levels and career goals:</p>
+                                    <ul>
+                                        <li><strong>Programming:</strong> Python, JavaScript, Java, C++, and more</li>
+                                        <li><strong>Web Development:</strong> HTML, CSS, React, Node.js, PHP</li>
+                                        <li><strong>Graphic Design:</strong> Photoshop, Illustrator, UI/UX Design</li>
+                                        <li><strong>ICT Skills:</strong> Computer basics, networking, digital literacy</li>
+                                    </ul>
+                                    <p>All courses include hands-on projects and practical experience.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="faq-item">
+                            <div className="faq-question" onClick={() => toggleFaq(1)}>
+                                <div className="faq-question-content">
+                                    <h4>How can I enroll in a course?</h4>
+                                    <p>Multiple enrollment options available for your convenience.</p>
+                                </div>
+                                <div className="faq-toggle">
+                                    <i className="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <div className="faq-answer">
+                                <div className="faq-answer-content">
+                                    <p>Enrolling in our courses is simple and flexible:</p>
+                                    <ul>
+                                        <li><strong>Online Enrollment:</strong> Visit our website and complete the registration form</li>
+                                        <li><strong>In-Person Registration:</strong> Visit our center during business hours</li>
+                                        <li><strong>Phone Registration:</strong> Call our enrollment hotline</li>
+                                        <li><strong>Email Registration:</strong> Send us an email with your details</li>
+                                    </ul>
+                                    <p>Our staff will guide you through the process and help you choose the right course.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="faq-item">
+                            <div className="faq-question" onClick={() => toggleFaq(2)}>
+                                <div className="faq-question-content">
+                                    <h4>Are there any prerequisites for joining?</h4>
+                                    <p>Requirements vary depending on the course level.</p>
+                                </div>
+                                <div className="faq-toggle">
+                                    <i className="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <div className="faq-answer">
+                                <div className="faq-answer-content">
+                                    <p>Prerequisites depend on the course level:</p>
+                                    <ul>
+                                        <li><strong>Beginner Courses:</strong> No prior experience required</li>
+                                        <li><strong>Intermediate Courses:</strong> Basic understanding of the subject</li>
+                                        <li><strong>Advanced Courses:</strong> Previous experience or completion of prerequisite courses</li>
+                                    </ul>
+                                    <p>Each course description clearly outlines any requirements. Contact us if you're unsure about your eligibility.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="faq-item">
+                            <div className="faq-question" onClick={() => toggleFaq(3)}>
+                                <div className="faq-question-content">
+                                    <h4>Do you provide certificates?</h4>
+                                    <p>Yes, certificates are awarded upon course completion.</p>
+                                </div>
+                                <div className="faq-toggle">
+                                    <i className="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <div className="faq-answer">
+                                <div className="faq-answer-content">
+                                    <p>We provide comprehensive certification:</p>
+                                    <ul>
+                                        <li><strong>Completion Certificate:</strong> Awarded after successfully finishing the course</li>
+                                        <li><strong>Achievement Certificate:</strong> For outstanding performance</li>
+                                        <li><strong>Digital Certificates:</strong> Shareable on LinkedIn and other platforms</li>
+                                        <li><strong>Physical Certificates:</strong> Printed copies available upon request</li>
+                                    </ul>
+                                    <p>Our certificates are recognized by industry partners and can help advance your career.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="faq-item">
+                            <div className="faq-question" onClick={() => toggleFaq(4)}>
+                                <div className="faq-question-content">
+                                    <h4>How can I contact support?</h4>
+                                    <p>Multiple support channels available for your convenience.</p>
+                                </div>
+                                <div className="faq-toggle">
+                                    <i className="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <div className="faq-answer">
+                                <div className="faq-answer-content">
+                                    <p>We're here to help through multiple channels:</p>
+                                    <ul>
+                                        <li><strong>Phone Support:</strong> Available during business hours</li>
+                                        <li><strong>Email Support:</strong> Response within 24 hours</li>
+                                        <li><strong>Live Chat:</strong> Available on our website</li>
+                                        <li><strong>In-Person Support:</strong> Visit our center</li>
+                                        <li><strong>Social Media:</strong> Message us on Facebook or Instagram</li>
+                                    </ul>
+                                    <p>Our support team is dedicated to helping you succeed in your learning journey.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            {/* Reviews Section - Modern Design */}
+            {homeReviews && homeReviews.length > 0 && (
+                <section className="modern-reviews-section py-5" id="reviews">
+                    <div className="container">
+                        {/* Section Header */}
+                        <div className="text-center mb-5">
+                            <div className="hit-badge">
+                                <i className="fas fa-star"></i>
+                                <span>STUDENT REVIEWS</span>
+                            </div>
+                            <div className="title-underline"></div>
+                            <p className="hit-subtitle">
+                                Real voices. Real experiences. See what our students say!
+                            </p>
+                        </div>
+
+                        {/* Reviews Grid */}
+                        <div className="reviews-grid">
+                            {homeReviews.slice(0, 6).map((review) => (
+                                <div key={review.id} className="modern-review-card">
+                                    <div className="review-header">
+                                        <div className="review-avatar">
+                                            {review.photo ? (
+                                                <img src={`/storage/${review.photo}`} alt={review.name} />
+                                            ) : (
+                                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
+                                            )}
+                                        </div>
+                                        <div className="review-info">
+                                            <h4 className="review-name">{review.name}</h4>
+                                            <div className="review-rating">
+                                                {[1,2,3,4,5].map((star) => (
+                                                    <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="review-quote-icon">
+                                            <i className="fas fa-quote-right"></i>
+                                        </div>
+                                    </div>
+                                    <div className="review-content">
+                                        <p className="review-text">{review.review}</p>
+                                    </div>
+                                    <div className="review-footer">
+                                        <div className="review-date">
+                                            <i className="fas fa-calendar"></i>
+                                            <span>Recent Student</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* View All Reviews Button */}
+                        <div className="text-center mt-5">
+                            <Link href="/reviews" className="modern-view-all">
+                                <span>View All Reviews</span>
+                                <i className="fas fa-star"></i>
+                            </Link>
                         </div>
                     </div>
                 </section>
