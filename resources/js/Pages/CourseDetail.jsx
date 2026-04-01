@@ -3,14 +3,14 @@ import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
 export default function CourseDetail({ course, subjects, prog, graph, ict, address }) {
-    const ctaCourseUrl = course?.links && !course.links.startsWith('http') 
-        ? `https://${course.links}` 
+    const ctaCourseUrl = course?.links && !course.links.startsWith('http')
+        ? `https://${course.links}`
         : course?.links;
 
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
-            
+
             {/* Hero Section */}
             <section className="course-hero">
                 <div className="container">
@@ -21,7 +21,7 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                                     <i className="fas fa-home"></i> Home
                                 </Link>
                                 <span className="breadcrumb-separator">/</span>
-                                <Link href="/yha/courses/monthl" className="breadcrumb-link">Courses</Link>
+                                <Link href="/courses/" className="breadcrumb-link">Courses</Link>
                                 <span className="breadcrumb-separator">/</span>
                                 <span className="breadcrumb-current">{course?.name}</span>
                             </div>
@@ -45,12 +45,12 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                             </div>
 
                             <div className="course-actions">
-                                {course?.links && (
-                                    <a href={course.links} className="btn-primary" target="_blank" rel="noopener noreferrer">
-                                        <i className="fas fa-external-link-alt"></i>
-                                        View Details
-                                    </a>
-                                )}
+                                {/* {course?.links && (
+                                    // <a href={course.links} className="btn-primary" target="_blank" rel="noopener noreferrer">
+                                    //     <i className="fas fa-external-link-alt"></i>
+                                    //     View Details
+                                    // </a>
+                                )} */}
                                 <a href="#subjects" className="btn-secondary">
                                     <i className="fas fa-list"></i>
                                     View Subjects
@@ -148,36 +148,88 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                 </div>
             </section>
 
-            {/* Call to Action */}
-            <section className="cta-section">
-                <div className="container">
-                    <div className="text-center cta-content">
-                        <h2>Ready to Start Learning?</h2>
-                        <p>Join our course and take the first step towards your career goals</p>
-                        <div className="cta-buttons">
-                            <Link href="/yha/courses/monthl" className="btn-primary">
-                                <i className="fas fa-arrow-left"></i>
-                                Back to Courses
-                            </Link>
-                            {course?.links && (
-                                <a href={ctaCourseUrl} className="btn-secondary" target="_blank" rel="noopener noreferrer">
-                                    <i className="fas fa-external-link-alt"></i>
-                                    Learn More
-                                </a>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <style jsx>{`
-                /* Hero Section */
+                /* Premium Course Detail Styles - Matching Homepage Design */
+                .course-detail-section {
+                    background: #ffffff;
+                    position: relative;
+                    overflow: hidden;
+                    padding: 6rem 0;
+                    margin-bottom: 0;
+                    border-bottom: 1px solid #f8f9fa;
+                }
+
+                @media (max-width: 768px) {
+                    .course-detail-section {
+                        padding: 4rem 0;
+                    }
+                }
+
+                @media (max-width: 576px) {
+                    .course-detail-section {
+                        padding: 3rem 0 !important;
+                    }
+                }
+
+                /* Section Header - Premium Design */
+                .hit-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+                    color: white;
+                    padding: 0.6rem 1.8rem;
+                    border-radius: 50px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1.2px;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 20px rgba(255,107,53,0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
+                }
+
+                .hit-title {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    margin-bottom: 1.5rem;
+                    line-height: 1.2;
+                    letter-spacing: -0.02em;
+                    color: #1e293b;
+                }
+
+                .hit-title span {
+                    display: block;
+                }
+
+                .hit-title span:first-child {
+                    color: #1e293b;
+                }
+
+                .hit-title span:last-child {
+                    color: #ff6b35;
+                }
+
+                .hit-subtitle {
+                    font-size: 1.1rem;
+                    color: #64748b;
+                    max-width: 700px;
+                    margin: 0 auto;
+                    line-height: 1.7;
+                    font-weight: 400;
+                    letter-spacing: 0.01em;
+                }
+
+                /* Course Hero - Premium Design */
                 .course-hero {
-                    background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%);
-                    padding: 80px 0;
+                    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+                    padding: 4rem 0;
                     color: white;
                     position: relative;
                     overflow: hidden;
+                    border-radius: 0 0 30px 30px;
+                    margin-bottom: 4rem;
                 }
 
                 .course-hero::before {
@@ -197,6 +249,8 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                     gap: 0.5rem;
                     margin-bottom: 2rem;
                     font-size: 0.9rem;
+                    position: relative;
+                    z-index: 1;
                 }
 
                 .breadcrumb-link {
@@ -219,17 +273,21 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                 }
 
                 .course-title {
-                    font-size: 3rem;
+                    font-size: 2.5rem;
                     font-weight: 800;
                     margin-bottom: 1.5rem;
                     line-height: 1.2;
+                    position: relative;
+                    z-index: 1;
                 }
 
                 .course-description {
-                    font-size: 1.2rem;
-                    opacity: 0.9;
+                    font-size: 1.1rem;
+                    opacity: 0.95;
                     margin-bottom: 2rem;
                     line-height: 1.6;
+                    position: relative;
+                    z-index: 1;
                 }
 
                 .course-meta {
@@ -237,117 +295,147 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                     gap: 2rem;
                     margin-bottom: 2rem;
                     flex-wrap: wrap;
+                    position: relative;
+                    z-index: 1;
                 }
 
                 .meta-item {
                     display: flex;
                     align-items: center;
                     gap: 0.5rem;
+                    background: rgba(255, 255, 255, 0.1);
+                    padding: 0.5rem 1rem;
+                    border-radius: 20px;
+                    backdrop-filter: blur(10px);
                 }
 
                 .meta-item i {
                     color: #ffd700;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                 }
 
                 .course-actions {
                     display: flex;
                     gap: 1rem;
                     flex-wrap: wrap;
+                    position: relative;
+                    z-index: 1;
                 }
 
                 .btn-primary, .btn-secondary {
-                    padding: 0.75rem 1.5rem;
+                    padding: 0.8rem 1.5rem;
                     border-radius: 25px;
                     text-decoration: none;
                     font-weight: 600;
-                    display: flex;
+                    display: inline-flex;
                     align-items: center;
                     gap: 0.5rem;
                     transition: all 0.3s ease;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
 
                 .btn-primary {
                     background: white;
-                    color: #ff6c0f;
+                    color: #ff6b35;
+                    box-shadow: 0 4px 15px rgba(255,255,255,0.2);
                 }
 
                 .btn-primary:hover {
                     background: #f8f9fa;
-                    color: #ff6c0f;
+                    color: #ff6b35;
                     transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(255,255,255,0.3);
                 }
 
                 .btn-secondary {
                     background: rgba(255, 255, 255, 0.2);
                     color: white;
                     border: 1px solid rgba(255, 255, 255, 0.3);
+                    backdrop-filter: blur(10px);
                 }
 
                 .btn-secondary:hover {
                     background: rgba(255, 255, 255, 0.3);
                     color: white;
                     transform: translateY(-2px);
+                    box-shadow: 0 4px 15px rgba(255,255,255,0.2);
                 }
 
                 .course-image-wrapper {
                     position: relative;
                     border-radius: 20px;
                     overflow: hidden;
-                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    transition: transform 0.3s ease;
+                }
+
+                .course-image-wrapper:hover {
+                    transform: translateY(-5px);
                 }
 
                 .course-image {
                     width: 100%;
                     height: 400px;
                     object-fit: cover;
+                    transition: transform 0.6s ease;
+                }
+
+                .course-image-wrapper:hover .course-image {
+                    transform: scale(1.05);
                 }
 
                 .course-badge {
                     position: absolute;
                     top: 20px;
                     right: 20px;
-                    background: #ffd700;
+                    background: linear-gradient(135deg, #ffd700, #ffed4e);
                     color: #2c3e50;
                     padding: 0.5rem 1rem;
                     border-radius: 25px;
                     font-size: 0.8rem;
                     font-weight: 700;
+                    box-shadow: 0 4px 15px rgba(255,215,0,0.3);
                 }
 
-                /* Course About Section */
+                /* Course About Section - Premium Design */
                 .course-about {
-                    padding: 80px 0;
+                    padding: 4rem 0;
                     background: #f8f9fa;
+                    position: relative;
                 }
 
                 .section-title {
-                    font-size: 2.5rem;
+                    font-size: 2rem;
                     font-weight: 700;
                     margin-bottom: 2rem;
-                    color: #2c3e50;
+                    color: #ff6b35;
+                    line-height: 1.3;
+                    letter-spacing: -0.01em;
                 }
 
                 .about-text {
-                    font-size: 1.1rem;
+                    font-size: 1.05rem;
                     line-height: 1.8;
-                    color: #495057;
+                    color: #475569;
+                    font-weight: 400;
                 }
 
                 .about-text :global(p) {
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.5rem;
                 }
 
                 .about-text :global(ul), .about-text :global(ol) {
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.5rem;
                     padding-left: 2rem;
                 }
 
                 .about-text :global(li) {
-                    margin-bottom: 0.5rem;
+                    margin-bottom: 0.75rem;
                 }
 
-                /* Sidebar */
+                /* Sidebar - Premium Design */
                 .course-sidebar {
                     position: sticky;
                     top: 100px;
@@ -355,16 +443,31 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
 
                 .sidebar-card {
                     background: white;
-                    border-radius: 15px;
+                    border-radius: 20px;
                     padding: 2rem;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+                    border: 1px solid rgba(0,0,0,0.06);
+                    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                }
+
+                .sidebar-card:hover {
+                    transform: translateY(-8px);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.08);
+                    border-color: rgba(0,0,0,0.1);
                 }
 
                 .sidebar-title {
                     font-size: 1.3rem;
                     font-weight: 700;
                     margin-bottom: 1.5rem;
-                    color: #2c3e50;
+                    color: #1e293b;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .sidebar-title i {
+                    color: #ff6b35;
                 }
 
                 .info-list {
@@ -377,13 +480,21 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                     display: flex;
                     align-items: center;
                     gap: 1rem;
-                    padding: 1rem;
-                    background: #f8f9fa;
-                    border-radius: 10px;
+                    padding: 1.2rem;
+                    background: linear-gradient(135deg, #fafbfc, #f8fafc);
+                    border-radius: 12px;
+                    border: 1px solid rgba(0,0,0,0.06);
+                    transition: all 0.3s ease;
+                }
+
+                .info-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                    border-color: rgba(255,107,53,0.1);
                 }
 
                 .info-item i {
-                    color: #ff6c0f;
+                    color: #ff6b35;
                     font-size: 1.2rem;
                     width: 20px;
                 }
@@ -395,23 +506,24 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                 }
 
                 .info-label {
-                    font-size: 0.9rem;
-                    color: #6c757d;
+                    font-size: 0.85rem;
+                    color: #64748b;
+                    font-weight: 500;
                 }
 
                 .info-value {
                     font-size: 1.1rem;
                     font-weight: 600;
-                    color: #2c3e50;
+                    color: #1e293b;
                 }
 
                 .info-value.special {
-                    color: #28a745;
+                    color: #10b981;
                 }
 
-                /* Subjects Section */
+                /* Subjects Section - Premium Design */
                 .subjects-section {
-                    padding: 80px 0;
+                    padding: 4rem 0;
                     background: white;
                 }
 
@@ -421,9 +533,10 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
 
                 .section-subtitle {
                     font-size: 1.1rem;
-                    color: #6c757d;
+                    color: #64748b;
                     max-width: 600px;
                     margin: 0 auto;
+                    line-height: 1.6;
                 }
 
                 .subject-card {
@@ -431,135 +544,330 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                     align-items: center;
                     gap: 1rem;
                     padding: 1.5rem;
-                    background: #f8f9fa;
-                    border-radius: 15px;
-                    border-left: 4px solid #ff6c0f;
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    background: white;
+                    border-radius: 16px;
+                    border: 1px solid rgba(0,0,0,0.06);
+                    border-left: 4px solid #ff6b35;
+                    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
                 }
 
                 .subject-card:hover {
                     transform: translateY(-5px);
-                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.08);
+                    border-color: rgba(255,107,53,0.2);
                 }
 
                 .subject-number {
-                    width: 40px;
-                    height: 40px;
-                    background: #ff6c0f;
+                    width: 50px;
+                    height: 50px;
+                    background: linear-gradient(135deg, #ff6b35, #ff8c42);
                     color: white;
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-weight: 700;
+                    font-size: 1.1rem;
                     flex-shrink: 0;
+                    box-shadow: 0 4px 15px rgba(255,107,53,0.3);
                 }
 
                 .subject-title {
                     font-size: 1.1rem;
                     font-weight: 600;
-                    color: #2c3e50;
+                    color: #1e293b;
                     margin: 0;
+                    line-height: 1.4;
                 }
 
                 .empty-state {
                     text-align: center;
                     padding: 4rem 2rem;
-                    color: #6c757d;
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    border: 1px solid rgba(255,107,53,0.08);
                 }
 
                 .empty-state i {
-                    font-size: 4rem;
+                    font-size: 3rem;
+                    color: #ff6b35;
                     margin-bottom: 1rem;
-                    opacity: 0.5;
+                    opacity: 0.7;
                 }
 
                 .empty-state h3 {
                     font-size: 1.5rem;
                     margin-bottom: 0.5rem;
+                    color: #1e293b;
                 }
 
-                /* CTA Section */
-                .cta-section {
-                    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-                    padding: 80px 0;
-                    color: white;
-                    text-align: center;
+                .empty-state p {
+                    color: #64748b;
+                    margin: 0;
                 }
 
-                .cta-content h2 {
-                    font-size: 2.5rem;
-                    font-weight: 700;
-                    margin-bottom: 1rem;
+                /* Responsive Design */
+                @media (max-width: 1200px) {
+                    .course-hero {
+                        padding: 3rem 0;
+                    }
+
+                    .course-title {
+                        font-size: 2.2rem;
+                    }
                 }
 
-                .cta-content p {
-                    font-size: 1.1rem;
-                    opacity: 0.9;
-                    margin-bottom: 2rem;
-                    max-width: 600px;
-                    margin-left: auto;
-                    margin-right: auto;
-                }
+                @media (max-width: 992px) {
+                    .course-hero {
+                        padding: 2.5rem 0;
+                    }
 
-                .cta-buttons {
-                    display: flex;
-                    justify-content: center;
-                    gap: 1rem;
-                    flex-wrap: wrap;
-                }
-
-                .cta-buttons .btn-primary {
-                    background: #ff6c0f;
-                    color: white;
-                }
-
-                .cta-buttons .btn-primary:hover {
-                    background: #e65b00;
-                }
-
-                .cta-buttons .btn-secondary {
-                    background: transparent;
-                    color: white;
-                    border: 2px solid white;
-                }
-
-                .cta-buttons .btn-secondary:hover {
-                    background: white;
-                    color: #2c3e50;
-                }
-
-                /* Responsive */
-                @media (max-width: 768px) {
                     .course-title {
                         font-size: 2rem;
                     }
-                    
+
+                    .course-description {
+                        font-size: 1rem;
+                    }
+
+                    .course-image {
+                        height: 350px;
+                    }
+
+                    .course-meta {
+                        gap: 1rem;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .course-hero {
+                        padding: 2rem 0;
+                        margin-bottom: 3rem;
+                    }
+
+                    .course-title {
+                        font-size: 1.8rem;
+                    }
+
+                    .course-description {
+                        font-size: 0.95rem;
+                    }
+
                     .course-meta {
                         justify-content: center;
+                        gap: 1rem;
                     }
-                    
+
                     .course-actions {
                         justify-content: center;
                     }
-                    
+
                     .course-image {
                         height: 250px;
                     }
-                    
-                    .info-item {
-                        padding: 0.75rem;
+
+                    .course-image-wrapper {
+                        margin-top: 2rem;
                     }
-                    
+
+                    .sidebar-card {
+                        margin-top: 2rem;
+                    }
+
+                    .info-item {
+                        padding: 1rem;
+                    }
+
+                    .subject-card {
+                        padding: 1rem;
+                    }
+
+                    .subject-number {
+                        width: 40px;
+                        height: 40px;
+                        font-size: 1rem;
+                    }
+
                     .cta-buttons {
                         flex-direction: column;
                         align-items: center;
                     }
-                    
+
                     .cta-buttons .btn-primary,
                     .cta-buttons .btn-secondary {
                         width: 200px;
                         justify-content: center;
+                    }
+
+                    .course-about {
+                        padding: 3rem 0;
+                    }
+
+                    .subjects-section {
+                        padding: 3rem 0;
+                    }
+                }
+
+                @media (max-width: 576px) {
+                    .course-hero {
+                        padding: 1.5rem 0;
+                        margin-bottom: 2rem;
+                    }
+
+                    .course-title {
+                        font-size: 1.6rem;
+                    }
+
+                    .course-description {
+                        font-size: 0.9rem;
+                    }
+
+                    .course-breadcrumb {
+                        font-size: 0.8rem;
+                        margin-bottom: 1rem;
+                    }
+
+                    .course-meta {
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+
+                    .meta-item {
+                        padding: 0.4rem 0.8rem;
+                        font-size: 0.85rem;
+                    }
+
+                    .course-actions {
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+
+                    .btn-primary, .btn-secondary {
+                        width: 100%;
+                        max-width: 200px;
+                        font-size: 0.8rem;
+                        padding: 0.6rem 1rem;
+                    }
+
+                    .course-image {
+                        height: 200px;
+                    }
+
+                    .course-image-wrapper {
+                        margin-top: 1.5rem;
+                    }
+
+                    .course-badge {
+                        top: 15px;
+                        right: 15px;
+                        padding: 0.4rem 0.8rem;
+                        font-size: 0.7rem;
+                    }
+
+                    .sidebar-card {
+                        padding: 1.5rem;
+                        margin-top: 1.5rem;
+                    }
+
+                    .sidebar-title {
+                        font-size: 1.1rem;
+                    }
+
+                    .info-item {
+                        padding: 0.8rem;
+                        flex-direction: column;
+                        text-align: center;
+                        gap: 0.5rem;
+                    }
+
+                    .info-value {
+                        font-size: 1rem;
+                    }
+
+                    .section-title {
+                        font-size: 1.5rem;
+                    }
+
+                    .about-text {
+                        font-size: 0.95rem;
+                    }
+
+                    .subject-card {
+                        padding: 1rem;
+                        flex-direction: column;
+                        text-align: center;
+                    }
+
+                    .subject-number {
+                        width: 35px;
+                        height: 35px;
+                        font-size: 0.9rem;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    .subject-title {
+                        font-size: 1rem;
+                    }
+
+                    .empty-state {
+                        padding: 2rem 1rem;
+                    }
+
+                    .empty-state i {
+                        font-size: 2.5rem;
+                    }
+
+                    .empty-state h3 {
+                        font-size: 1.3rem;
+                    }
+
+                    .course-about {
+                        padding: 2rem 0;
+                    }
+
+                    .subjects-section {
+                        padding: 2rem 0;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .course-title {
+                        font-size: 1.4rem;
+                    }
+
+                    .course-description {
+                        font-size: 0.85rem;
+                    }
+
+                    .course-image {
+                        height: 180px;
+                    }
+
+                    .sidebar-card {
+                        padding: 1rem;
+                    }
+
+                    .info-item {
+                        padding: 0.6rem;
+                    }
+
+                    .subject-card {
+                        padding: 0.8rem;
+                    }
+
+                    .subject-number {
+                        width: 30px;
+                        height: 30px;
+                        font-size: 0.8rem;
+                    }
+
+                    .btn-primary, .btn-secondary {
+                        font-size: 0.75rem;
+                        padding: 0.5rem 0.8rem;
                     }
                 }
             `}</style>

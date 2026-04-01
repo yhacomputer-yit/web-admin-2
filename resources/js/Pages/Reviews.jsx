@@ -5,7 +5,7 @@ import Footer from '../Components/Footer';
 
 export default function Reviews({ reviews, rating, sort, prog, graph, ict, address }) {
     const [currentPage, setCurrentPage] = useState(1);
-    const reviewsPerPage = 6;
+    const reviewsPerPage = 4;
     
     // Handle reviews data structure
     const reviewsData = Array.isArray(reviews) ? reviews : (reviews?.data || []);
@@ -22,240 +22,261 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
             <Navigation prog={prog} graph={graph} ict={ict} />
 
             <style jsx>{`
-                /* Modern Review Page Styles - Matching Event Page */
-                .reviews-hero {
-                    background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%);
-                    padding: 3rem 0;
-                    margin-bottom: 3rem;
-                    border-radius: 0 0 30px 30px;
-                    color: white;
-                    text-align: center;
-                }
-
-                .reviews-hero h1 {
-                    font-size: 2.5rem;
-                    font-weight: 800;
-                    margin-bottom: 1rem;
-                    letter-spacing: 1px;
-                }
-
-                .reviews-hero p {
-                    font-size: 1.1rem;
-                    opacity: 0.9;
-                    max-width: 600px;
-                    margin: 0 auto;
-                }
-
-                .review-card {
-                    background: #fff;
-                    border-radius: 20px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-                    overflow: hidden;
-                    transition: all 0.3s ease;
-                    margin-bottom: 2rem;
-                    border: 1px solid rgba(255,107,1,0.1);
+                /* Premium Reviews Page Styles - Matching Homepage Design */
+                .reviews-section {
+                    background: #ffffff;
                     position: relative;
+                    overflow: hidden;
+                    padding: 6rem 0;
+                    margin-bottom: 0;
+                    border-bottom: 1px solid #f8f9fa;
                 }
 
-                .review-card:hover {
-                    transform: translateY(-8px) scale(1.01);
-                    box-shadow: 0 12px 40px rgba(255,107,1,0.15);
+                @media (max-width: 768px) {
+                    .reviews-section {
+                        padding: 4rem 0;
+                    }
                 }
 
-                .review-avatar-section {
-                    padding: 2rem;
-                    background: linear-gradient(135deg, rgba(255,107,1,0.05) 0%, rgba(255,179,71,0.05) 100%);
-                    text-align: center;
-                    border-bottom: 1px solid rgba(255,107,1,0.1);
+                @media (max-width: 576px) {
+                    .reviews-section {
+                        padding: 3rem 0 !important;
+                    }
+                }
+
+                /* Section Header - Premium Design */
+                .hit-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+                    color: white;
+                    padding: 0.6rem 1.8rem;
+                    border-radius: 50px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1.2px;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 20px rgba(255,107,53,0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
+                }
+
+                .hit-title {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    margin-bottom: 1.5rem;
+                    line-height: 1.2;
+                    letter-spacing: -0.02em;
+                    color: #1e293b;
+                }
+
+                .hit-title span {
+                    display: block;
+                }
+
+                .hit-title span:first-child {
+                    color: #1e293b;
+                }
+
+                .hit-title span:last-child {
+                    color: #ff6b35;
+                }
+
+                .hit-subtitle {
+                    font-size: 1.1rem;
+                    color: #64748b;
+                    max-width: 700px;
+                    margin: 0 auto;
+                    line-height: 1.7;
+                    font-weight: 400;
+                    letter-spacing: 0.01em;
+                }
+
+                /* Modern Review Cards - Premium Design */
+                .modern-review-card {
+                    background: white;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+                    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                    border: 1px solid rgba(0,0,0,0.06);
+                    position: relative;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 2rem;
+                }
+
+                .modern-review-card:hover {
+                    transform: translateY(-8px);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.08);
+                    border-color: rgba(0,0,0,0.1);
+                }
+
+                .review-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    padding: 1.5rem;
+                    background: linear-gradient(135deg, #fafbfc, #f8fafc);
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
                 }
 
                 .review-avatar {
-                    width: 80px;
-                    height: 80px;
+                    width: 60px;
+                    height: 60px;
                     border-radius: 50%;
                     object-fit: cover;
-                    border: 3px solid #fff;
-                    box-shadow: 0 4px 16px rgba(255,107,1,0.2);
-                    margin-bottom: 1rem;
+                    border: 3px solid rgba(255,107,53,0.1);
+                }
+
+                .review-info {
+                    flex: 1;
                 }
 
                 .review-name {
-                    font-size: 1.3rem;
-                    font-weight: 700;
-                    color: #333;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: #1e293b;
                     margin: 0;
-                    margin-bottom: 0.5rem;
+                    line-height: 1.4;
+                    letter-spacing: -0.01em;
                 }
 
                 .review-rating {
-                    color: #ffb347;
-                    font-size: 1.1rem;
-                    margin-bottom: 0.5rem;
+                    display: flex;
+                    gap: 0.25rem;
+                    margin: 0.5rem 0;
+                }
+
+                .review-rating i {
+                    color: #ff6b35;
+                    font-size: 0.9rem;
                 }
 
                 .review-date {
-                    color: #666;
-                    font-size: 0.9rem;
-                    background: rgba(255,107,1,0.1);
-                    padding: 0.3rem 0.8rem;
-                    border-radius: 15px;
-                    display: inline-block;
+                    font-size: 0.8rem;
+                    color: #64748b;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
                 }
 
                 .review-content {
-                    padding: 2rem 1.5rem;
+                    padding: 1.5rem;
+                    flex: 1;
                 }
 
                 .review-text {
-                    color: #555;
-                    line-height: 1.6;
-                    font-size: 1.05rem;
-                    margin-bottom: 1.5rem;
-                    font-style: italic;
-                    position: relative;
-                    padding-left: 2rem;
-                }
-
-                .review-text::before {
-                    content: '"';
-                    position: absolute;
-                    left: 0;
-                    top: -10px;
-                    font-size: 3rem;
-                    color: #ffb347;
-                    opacity: 0.3;
-                    font-family: Georgia, serif;
-                }
-
-                .filter-section {
-                    background: rgba(255,255,255,0.95);
-                    border-radius: 20px;
-                    padding: 1.5rem 2rem;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-                    margin-bottom: 3rem;
-                    border: 1px solid rgba(255,107,1,0.1);
-                }
-
-                .filter-buttons {
-                    display: flex;
-                    gap: 1rem;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                    align-items: center;
-                }
-
-                .filter-btn {
-                    padding: 0.6rem 1.2rem;
-                    border: 2px solid #ffe5d0;
-                    background: #fff;
-                    color: #ff6b01;
-                    border-radius: 20px;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
-                    font-weight: 500;
                     font-size: 0.95rem;
+                    color: #475569;
+                    line-height: 1.7;
+                    font-weight: 400;
+                    margin: 0;
                 }
 
-                .filter-btn:hover,
-                .filter-btn.active {
-                    background: linear-gradient(90deg, #ff6b01 0%, #ffb347 100%);
-                    color: white;
-                    border-color: #ff6b01;
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 16px rgba(255,107,1,0.18);
-                }
-
-                .pagination-container {
-                    display: flex;
-                    justify-content: center;
-                    margin-top: 3rem;
-                }
-
-                .pagination .page-link {
-                    color: #ff6b01;
-                    border: 1px solid #ff6b01;
-                    margin: 0 0.2rem;
-                    border-radius: 8px;
-                }
-
-                .pagination .page-item.active .page-link {
-                    background: #ff6b01;
-                    border-color: #ff6b01;
-                    color: white;
-                }
-
-                .pagination .page-link:hover {
-                    background: #ff6b01;
-                    color: white;
-                }
-
-                .empty-state {
+                .modern-no-reviews {
                     text-align: center;
                     padding: 4rem 2rem;
-                    background: rgba(255,255,255,0.95);
-                    border-radius: 20px;
-                    border: 2px dashed #ffe5d0;
+                    background: white;
+                    border-radius: 16px;
                     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    border: 1px solid rgba(255,107,53,0.08);
                 }
 
-                .empty-state i {
-                    font-size: 3rem;
-                    color: #ff6b01;
+                .modern-no-reviews-icon {
+                    width: 80px;
+                    height: 80px;
+                    background: linear-gradient(135deg, #ff6b35, #ff8c42);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 2rem;
+                    color: white;
+                    font-size: 2rem;
+                    box-shadow: 0 8px 20px rgba(255,107,53,0.3);
+                }
+
+                .modern-no-reviews h3 {
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                    color: #1e293b;
                     margin-bottom: 1rem;
                 }
 
-                /* Responsive Design */
-                @media (max-width: 768px) {
-                    .reviews-hero {
-                        padding: 2rem 0;
-                        border-radius: 0 0 20px 20px;
-                    }
-
-                    .reviews-hero h1 {
-                        font-size: 2rem;
-                    }
-
-                    .reviews-hero p {
-                        font-size: 1rem;
-                    }
-
-                    .review-card {
-                        border-radius: 14px;
-                    }
-
-                    .review-avatar-section {
-                        padding: 1.5rem 1rem;
-                    }
-
-                    .review-avatar {
-                        width: 60px;
-                        height: 60px;
-                    }
-
-                    .review-name {
-                        font-size: 1.1rem;
-                    }
-
-                    .review-content {
-                        padding: 1.5rem 1rem;
-                    }
-
-                    .review-text {
-                        font-size: 1rem;
-                        padding-left: 1.5rem;
-                    }
-
-                    .filter-section {
-                        padding: 1rem 1.5rem;
-                        margin-bottom: 2rem;
-                    }
-
-                    .filter-btn {
-                        padding: 0.5rem 1rem;
-                        font-size: 0.85rem;
-                    }
+                .modern-no-reviews p {
+                    font-size: 1rem;
+                    color: #64748b;
+                    margin-bottom: 2rem;
+                    max-width: 400px;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
 
+                .modern-browse-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.8rem;
+                    padding: 0.8rem 1.5rem;
+                    background: white;
+                    color: #ff6b35;
+                    border: 2px solid #ff6b35;
+                    border-radius: 25px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    transition: all 0.3s ease;
+                }
+
+                .modern-browse-btn:hover {
+                    background: #ff6b35;
+                    color: white;
+                    border-color: transparent;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(255,107,53,0.3);
+                }
+
+                .modern-view-all {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.8rem;
+                    padding: 1rem 2rem;
+                    background: white;
+                    color: #ff6b35;
+                    border: 2px solid #ff6b35;
+                    border-radius: 25px;
+                    text-decoration: none;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    transition: all 0.3s ease;
+                }
+
+                .modern-view-all:hover {
+                    background: linear-gradient(135deg, #ff6b35, #ff8c42);
+                    color: white;
+                    border-color: transparent;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(255,107,53,0.3);
+                }
+
+                .modern-view-all i {
+                    font-size: 0.9rem;
+                    transition: transform 0.3s ease;
+                }
+
+                .modern-view-all:hover i {
+                    transform: translateX(4px);
+                }
+
+                /* Pagination Styles - Matching Homepage */
                 .pagination-container {
                     display: flex;
                     justify-content: center;
@@ -309,107 +330,129 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                     color: white;
                 }
 
-                @media (max-width: 576px) {
-                    .reviews-hero h1 {
-                        font-size: 1.5rem;
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .hit-title {
+                        font-size: 1.8rem;
                     }
+                    
+                    .hit-subtitle {
+                        font-size: 0.95rem;
+                    }
+                    
+                    .review-header {
+                        padding: 1rem;
+                    }
+                    
+                    .review-content {
+                        padding: 1rem;
+                    }
+                    
+                    .review-text {
+                        font-size: 0.9rem;
+                    }
+                    
+                    .modern-no-reviews {
+                        padding: 3rem 1rem;
+                    }
+                }
 
+                @media (max-width: 576px) {
+                    .hit-title {
+                        font-size: 1.6rem;
+                    }
+                    
+                    .hit-subtitle {
+                        font-size: 0.9rem;
+                    }
+                    
+                    .review-avatar {
+                        width: 50px;
+                        height: 50px;
+                    }
+                    
                     .review-name {
                         font-size: 1rem;
                     }
-
+                    
                     .review-text {
-                        font-size: 0.95rem;
+                        font-size: 0.85rem;
                     }
                 }
             `}</style>
 
-            {/* Hero Section - Matching Event Page Style */}
-            <section className="reviews-hero">
+            {/* Reviews Section - Premium Design */}
+            <section className="reviews-section">
                 <div className="container">
-                    <h1>Student Reviews</h1>
-                    <p>Discover what our students have to say about their learning experience and journey with YHA Computer Training Center.</p>
-                </div>
-            </section>
+                    {/* Section Header */}
+                    <div className="text-center mb-5">
+                        <div className="hit-badge">
+                            <i className="fa-solid fa-star"></i>
+                            <span>Student Reviews</span>
+                        </div>
+                        <h1 className="hit-title">
+                            <span>What Our Students Say</span>
+                            <span>About Us</span>
+                        </h1>
+                        <p className="hit-subtitle">Discover what our students have to say about their learning experience and journey with YHA Computer Training Center.</p>
+                    </div>
 
-            {/* Reviews Content */}
-            <section className="main">
-                <div className="container">
-                    {currentReviews && currentReviews.length > 0 ? (
-                        <>
-                            {currentReviews.map((review, index) => (
-                                <div key={review.id} className="review-card">
-                                    <div className="row g-0 align-items-center">
-                                        {index % 2 === 0 ? (
-                                            <>
-                                                {/* First, third items... avatar left, content right */}
-                                                <div className="col-lg-4">
-                                                    <div className="review-avatar-section">
-                                                        {review.photo ? (
-                                                            <img src={`/storage/${review.photo}`} className="review-avatar" alt={review.name} />
-                                                        ) : (
-                                                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffb347&color=fff&size=80`} className="review-avatar" alt={review.name} />
-                                                        )}
-                                                        <h3 className="review-name">{review.name}</h3>
-                                                        <div className="review-rating">
-                                                            {[1,2,3,4,5].map((star) => (
-                                                                <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
-                                                            ))}
-                                                        </div>
-                                                        <div className="review-date">
-                                                            <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                            {new Date(review.created_at).toLocaleDateString('en-US', {
-                                                                year: 'numeric',
-                                                                month: 'short',
-                                                                day: 'numeric'
-                                                            })}
-                                                        </div>
-                                                    </div>
+                    {/* Modern Reviews Grid */}
+                    <div className="row g-4">
+                        {currentReviews && currentReviews.length > 0 ? (
+                            currentReviews.map((review) => (
+                                <div key={review.id} className="col-xl-6 col-lg-6 col-md-12">
+                                    <div className="modern-review-card">
+                                        {/* Review Header */}
+                                        <div className="review-header">
+                                            {review.photo ? (
+                                                <img src={`/storage/${review.photo}`} className="review-avatar" alt={review.name} />
+                                            ) : (
+                                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff&size=80`} className="review-avatar" alt={review.name} />
+                                            )}
+                                            <div className="review-info">
+                                                <h3 className="review-name">{review.name}</h3>
+                                                <div className="review-rating">
+                                                    {[1,2,3,4,5].map((star) => (
+                                                        <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                                                    ))}
                                                 </div>
-                                                <div className="col-lg-8">
-                                                    <div className="review-content">
-                                                        <div className="review-text">{review.review}</div>
-                                                    </div>
+                                                <div className="review-date">
+                                                    <i className="fa-solid fa-calendar-alt"></i>
+                                                    {new Date(review.created_at).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
                                                 </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                {/* Second, fourth items... content left, avatar right */}
-                                                <div className="col-lg-8 order-lg-2">
-                                                    <div className="review-content">
-                                                        <div className="review-text">{review.review}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-4 order-lg-1">
-                                                    <div className="review-avatar-section">
-                                                        {review.photo ? (
-                                                            <img src={`/storage/${review.photo}`} className="review-avatar" alt={review.name} />
-                                                        ) : (
-                                                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffb347&color=fff&size=80`} className="review-avatar" alt={review.name} />
-                                                        )}
-                                                        <h3 className="review-name">{review.name}</h3>
-                                                        <div className="review-rating">
-                                                            {[1,2,3,4,5].map((star) => (
-                                                                <i key={star} className={star <= review.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
-                                                            ))}
-                                                        </div>
-                                                        <div className="review-date">
-                                                            <i className="fa-solid fa-calendar-alt me-2"></i>
-                                                            {new Date(review.created_at).toLocaleDateString('en-US', {
-                                                                year: 'numeric',
-                                                                month: 'short',
-                                                                day: 'numeric'
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </>
-                                        )}
+                                            </div>
+                                        </div>
+
+                                        {/* Review Content */}
+                                        <div className="review-content">
+                                            <p className="review-text">{review.review}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
+                        ) : (
+                            <div className="col-12">
+                                <div className="modern-no-reviews">
+                                    <div className="modern-no-reviews-icon">
+                                        <i className="fa-solid fa-star"></i>
+                                    </div>
+                                    <h3>No Reviews Yet</h3>
+                                    <p>Be the first to share your experience with us!</p>
+                                    <Link href="/contact" className="modern-browse-btn">
+                                        <i className="fa-solid fa-message"></i>
+                                        <span>Leave a Review</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
-                            {/* Pagination */}
+                    {/* Pagination */}
                     {(totalPages > 1 || (reviewsData && reviewsData.length > 0)) && (
                         <div className="pagination-container">
                             <div className="d-flex justify-content-center align-items-center gap-2">
@@ -450,14 +493,6 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                             <small className="text-muted">
                                 Showing {indexOfFirstReview + 1}-{Math.min(indexOfLastReview, reviewsData.length)} of {reviewsData.length} reviews
                             </small>
-                        </div>
-                    )}
-                        </>
-                    ) : (
-                        <div className="empty-state">
-                            <i className="fa-solid fa-star"></i>
-                            <h3>No Reviews Yet</h3>
-                            <p>Be the first to share your experience with us!</p>
                         </div>
                     )}
                 </div>

@@ -28,12 +28,13 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('us
 
 
     // consumer will see first this routes
+    Route::get('/courses', [FrontendSectionController::class, 'courseList'])->name('user.courseList');
     Route::get('/courses/monthl', [FrontendSectionController::class, 'courses'])->name('user.courses');
+    Route::get('/course/{id}', [FrontendSectionController::class, 'course'])->name('user.course');
     Route::get('/project/{c_id?}', [FrontendSectionController::class, 'project'])->name('user.project');
     Route::get('/gallery', [FrontendSectionController::class, 'gallery'])->name('user.gallery');
     Route::get('/event', [FrontendSectionController::class, 'event'])->name('user.event');
     Route::get('/eventDetail/{id}', [FrontendSectionController::class, 'eventDetail'])->name('user.eventDetail');
-    Route::get('/course/{id}', [FrontendSectionController::class, 'course'])->name('user.course');
     Route::get('/projects/{id}', [FrontendSectionController::class, 'projects'])->name('user.projects');
     Route::get('/project-detail/{id}', [FrontendSectionController::class, 'projectDetail'])->name('user.projectDetail');
     Route::get('/courses/monthly/{id}', [FrontendSectionController::class, 'monthly_courses'])->name('course.monthly');

@@ -236,7 +236,7 @@ export default function Homepage({
                             </p>
 
                             <div className="hero-actions">
-                                <Link href="/yha/courses/monthl" className="hero-btn primary">
+                                <Link href="/courses/" className="hero-btn primary">
                                     <span className="btn-text">Explore Courses</span>
                                     <i className="fas fa-arrow-right"></i>
                                 </Link>

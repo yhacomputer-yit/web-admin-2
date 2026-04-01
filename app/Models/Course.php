@@ -36,9 +36,9 @@ class Course extends Model
         return $this->belongsToMany(Section::class, 'course_sections', 'course_id', 'section_id');
     }
 
-    public function course_type()
+    public function courseType()
     {
-        return $this->belongsToMany(course_type::class, 'type');
+        return $this->belongsTo(course_type::class, 'type');
     }
 
     public function projects()

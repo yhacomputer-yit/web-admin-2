@@ -181,15 +181,31 @@ class FrontendSectionController extends Controller
         ]);
     }
 
+    public function courseList(){
+        $data = $this->share();
+        
+        // Get all courses with their course types
+        $courses = Course::with('courseType')->orderBy('created_at', 'desc')->get();
+        
+        return inertia('CourseList', [
+            'courses' => $courses,
+            'prog' => $data['prog'],
+            'graph' => $data['graph'],
+            'ict' => $data['ict'],
+            'address' => $data['address'],
+        ]);
+    }
+
     public function course(Request $request, $id){
         $data = $this->share();
+        
 
         $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
         $course = Course::where('id', $id)->first();
 
         return inertia('CourseDetail', [
             'ict' => $data['ict'],
-            'course' => $course,
+            'course' => $course,  // This was missing - the course data
             'subjects' => $subjects,
             'address' => $data['address'],
             'prog' => $data['prog'],
