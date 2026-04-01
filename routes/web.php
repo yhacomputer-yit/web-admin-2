@@ -229,6 +229,8 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('admin')->group(function(){
     //Route::redirect('/', 'loginPage');
     Route::get('/loginPage', [AuthController::class, 'login'])->name('loginPage');
+    Route::post('/loginPage', [AuthController::class, 'loginProcess'])->name('admin.login.process');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
     Route::get('/registerPage', [AuthController::class, 'register'])->name('registerPage');
 });
 

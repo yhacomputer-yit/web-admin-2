@@ -11,11 +11,21 @@
     <div class="row d-flex align-items-center justify-content-center">
         <div class="col-md-5 ">
 
-            <form class="border p-3 border-rounded shadow bg-white" action="{{ route('loginPage ') }}" method="POST">
+            <form class="border p-3 border-rounded shadow bg-white" action="{{ route('loginPage') }}" method="POST">
 
               <h4>Login</h4>
               <hr>
                 @csrf
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <!-- email  -->
                 <div class="mb-3">
                   <label class="form-label" for="">Email</label>
@@ -27,7 +37,7 @@
                       class="form-control"
                       placeholder="john.doe"
                       name="email"/>
-                    <span id="basic-icon-default-email2" class="input-group-text">@example.com</span>
+                    <span id="basic-icon-default-email2" class="input-group-text">@yha-edu.tech</span>
                   </div>
                 </div>
                 <!-- Password  -->

@@ -174,7 +174,7 @@ export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
                         <Link className={`nav-link ${isActive('/about') ? 'active' : ''}`} href="/about"> About Us</Link>
                     </li>
                     <li className="nav-item">
-                        <Link href="/login" className="login-btn">
+                        <Link href="/admin/loginPage" className="login-btn">
                             <i className="fas fa-sign-in-alt"></i>
                             <span>Login</span>
                         </Link>
