@@ -278,56 +278,7 @@
 }
 
 .frontend-page section.main {
-    padding-top: 120px !important;
-}
-
-/* Specific fix for Homepage component */
-.frontend-page > div:first-child,
-.frontend-page .hero-section,
-.frontend-page .main-content {
-    padding-top: 120px !important;
-}
-
-/* Additional fix for all pages with fixed navbar */
-body.has-fixed-navbar section.main,
-body.has-fixed-navbar .main-content,
-body.has-fixed-navbar .container-fluid {
-    padding-top: 120px !important;
-}
-
-/* Specific fix for project pages */
-.project-page .main,
-.project-page .main-content,
-.project-page section,
-.frontend-page .project-section {
-    padding-top: 120px !important;
-}
-
-/* Universal fix for any page with fixed navbar */
-.navbar-spacer {
-    padding-top: 120px !important;
-}
-
-/* Fix for all main content areas */
-.main-content,
-.content-wrapper,
-.page-content {
-    padding-top: 120px !important;
-}
-
-/* Ensure proper spacing for all sections */
-section {
-    scroll-margin-top: 120px;
-}
-
-/* Additional fix for Homepage specifically */
-.frontend-page {
-    padding-top: 120px !important;
-}
-
-.frontend-page .container,
-.frontend-page .container-fluid {
-    padding-top: 0 !important;
+    padding-top: 80px !important;
 }
 
 @media (max-width: 992px) {
@@ -391,18 +342,7 @@ section {
     }
 
     .frontend-page .main {
-        padding-top: 140px !important;
-    }
-    
-    .project-page .main,
-    .project-page .main-content,
-    .project-page section {
-        padding-top: 140px !important;
-    }
-    
-    body.has-fixed-navbar section.main,
-    body.has-fixed-navbar .main-content {
-        padding-top: 140px !important;
+        padding-top: 100px !important;
     }
 
     .frontend-page .tech-university-hero {
