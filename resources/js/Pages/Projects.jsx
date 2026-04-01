@@ -1,8 +1,22 @@
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
 export default function Projects({ projects, prog, graph, ict, address }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const projectsPerPage = 4;
+    
+    // Handle projects data structure
+    const projectsData = Array.isArray(projects) ? projects : (projects?.data || []);
+    const totalPages = Math.ceil(projectsData.length / projectsPerPage);
+    
+    // Pagination logic
+    const indexOfLastProject = currentPage * projectsPerPage;
+    const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+    const currentProjects = projectsData.slice(indexOfFirstProject, indexOfLastProject);
+    
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
@@ -218,21 +232,50 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                     margin-top: 3rem;
                 }
 
-                .pagination .page-link {
-                    color: #ff6b01;
-                    border: 1px solid #ff6b01;
-                    margin: 0 0.2rem;
+                .pagination-container .btn {
+                    min-width: 40px;
+                    height: 40px;
+                    padding: 0.5rem 0.75rem;
                     border-radius: 8px;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
                 }
 
-                .pagination .page-item.active .page-link {
-                    background: #ff6b01;
+                .pagination-container .btn:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                }
+
+                .pagination-container .btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                .pagination-container .btn-primary {
+                    background: linear-gradient(135deg, #ff6b01, #ffb347);
                     border-color: #ff6b01;
                     color: white;
                 }
 
-                .pagination .page-link:hover {
+                .pagination-container .btn-outline-primary {
+                    background: transparent;
+                    border-color: #ff6b01;
+                    color: #ff6b01;
+                }
+
+                .pagination-container .btn-outline-primary:hover {
                     background: #ff6b01;
+                    color: white;
+                }
+
+                .pagination-container .btn-outline-secondary {
+                    background: transparent;
+                    border-color: #6c757d;
+                    color: #6c757d;
+                }
+
+                .pagination-container .btn-outline-secondary:hover:not(:disabled) {
+                    background: #6c757d;
                     color: white;
                 }
 
@@ -315,66 +358,100 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                     </div>
 
                     <div className="row" id="projects-container">
-                        {(() => {
-                            const projectsData = Array.isArray(projects) ? projects : (projects?.data || []);
-                            return projectsData && projectsData.length > 0 ? (
-                                projectsData.map((project) => (
-                                    <div key={project.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                                        <div className="project-card">
-                                            <img src={`/storage/${project.image}`} className="project-image" alt={project.title} />
-                                            <div className="project-content">
-                                                <h5 className="project-title">
-                                                    <Link href={`/yha/project/detail/${project.id}`} className="project-title-link">{project.title}</Link>
-                                                </h5>
-                                                <div className="project-course">
-                                                    <i className="fa-solid fa-graduation-cap"></i>
-                                                    <span>{project.course?.name}</span>
-                                                </div>
-                                                <p className="project-description">{project.desc}</p>
-                                                <div className="project-links">
-                                                    {project.github ? (
-                                                        <a href={project.github} className="project-link github-link" target="_blank" rel="noopener noreferrer">
-                                                            <i className="fa-brands fa-github"></i>
-                                                            <span>GitHub</span>
-                                                        </a>
-                                                    ) : (
-                                                        <span className="project-link github-link disabled">
-                                                            <i className="fa-brands fa-github"></i>
-                                                            <span>GitHub</span>
-                                                        </span>
-                                                    )}
-                                                    {project.demo ? (
-                                                        <a href={project.demo} className="project-link demo-link" target="_blank" rel="noopener noreferrer">
-                                                            <i className="fa-solid fa-play"></i>
-                                                            <span>Live Demo</span>
-                                                        </a>
-                                                    ) : (
-                                                        <span className="project-link demo-link disabled">
-                                                            <i className="fa-solid fa-play"></i>
-                                                            <span>Live Demo</span>
-                                                        </span>
-                                                    )}
-                                                </div>
+                        {currentProjects && currentProjects.length > 0 ? (
+                            currentProjects.map((project) => (
+                                <div key={project.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div className="project-card">
+                                        <img src={`/storage/${project.image}`} className="project-image" alt={project.title} />
+                                        <div className="project-content">
+                                            <h5 className="project-title">
+                                                <Link href={`/yha/project/detail/${project.id}`} className="project-title-link">{project.title}</Link>
+                                            </h5>
+                                            <div className="project-course">
+                                                <i className="fa-solid fa-graduation-cap"></i>
+                                                <span>{project.course?.name || 'Student Project'}</span>
+                                            </div>
+                                            <p className="project-description">{project.desc || project.description || 'Project description'}</p>
+                                            <div className="project-links">
+                                                {project.github ? (
+                                                    <a href={project.github} className="project-link github-link" target="_blank" rel="noopener noreferrer">
+                                                        <i className="fa-brands fa-github"></i>
+                                                        <span>GitHub</span>
+                                                    </a>
+                                                ) : (
+                                                    <span className="project-link github-link disabled">
+                                                        <i className="fa-brands fa-github"></i>
+                                                        <span>GitHub</span>
+                                                    </span>
+                                                )}
+                                                {project.demo ? (
+                                                    <a href={project.demo} className="project-link demo-link" target="_blank" rel="noopener noreferrer">
+                                                        <i className="fa-solid fa-play"></i>
+                                                        <span>Live Demo</span>
+                                                    </a>
+                                                ) : (
+                                                    <span className="project-link demo-link disabled">
+                                                        <i className="fa-solid fa-play"></i>
+                                                        <span>Live Demo</span>
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <div className="col-12">
-                                    <div className="empty-state">
-                                        <i className="fa-solid fa-code-branch"></i>
-                                        <h3>Coming Soon!</h3>
-                                        <p>We're working on some amazing projects. Check back soon to see what our students have been creating!</p>
-                                    </div>
                                 </div>
-                            );
-                        })()}
+                            ))
+                        ) : (
+                            <div className="col-12">
+                                <div className="empty-state">
+                                    <i className="fa-solid fa-code-branch"></i>
+                                    <h3>No Projects Found</h3>
+                                    <p>There are no projects to display on this page.</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Pagination */}
-                    {projects && (projects.links || (typeof projects === 'object' && projects !== null && 'links' in projects)) && (
+                    {(totalPages > 1 || (projectsData && projectsData.length > 0)) && (
                         <div className="pagination-container">
-                            <div dangerouslySetInnerHTML={{ __html: projects.links }} />
+                            <div className="d-flex justify-content-center align-items-center gap-2">
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={() => paginate(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                >
+                                    <i className="fa-solid fa-chevron-left"></i>
+                                </button>
+
+                                <div className="d-flex gap-1">
+                                    {[...Array(totalPages)].map((_, index) => (
+                                        <button
+                                            key={index + 1}
+                                            className={`btn ${currentPage === index + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                                            onClick={() => paginate(index + 1)}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={() => paginate(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <i className="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Pagination Info */}
+                    {(totalPages > 1 || (projectsData && projectsData.length > 0)) && (
+                        <div className="text-center mt-3">
+                            <small className="text-muted">
+                                Showing {indexOfFirstProject + 1}-{Math.min(indexOfLastProject, projectsData.length)} of {projectsData.length} projects
+                            </small>
                         </div>
                     )}
                 </div>

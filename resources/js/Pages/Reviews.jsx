@@ -1,8 +1,22 @@
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
 export default function Reviews({ reviews, rating, sort, prog, graph, ict, address }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const reviewsPerPage = 6;
+    
+    // Handle reviews data structure
+    const reviewsData = Array.isArray(reviews) ? reviews : (reviews?.data || []);
+    const totalPages = Math.ceil(reviewsData.length / reviewsPerPage);
+    
+    // Pagination logic
+    const indexOfLastReview = currentPage * reviewsPerPage;
+    const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+    const currentReviews = reviewsData.slice(indexOfFirstReview, indexOfLastReview);
+    
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
@@ -242,6 +256,59 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                     }
                 }
 
+                .pagination-container {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 3rem;
+                }
+
+                .pagination-container .btn {
+                    min-width: 40px;
+                    height: 40px;
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 8px;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+
+                .pagination-container .btn:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                }
+
+                .pagination-container .btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                .pagination-container .btn-primary {
+                    background: linear-gradient(135deg, #ff6b01, #ffb347);
+                    border-color: #ff6b01;
+                    color: white;
+                }
+
+                .pagination-container .btn-outline-primary {
+                    background: transparent;
+                    border-color: #ff6b01;
+                    color: #ff6b01;
+                }
+
+                .pagination-container .btn-outline-primary:hover {
+                    background: #ff6b01;
+                    color: white;
+                }
+
+                .pagination-container .btn-outline-secondary {
+                    background: transparent;
+                    border-color: #6c757d;
+                    color: #6c757d;
+                }
+
+                .pagination-container .btn-outline-secondary:hover:not(:disabled) {
+                    background: #6c757d;
+                    color: white;
+                }
+
                 @media (max-width: 576px) {
                     .reviews-hero h1 {
                         font-size: 1.5rem;
@@ -268,9 +335,9 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
             {/* Reviews Content */}
             <section className="main">
                 <div className="container">
-                    {reviews && reviews.data && reviews.data.length > 0 ? (
+                    {currentReviews && currentReviews.length > 0 ? (
                         <>
-                            {reviews.data.map((review, index) => (
+                            {currentReviews.map((review, index) => (
                                 <div key={review.id} className="review-card">
                                     <div className="row g-0 align-items-center">
                                         {index % 2 === 0 ? (
@@ -342,27 +409,49 @@ export default function Reviews({ reviews, rating, sort, prog, graph, ict, addre
                                 </div>
                             ))}
 
-                            <div className="pagination-container mb-3">
-                                {reviews.links && reviews.links.length > 0 ? (
-                                    <nav aria-label="Reviews pagination">
-                                        <ul className="pagination">
-                                            {reviews.links.map((link, index) => (
-                                                <li key={index} className={`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}>
-                                                    {link.url ? (
-                                                        <Link href={link.url} className="page-link">
-                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
-                                                        </Link>
-                                                    ) : (
-                                                        <span className="page-link">
-                                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
-                                                        </span>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </nav>
-                                ) : null}
+                            {/* Pagination */}
+                    {(totalPages > 1 || (reviewsData && reviewsData.length > 0)) && (
+                        <div className="pagination-container">
+                            <div className="d-flex justify-content-center align-items-center gap-2">
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={() => paginate(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                >
+                                    <i className="fa-solid fa-chevron-left"></i>
+                                </button>
+
+                                <div className="d-flex gap-1">
+                                    {[...Array(totalPages)].map((_, index) => (
+                                        <button
+                                            key={index + 1}
+                                            className={`btn ${currentPage === index + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                                            onClick={() => paginate(index + 1)}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={() => paginate(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <i className="fa-solid fa-chevron-right"></i>
+                                </button>
                             </div>
+                        </div>
+                    )}
+
+                    {/* Pagination Info */}
+                    {(totalPages > 1 || (reviewsData && reviewsData.length > 0)) && (
+                        <div className="text-center mt-3">
+                            <small className="text-muted">
+                                Showing {indexOfFirstReview + 1}-{Math.min(indexOfLastReview, reviewsData.length)} of {reviewsData.length} reviews
+                            </small>
+                        </div>
+                    )}
                         </>
                     ) : (
                         <div className="empty-state">

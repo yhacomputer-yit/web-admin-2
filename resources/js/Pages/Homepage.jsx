@@ -20,8 +20,6 @@ export default function Homepage({
     const [typedText, setTypedText] = useState('');
     const [typingKey, setTypingKey] = useState(0);
     const [activeFilter, setActiveFilter] = useState('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const projectsPerPage = 6;
     const fullText = "Unlock your full potential through curiosity";
     const { url } = usePage();
 
@@ -96,14 +94,6 @@ export default function Homepage({
         if (category === 'all') return monthliesData.length;
         return monthliesData.filter(course => course.category === category).length;
     };
-
-    // Pagination logic for projects
-    const indexOfLastProject = currentPage * projectsPerPage;
-    const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-    const currentProjects = projects ? projects.slice(indexOfFirstProject, indexOfLastProject) : [];
-    const totalPages = projects ? Math.ceil(projects.length / projectsPerPage) : 0;
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     // FAQ Accordion functionality
     const toggleFaq = (index) => {
@@ -532,29 +522,30 @@ export default function Homepage({
 
                     {/* Modern Projects Grid */}
                     <div className="row g-4">
-                        {currentProjects && currentProjects.length > 0 ? (
-                            currentProjects.map((project) => (
-                                <div key={project.id} className="col-xl-4 col-lg-4 col-md-6">
+                        {projects && projects.length > 0 ? (
+                            projects.map((project, index) => (
+                                <div key={project.id || index} className="col-xl-4 col-lg-4 col-md-6">
                                     <div className="modern-project-card">
                                         {/* Project Image */}
                                         <div className="modern-project-image-container">
                                             <img
-                                                src={`/storage/${project.image}`}
-                                                alt={project.title}
+                                                src={project.image ? `/storage/${project.image}` : '/placeholder.jpg'}
+                                                alt={project.title || 'Project'}
                                                 className="modern-project-image"
+                                                onError={(e) => { e.target.src = '/placeholder.jpg'; }}
                                             />
                                             <div className="modern-project-overlay">
                                                 <div className="modern-project-category">
-                                                    {project.course?.name || 'Student Work'}
+                                                    {typeof project.course?.name === 'string' ? project.course.name : (project.category || 'Student Work')}
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Project Content */}
                                         <div className="modern-project-content">
-                                            <h3 className="modern-project-title">{project.title}</h3>
+                                            <h3 className="modern-project-title">{typeof project.title === 'string' ? project.title : 'Project Title'}</h3>
                                             <p className="modern-project-description">
-                                                {project.desc}
+                                                {typeof (project.desc || project.description) === 'string' ? (project.desc || project.description) : 'Project description'}
                                             </p>
                                         </div>
 
@@ -594,45 +585,6 @@ export default function Homepage({
                             </div>
                         )}
                     </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="projects-pagination">
-                            <div className="pagination-container">
-                                <button
-                                    className="pagination-btn"
-                                    onClick={() => paginate(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                >
-                                    <i className="fas fa-chevron-left"></i>
-                                </button>
-
-                                <div className="pagination-numbers">
-                                    {[...Array(totalPages)].map((_, index) => (
-                                        <button
-                                            key={index + 1}
-                                            className={`pagination-number ${currentPage === index + 1 ? 'active' : ''}`}
-                                            onClick={() => paginate(index + 1)}
-                                        >
-                                            {index + 1}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <button
-                                    className="pagination-btn"
-                                    onClick={() => paginate(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                >
-                                    <i className="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-
-                            <div className="pagination-info">
-                                <span>Showing {indexOfFirstProject + 1}-{Math.min(indexOfLastProject, projects?.length || 0)} of {projects?.length || 0} projects</span>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </section>
 
@@ -910,7 +862,7 @@ export default function Homepage({
             )}
 
             {/* Contact Section */}
-            <section id="contact" className="py-5 bg-white" style={{borderTop: '2px solid #f3f3f3'}}>
+            <section id="contact" className="py-5 bg-white" style={{borderTop: '1px solid #f8f9fa', paddingTop: '6rem', paddingBottom: '6rem'}}>
                 <div className="container">
                     <div className="row g-4 align-items-stretch">
                         <div className="mb-4 col-lg-6 col-12">
