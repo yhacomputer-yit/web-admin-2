@@ -68,28 +68,49 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    background: #ffffff;
-    color: var(--primary-orange);
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #ff6b01 0%, #ff852d 100%);
+    color: #ffffff;
     text-decoration: none;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 6px var(--shadow-orange);
-    border: 1.5px solid var(--primary-orange);
-    min-width: 80px;
+    box-shadow: 0 4px 15px rgba(255, 107, 1, 0.3);
+    border: none;
+    min-width: 90px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.login-btn:hover::before {
+    left: 100%;
 }
 
 .login-btn:hover {
-    background: var(--navbar-gradient);
+    background: linear-gradient(135deg, #ff852d 0%, #ff6b01 100%);
     color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 1, 0.4);
+}
+
+.login-btn:active {
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px var(--shadow-orange);
-    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(255, 107, 1, 0.3);
 }
 
 .login-btn i {
@@ -257,7 +278,56 @@
 }
 
 .frontend-page section.main {
-    padding-top: 80px !important;
+    padding-top: 120px !important;
+}
+
+/* Specific fix for Homepage component */
+.frontend-page > div:first-child,
+.frontend-page .hero-section,
+.frontend-page .main-content {
+    padding-top: 120px !important;
+}
+
+/* Additional fix for all pages with fixed navbar */
+body.has-fixed-navbar section.main,
+body.has-fixed-navbar .main-content,
+body.has-fixed-navbar .container-fluid {
+    padding-top: 120px !important;
+}
+
+/* Specific fix for project pages */
+.project-page .main,
+.project-page .main-content,
+.project-page section,
+.frontend-page .project-section {
+    padding-top: 120px !important;
+}
+
+/* Universal fix for any page with fixed navbar */
+.navbar-spacer {
+    padding-top: 120px !important;
+}
+
+/* Fix for all main content areas */
+.main-content,
+.content-wrapper,
+.page-content {
+    padding-top: 120px !important;
+}
+
+/* Ensure proper spacing for all sections */
+section {
+    scroll-margin-top: 120px;
+}
+
+/* Additional fix for Homepage specifically */
+.frontend-page {
+    padding-top: 120px !important;
+}
+
+.frontend-page .container,
+.frontend-page .container-fluid {
+    padding-top: 0 !important;
 }
 
 @media (max-width: 992px) {
@@ -300,14 +370,19 @@
     }
     
     .login-btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 11px;
-        min-width: 40px;
-        gap: 0.3rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 12px;
+        min-width: 50px;
+        gap: 0.4rem;
+        border-radius: 6px;
     }
 
     .login-btn span {
         display: none; /* Hide text on mobile, show only icon */
+    }
+    
+    .login-btn i {
+        font-size: 12px;
     }
     
     .tech-university-navbar .logo img {
@@ -316,7 +391,18 @@
     }
 
     .frontend-page .main {
-        padding-top: 100px !important;
+        padding-top: 140px !important;
+    }
+    
+    .project-page .main,
+    .project-page .main-content,
+    .project-page section {
+        padding-top: 140px !important;
+    }
+    
+    body.has-fixed-navbar section.main,
+    body.has-fixed-navbar .main-content {
+        padding-top: 140px !important;
     }
 
     .frontend-page .tech-university-hero {

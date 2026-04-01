@@ -225,12 +225,17 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+// unified login routes for all users
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// unified register routes for all users
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
+
 // admin register and login middleware
 Route::prefix('admin')->group(function(){
-    //Route::redirect('/', 'loginPage');
-    Route::get('/loginPage', [AuthController::class, 'login'])->name('loginPage');
-    Route::post('/loginPage', [AuthController::class, 'loginProcess'])->name('admin.login.process');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
     Route::get('/registerPage', [AuthController::class, 'register'])->name('registerPage');
 });
 

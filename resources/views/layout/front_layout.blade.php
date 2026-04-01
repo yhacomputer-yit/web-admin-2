@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('css/f_home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/f_course_menu.css') }}">
     <link rel="stylesheet" href="{{ asset('css/f_footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/login-modal.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -542,16 +543,16 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{route('user.about')}}"><i class="fa-solid fa-circle-info"></i> About Us</a>
             </li>
-            {{-- <li class="nav-item d-lg-none">
+            <li class="nav-item d-lg-none">
                 <a class="login-btn" href="/login">
                     <i class="fa-solid fa-user"></i> Login
                 </a>
-            </li> --}}
+            </li>
 
         </ul>
-        {{-- <a class="login-btn d-none d-lg-flex" href="/login">
+        <a class="login-btn d-none d-lg-flex" href="/login">
             <i class="fa-solid fa-user"></i> Login
-        </a> --}}
+        </a>
     </nav>
     <script>
         // Hamburger menu toggle

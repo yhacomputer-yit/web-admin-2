@@ -1,5 +1,6 @@
 @import './components/navigation.css';
 @import './components/tech-hero.css';
+@import './components/login-modal.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
