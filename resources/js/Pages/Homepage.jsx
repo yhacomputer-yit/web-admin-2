@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
+import '../../css/pages/homepage.css';
 
 export default function Homepage({
     abouts,
