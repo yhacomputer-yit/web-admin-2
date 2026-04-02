@@ -148,15 +148,20 @@
                                         <td>{{ $class->name }}</td>
                                         <td>{{ $class->duration }} hr</td>
                                         <td class="w-25">
-                                            {{-- List of Instructors --}}
-                                            @foreach ($class->subjects as $subject)
-                                                <div class="rounded-pill d-inline text-white py-1 px-2 mx-1"
-                                                style="
-                                                    background-color: rgba({{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, 0.8);
-                                                ">
-                                                    {{ $subject->name }}
-                                                </div>
-                                            @endforeach
+                                           
+                                            {{-- List of Subjects --}}
+                                            @if(count($class->subjects) > 0)
+                                                @foreach ($class->subjects as $subject)
+                                                    <div class="rounded-pill d-inline text-white py-1 px-2 mx-1 mb-1"
+                                                        style="
+                                                            background-color: rgba({{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, 0.8);
+                                                            ">
+                                                        {{ $subject->name }}
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">No subjects assigned</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">

@@ -62,9 +62,8 @@ class AdminController extends Controller
         $monthlies = Monthly::with(['course', 'section'])
                             ->orderBy('updated_at', 'desc')
                             ->paginate(5, ['*'], 'monthly');
-        // fetch -> distinct teachers and subjects by courses table
-        $classes = Course::whereHas('subjects.teachers')
-        ->with(['subjects' => function ($query) {
+        // fetch all courses with their subjects
+        $classes = Course::with(['subjects' => function ($query) {
             $query->select('subjects.*')
                 ->distinct()
                 ->selectRaw('subjects.id, subjects.name, subjects.created_at, subjects.updated_at');
