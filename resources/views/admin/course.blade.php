@@ -148,10 +148,15 @@
                                         <td>{{ $class->name }}</td>
                                         <td>{{ $class->duration }} hr</td>
                                         <td class="w-25">
-                                           
-                                            {{-- List of Subjects --}}
+                                            {{-- List of Subjects with Modal UX --}}
                                             @if(count($class->subjects) > 0)
-                                                @foreach ($class->subjects as $subject)
+                                                {{-- Show first 2 subjects directly --}}
+                                                @php
+                                                    $visibleSubjects = $class->subjects->take(2);
+                                                    $hiddenSubjectsCount = $class->subjects->count() - 2;
+                                                @endphp
+                                                
+                                                @foreach ($visibleSubjects as $subject)
                                                     <div class="rounded-pill d-inline text-white py-1 px-2 mx-1 mb-1"
                                                         style="
                                                             background-color: rgba({{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, {{ mt_rand(0, 255) }}, 0.8);
@@ -159,6 +164,17 @@
                                                         {{ $subject->name }}
                                                     </div>
                                                 @endforeach
+                                                
+                                                {{-- Show "See All" button if there are more subjects --}}
+                                                @if($hiddenSubjectsCount > 0)
+                                                    <button type="button" 
+                                                        class="rounded-pill d-inline text-white py-1 px-2 mx-1 mb-1 border-0"
+                                                        style="background-color: #6c757d; cursor: pointer; font-size: 0.8rem;"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#subjectsModal{{ $class->id }}">
+                                                        <i class="bx bx-plus"></i> See All ({{ $hiddenSubjectsCount + 2 }})
+                                                    </button>
+                                                @endif
                                             @else
                                                 <span class="text-muted">No subjects assigned</span>
                                             @endif
@@ -269,5 +285,49 @@
 
             <a style="background-color: #ff6c0f; color:white;" href="{{route('monthly.add')}}" class="btn"><i class="bx bx-plus"></i>Monthly Courses</a>
 
-    </main>
+        </main>
+        
+        {{-- Subject Modals --}}
+        @foreach ($classes as $class)
+            @if(count($class->subjects) > 2)
+                <!-- Modal for Course {{ $class->id }} -->
+                <div class="modal fade" id="subjectsModal{{ $class->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="bx bx-book-open me-2"></i>All Subjects for {{ $class->name }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <?php $subjectIndex = 0; ?>
+                                    @foreach ($class->subjects as $subject)
+                                        <?php $subjectIndex++; ?>
+                                        <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                            <div class="card border-0 shadow-sm">
+                                                <div class="card-body text-center p-2">
+                                                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-1" style="width: 35px; height: 35px; background-color: #6c757d; color: white; font-weight: bold; font-size: 0.8rem;">
+                                                        {{ substr($subject->name, 0, 1) }}
+                                                    </div>
+                                                    <h6 class="card-title mb-0" style="font-size: 0.85rem;">{{ Str::limit($subject->name, 8) }}</h6>
+                                                    <small class="text-muted" style="font-size: 0.7rem;">ID: #{{ $subject->id }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <a href="{{ route('class.edit', $class->id) }}" class="btn btn-primary">
+                                    <i class="bx bx-edit me-1"></i>Edit Subjects
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
 @endsection
