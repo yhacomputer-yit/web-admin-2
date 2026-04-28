@@ -2,9 +2,165 @@
 .tech-university-hero {
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     overflow: hidden;
+}
+
+/* Mobile specific hero section fixes */
+@media (max-width: 768px) {
+    .tech-university-hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        align-items: stretch;
+        padding: 0;
+    }
+    
+    .hero-video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: -1;
+    }
+    
+    .hero-slider-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: -2;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    
+    .hero-text-content {
+        padding: 0 1rem;
+        max-width: 90%;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+    
+    .hero-description {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+        padding: 0;
+    }
+    
+    .hero-actions {
+        gap: 1rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.65rem;
+        width: 100%;
+        max-width: 120px;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .tech-university-hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        align-items: stretch;
+        padding: 0;
+    }
+    
+    .hero-video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: -1;
+    }
+    
+    .hero-slider-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: -2;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    
+    .hero-text-content {
+        padding: 0 0.5rem;
+        max-width: 95%;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.2;
+    }
+    
+    .hero-description {
+        font-size: 0.8rem;
+        margin-bottom: 1.2rem;
+        line-height: 1.3;
+        padding: 0;
+    }
+    
+    .hero-actions {
+        gap: 0.8rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.6rem;
+        width: 100%;
+        max-width: 100px;
+        justify-content: center;
+        gap: 0.2rem;
+    }
 }
 
 .hero-video-background {
@@ -109,6 +265,44 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
+}
+
+/* Mobile specific fixes for background image */
+@media (max-width: 768px) {
+    .slide-background {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .slide-background img {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        object-fit: cover;
+        object-position: center;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+@media (max-width: 576px) {
+    .slide-background {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .slide-background img {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        object-fit: cover;
+        object-position: center;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
 }
 
 .slide-gradient {
@@ -127,15 +321,17 @@
 }
 
 .hero-text-content {
-    max-width: 800px;
+    max-width: 100%;
+    text-align: center;
+    padding: 0 1rem;
 }
 
 .hero-title {
     font-size: 4rem;
     font-weight: 800;
-    margin-bottom: 1.5rem;
     line-height: 1.1;
     color: white;
+    margin-top: 2rem;
 }
 
 .title-line {
@@ -151,13 +347,16 @@
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 2.5rem;
     line-height: 1.6;
-    max-width: 600px;
+    max-width: 100%;
+    padding: auto;
 }
 
 .hero-actions {
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
+    justify-content: center;
+
 }
 
 .hero-btn {
@@ -777,7 +976,7 @@
     .hero-title {
         font-size: 3.5rem;
     }
-    
+
     .hero-description {
         font-size: 1.2rem;
     }
@@ -787,15 +986,15 @@
     .hero-title {
         font-size: 3rem;
     }
-    
+
     .hero-description {
         font-size: 1.1rem;
     }
-    
+
     .hero-actions {
         gap: 1rem;
     }
-    
+
     .hero-btn {
         padding: 0.8rem 1.5rem;
         font-size: 0.9rem;
@@ -806,50 +1005,50 @@
     .hero-title {
         font-size: 2.5rem;
     }
-    
+
     .hero-description {
         font-size: 1rem;
     }
-    
+
     .hero-actions {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .hero-btn {
         justify-content: center;
         padding: 0.7rem 1.2rem;
         font-size: 0.85rem;
     }
-    
+
     .course-filter-buttons {
         gap: 0.5rem;
     }
-    
+
     .filter-btn {
         padding: 0.6rem 1rem;
         font-size: 0.8rem;
     }
-    
+
     .modern-course-content,
     .modern-project-content {
         padding: 1.5rem;
     }
-    
+
     .modern-course-title,
     .modern-project-title {
         font-size: 1.2rem;
     }
-    
+
     .modern-course-description,
     .modern-project-description {
         font-size: 0.9rem;
     }
-    
+
     .faq-question {
         padding: 1rem 1.5rem;
     }
-    
+
     .faq-answer-content {
         padding: 0 1.5rem 1rem 1.5rem;
     }
@@ -859,68 +1058,68 @@
     .hero-title {
         font-size: 2rem;
     }
-    
+
     .hero-description {
         font-size: 0.9rem;
     }
-    
+
     .modern-course-content,
     .modern-project-content {
         padding: 1rem;
     }
-    
+
     .modern-course-title,
     .modern-project-title {
         font-size: 1.1rem;
     }
-    
+
     .modern-course-description,
     .modern-project-description {
         font-size: 0.85rem;
     }
-    
+
     .modern-course-meta,
     .modern-project-meta {
         flex-direction: column;
         gap: 1rem;
         align-items: stretch;
     }
-    
+
     .modern-action-btn,
     .modern-browse-btn {
         justify-content: center;
     }
-    
+
     .project-actions {
         flex-direction: column;
     }
-    
+
     .modern-project-btn {
         justify-content: center;
     }
-    
+
     .faq-question {
         padding: 0.8rem 1rem;
     }
-    
+
     .faq-question-content h4 {
         font-size: 1rem;
     }
-    
+
     .faq-question-content p {
         font-size: 0.8rem;
     }
-    
+
     .faq-toggle {
         width: 35px;
         height: 35px;
         font-size: 0.9rem;
     }
-    
+
     .faq-answer-content {
         padding: 0 1rem 0.8rem 1rem;
     }
-    
+
     .faq-answer-content p,
     .faq-answer-content li {
         font-size: 0.8rem;
