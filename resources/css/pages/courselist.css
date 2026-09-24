@@ -26,7 +26,6 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
     color: white;
     padding: 0.6rem 1.8rem;
     border-radius: 50px;
@@ -35,9 +34,6 @@
     text-transform: uppercase;
     letter-spacing: 1.2px;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(255,107,53,0.25);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
 }
 
 .hit-title {
@@ -266,19 +262,19 @@
     .hit-title {
         font-size: 2rem;
     }
-    
+
     .hit-subtitle {
         font-size: 1rem;
     }
-    
+
     .course-content {
         padding: 1.5rem;
     }
-    
+
     .course-title {
         font-size: 1.2rem;
     }
-    
+
     .course-description {
         font-size: 0.9rem;
     }
@@ -288,28 +284,28 @@
     .hit-title {
         font-size: 1.8rem;
     }
-    
+
     .hit-subtitle {
         font-size: 0.95rem;
     }
-    
+
     .courses-grid {
         gap: 1rem;
     }
-    
+
     .course-content {
         padding: 1.2rem;
     }
-    
+
     .course-category {
         font-size: 0.75rem;
         padding: 0.3rem 0.8rem;
     }
-    
+
     .course-title {
         font-size: 1.1rem;
     }
-    
+
     .course-description {
         font-size: 0.85rem;
     }

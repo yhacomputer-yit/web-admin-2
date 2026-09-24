@@ -220,47 +220,18 @@ export default function Homepage({
                     </div>
                 </div>
 
-
-
                 {/* Hero Content */}
                 <div className="hero-content">
                     <div className="container">
                         <div className="hero-text-content">
                             <h1 className="hero-title">
                                 <span className="title-line">YHA Academy of Technology</span>
-                                {/* <span className="title-line highlight">With Technology</span> */}
                             </h1>
 
                             <p className="hero-description">
                                 Join YHA Computer Training Center to master programming, design, and ICT skills from industry experts.
                                 Transform your career with cutting-edge technology education.
                             </p>
-
-                            <div className="hero-actions">
-                                <Link href="/courses/" className="hero-btn primary">
-                                    <span className="btn-text">Explore Courses</span>
-                                    <i className="fas fa-arrow-right"></i>
-                                </Link>
-                                <Link href="/about" className="hero-btn secondary">
-                                    <i className="fas fa-play-circle"></i>
-                                    <span className="btn-text">Learn More</span>
-                                </Link>
-                            </div>
-
-                            {/* <div className="hero-stats">
-                                <div className="stat-item">
-                                    <span className="stat-number">20+</span>
-                                    <span className="stat-label">Courses</span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-number">1000+</span>
-                                    <span className="stat-label">Students</span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-number">50+</span>
-                                    <span className="stat-label">Batches</span>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -277,126 +248,19 @@ export default function Homepage({
                 </div>
             </section>
 
-            {/* About Section */}
-            {/* <section id="about1" className="py-5">
-                <div className="container">
-                    <div className="mb-4">
-                        <h3 className="typewriter-heading">
-                            <span id="typewriter-text" key={typingKey}>{typedText}<span className="typing-cursor">|</span></span>
-                        </h3>
-                    </div>
-                    <div className="flex-wrap row justify-content-center align-items-center g-5 flex-lg-nowrap">
-                        {abouts && abouts.length > 0 && (
-                            <div className="col-lg-6 d-flex justify-content-center">
-                                <div className="about-imgs-flex">
-                                    {abouts.slice(0, 3).map((about, index) => (
-                                        <div key={index} className="about-img-card-modern">
-                                            <img src={`/storage/${about.image}`} alt={`About image ${index+1}`} />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {aboutDesc && aboutDesc.length > 0 && (
-                            <div className="col-lg-6 d-flex justify-content-center">
-                                <div className="about-text-modern glass-effect">
-                                    <h2 className="mb-3">Welcome to YHA Programming Training Center!</h2>
-                                    <div className="section" dangerouslySetInnerHTML={{ __html: aboutDesc[0].desc }}></div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section> */}
-
-
-
-            {/* Student Numbers Section - Hidden */}
-            {/* <section id="stu_number">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 justify-content-end">
-                            <div className="card hidden1">
-                                <span>YHA</span>
-                                <h3 id="number" data-goal="20">0</h3>
-                                <p>courses</p>
-                            </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 justify-content-center">
-                            <div className="card hidden2">
-                                <span>YHA</span>
-                                <div className="d-flex">
-                                    <h3>1k+</h3>
-                                </div>
-                                <p>Students</p>
-                            </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 justify-content-start">
-                            <div className="card hidden3">
-                                <span>YHA</span>
-                                <div className="d-flex">
-                                    <h3 id="number" data-goal="50">0</h3>
-                                    <h3>+</h3>
-                                </div>
-                                <p>Batches</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section> */}
-
             {/* HIT Myanmar Style Course Section */}
             <section className="hit-courses-section py-5" id="course">
                 <div className="container">
                     {/* Section Header */}
-                    <div className="text-center mb-5">
-                        <div className="hit-badge">
-                            <i className="fas fa-code"></i>
-                            <span>OUR COURSES</span>
-                        </div>
-                        <div className="title-underline"></div>
-                        <p className="hit-subtitle">
-                            To master your skills of tomorrow, join our innovative e-learning platform today
-                        </p>
-                    </div>
+                    <div className="mb-1 section-header-left">
+                        <div className="hit-b">
 
-                    {/* Course Filter */}
-                    <div className="course-filter-container">
-                        <div className="course-filter-buttons">
-                            <button
-                                className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
-                                onClick={() => setActiveFilter('all')}
-                                data-count={getCourseCount('all')}
-                            >
-                                <span>All</span>
-                            </button>
-                            <button
-                                className={`filter-btn ${activeFilter === 'programming' ? 'active' : ''}`}
-                                onClick={() => setActiveFilter('programming')}
-                                data-count={getCourseCount('programming')}
-                            >
-                                <span>Programming</span>
-                            </button>
-                            <button
-                                className={`filter-btn ${activeFilter === 'graphic' ? 'active' : ''}`}
-                                onClick={() => setActiveFilter('graphic')}
-                                data-count={getCourseCount('graphic')}
-                            >
-                                <span>Graphic</span>
-                            </button>
-                            <button
-                                className={`filter-btn ${activeFilter === 'ict' ? 'active' : ''}`}
-                                onClick={() => setActiveFilter('ict')}
-                                data-count={getCourseCount('ict')}
-                            >
-                                <span>ICT</span>
-                            </button>
+                            <span>OUR COURSES</span>
                         </div>
                     </div>
 
                     {/* Modern Courses Grid */}
-                    <div className="row g-4">
+                    <div className="row g-2">
                         {filteredCourses && filteredCourses.length > 0 ? (
                             filteredCourses.map((monthly, index) => (
                                 <div key={monthly.id} className="col-xl-4 col-lg-4 col-md-6">
@@ -436,10 +300,10 @@ export default function Homepage({
                                             </div>
                                             <Link
                                                 href={`/course/${monthly.id}`}
-                                                className="modern-action-btn"
+                                                className="learnmore"
                                             >
-                                                <span>More Detail</span>
-                                                <i className="fas fa-arrow-right"></i>
+                                                <span>Learn More</span>
+                                                <i className="fas fa-arrow-right ms-2 learnmore"></i>
                                             </Link>
                                         </div>
                                     </div>
@@ -464,65 +328,56 @@ export default function Homepage({
                 </div>
             </section>
 
-            {/* Events Section */}
-            {/* <section className="mt-5 mb-5" id="event">
-                <div className="container">
-                    <div className="edu-glass-heading">
-                        <span className="edu-icon">
-                            <i className="fa-solid fa-calendar-days"></i>
-                        </span>
-                        <h3>Latest Events</h3>
-                        <div className="edu-subtitle">
-                            Stay updated with our latest workshops, seminars, and special events
+        {/* Statistics Section */}
+        <section className="modern-stats-section py-5">
+            <div className='container'>
+                <div className='row g-4'>
+                    <div className='col-lg-4 col-md-6'>
+                        <div className="modern-stat-card">
+                            <div className="stat-icon-wrapper">
+                                <i className="fas fa-user-group"></i>
+                            </div>
+                            <h3 className="stat-label">Total Students</h3>
+                            <div className="stat-number">909,999+</div>
+                            <div className="stat-description">Learning and growing with us</div>
                         </div>
                     </div>
-                    <div className="row w-100">
-                        {events && events.slice(0, 3).map((event) => (
-                            <div key={event.id} className="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                                <div className="edu-card event-card">
-                                    <img className="edu-card-img" src={`/storage/${event.image}`} alt={event.title} />
-                                    <div className="edu-card-body">
-                                        <h6 className="edu-card-title">{event.title}</h6>
-                                        <div className="mb-2 event-date">
-<i className="fa-solid fa-calendar-alt text-orange-primary"></i>
-                                            <span style={{fontSize: '14px', color: '#666'}}>
-                                                {new Date(event.edate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </span>
-                                        </div>
-                                        <p className="edu-card-desc clamped-text">{event.aboute?.replace(/<[^>]*>/g, '')}</p>
-                                        <div className="edu-card-footer">
-                                            <Link href={`/yha/eventDetail/${event.id}`} className="btn-uiverse">View Details</Link>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div className='col-lg-4 col-md-6'>
+                        <div className="modern-stat-card">
+                            <div className="stat-icon-wrapper">
+                                <i className="fas fa-laptop-code"></i>
                             </div>
-                        ))}
-                        {events && events.length > 3 && (
-                            <div className="mt-4 text-center">
-                                <Link href="/yha/event" className="btn-uiverse">View All Events</Link>
+                            <h3 className="stat-label">CS Students</h3>
+                            <div className="stat-number">99,999+</div>
+                            <div className="stat-description">Building the future of tech</div>
+                        </div>
+                    </div>
+                    <div className='col-lg-4 col-md-6'>
+                        <div className="modern-stat-card">
+                            <div className="stat-icon-wrapper">
+                                <i className="fas fa-book-open"></i>
                             </div>
-                        )}
+                            <h3 className="stat-label">Number of Courses</h3>
+                            <div className="stat-number">99+</div>
+                            <div className="stat-description">Comprehensive learning paths</div>
+                        </div>
                     </div>
                 </div>
-            </section> */}
+            </div>
+        </section>
 
             {/* Projects Section - Modern Design */}
             <section className="modern-projects-section py-5" id="projects">
                 <div className="container">
                     {/* Section Header */}
-                    <div className="text-center mb-5">
-                        <div className="hit-badge">
-                            <i className="fas fa-rocket"></i>
+                    <div className="mb-2 section-header-left">
+                        <div className="hit-b">
                             <span>STUDENT PROJECTS</span>
                         </div>
-                        <div className="title-underline"></div>
-                        <p className="hit-subtitle">
-                            Showcasing innovative projects created by our talented students
-                        </p>
                     </div>
 
                     {/* Modern Projects Grid */}
-                    <div className="row g-4">
+                    <div className="row g-2">
                         {projects && projects.length > 0 ? (
                             projects.map((project, index) => (
                                 <div key={project.id || index} className="col-xl-4 col-lg-4 col-md-6">
@@ -552,7 +407,7 @@ export default function Homepage({
 
                                         {/* Project Footer */}
                                         <div className="modern-project-meta">
-                                            <div className="project-actions">
+                                            {/* <div className="project-actions">
                                                 {project.github && (
                                                     <a href={project.github} className="modern-project-btn github-btn" target="_blank" rel="noopener noreferrer">
                                                         <i className="fab fa-github"></i>
@@ -565,7 +420,15 @@ export default function Homepage({
                                                         <span>Live</span>
                                                     </a>
                                                 )}
-                                            </div>
+                                            </div> */}
+                                             <Link
+                                                href={`/course/`}
+                                                className=""
+                                            >
+                                                <span className="learnmore">Learn More</span>
+
+                                                <i className="fas fa-arrow-right learnmore"></i>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -589,281 +452,49 @@ export default function Homepage({
                 </div>
             </section>
 
-            {/* FAQ Section - Modern Design */}
-            <section className="modern-faq-section py-5" id="faq">
-                <div className="container">
-                    {/* Section Header */}
-                    <div className="text-center mb-5">
-                        <div className="hit-badge">
-                            <i className="fas fa-question-circle"></i>
-                            <span>FAQ</span>
-                        </div>
-                        <div className="title-underline"></div>
-                        <p className="hit-subtitle">
-                            Find answers to common questions about our courses and services
-                        </p>
-                    </div>
 
-                    {/* Modern FAQ Accordion */}
-                    <div className="modern-faq-container">
-                        <div className="faq-item active">
-                            <div className="faq-question" onClick={() => toggleFaq(0)}>
-                                <div className="faq-question-content">
-                                    <h4>What courses does YHA offer?</h4>
-                                    <p>We offer comprehensive courses in programming, web development, graphic design, and ICT skills.</p>
-                                </div>
-                                <div className="faq-toggle">
-                                    <i className="fas fa-plus"></i>
-                                </div>
-                            </div>
-                            <div className="faq-answer">
-                                <div className="faq-answer-content">
-                                    <p>We offer a wide range of courses designed to meet different skill levels and career goals:</p>
-                                    <ul>
-                                        <li><strong>Programming:</strong> Python, JavaScript, Java, C++, and more</li>
-                                        <li><strong>Web Development:</strong> HTML, CSS, React, Node.js, PHP</li>
-                                        <li><strong>Graphic Design:</strong> Photoshop, Illustrator, UI/UX Design</li>
-                                        <li><strong>ICT Skills:</strong> Computer basics, networking, digital literacy</li>
-                                    </ul>
-                                    <p>All courses include hands-on projects and practical experience.</p>
-                                </div>
-                            </div>
-                        </div>
+            {/* ========== About Section (Homepage) ========== */}
+<section className="about-hero-section">
+    <div className="container">
+        <div className="about-hero-wrapper">
+            {/* Left - Logo Image */}
+            <div className="about-hero-image">
+                <img
+                    src="/image/logo/logo.png"
+                    alt="YHA Computer Training Center"
+                />
+            </div>
 
-                        <div className="faq-item">
-                            <div className="faq-question" onClick={() => toggleFaq(1)}>
-                                <div className="faq-question-content">
-                                    <h4>How can I enroll in a course?</h4>
-                                    <p>Multiple enrollment options available for your convenience.</p>
-                                </div>
-                                <div className="faq-toggle">
-                                    <i className="fas fa-plus"></i>
-                                </div>
-                            </div>
-                            <div className="faq-answer">
-                                <div className="faq-answer-content">
-                                    <p>Enrolling in our courses is simple and flexible:</p>
-                                    <ul>
-                                        <li><strong>Online Enrollment:</strong> Visit our website and complete the registration form</li>
-                                        <li><strong>In-Person Registration:</strong> Visit our center during business hours</li>
-                                        <li><strong>Phone Registration:</strong> Call our enrollment hotline</li>
-                                        <li><strong>Email Registration:</strong> Send us an email with your details</li>
-                                    </ul>
-                                    <p>Our staff will guide you through the process and help you choose the right course.</p>
-                                </div>
-                            </div>
-                        </div>
+            {/* Right - Content */}
+            <div className="about-hero-content">
+                <h1 className="about-hero-title">
+                    Learn about YHA Computer
+                </h1>
 
-                        <div className="faq-item">
-                            <div className="faq-question" onClick={() => toggleFaq(2)}>
-                                <div className="faq-question-content">
-                                    <h4>Are there any prerequisites for joining?</h4>
-                                    <p>Requirements vary depending on the course level.</p>
-                                </div>
-                                <div className="faq-toggle">
-                                    <i className="fas fa-plus"></i>
-                                </div>
-                            </div>
-                            <div className="faq-answer">
-                                <div className="faq-answer-content">
-                                    <p>Prerequisites depend on the course level:</p>
-                                    <ul>
-                                        <li><strong>Beginner Courses:</strong> No prior experience required</li>
-                                        <li><strong>Intermediate Courses:</strong> Basic understanding of the subject</li>
-                                        <li><strong>Advanced Courses:</strong> Previous experience or completion of prerequisite courses</li>
-                                    </ul>
-                                    <p>Each course description clearly outlines any requirements. Contact us if you're unsure about your eligibility.</p>
-                                </div>
-                            </div>
-                        </div>
+                <h2 className="about-hero-subtitle">
+                    YHA Computer Training Center
+                </h2>
 
-                        <div className="faq-item">
-                            <div className="faq-question" onClick={() => toggleFaq(3)}>
-                                <div className="faq-question-content">
-                                    <h4>Do you provide certificates?</h4>
-                                    <p>Yes, certificates are awarded upon course completion.</p>
-                                </div>
-                                <div className="faq-toggle">
-                                    <i className="fas fa-plus"></i>
-                                </div>
-                            </div>
-                            <div className="faq-answer">
-                                <div className="faq-answer-content">
-                                    <p>We provide comprehensive certification:</p>
-                                    <ul>
-                                        <li><strong>Completion Certificate:</strong> Awarded after successfully finishing the course</li>
-                                        <li><strong>Achievement Certificate:</strong> For outstanding performance</li>
-                                        <li><strong>Digital Certificates:</strong> Shareable on LinkedIn and other platforms</li>
-                                        <li><strong>Physical Certificates:</strong> Printed copies available upon request</li>
-                                    </ul>
-                                    <p>Our certificates are recognized by industry partners and can help advance your career.</p>
-                                </div>
-                            </div>
-                        </div>
+                <p className="about-hero-text">
+                    YHA Computer Training Center is a leading technology education
+                    institute dedicated to empowering students with practical skills
+                    in programming, design, data science, and ICT. Since our founding,
+                    we have been committed to delivering industry-relevant training
+                    that transforms careers and builds the next generation of tech
+                    professionals.
+                </p>
 
-                        <div className="faq-item">
-                            <div className="faq-question" onClick={() => toggleFaq(4)}>
-                                <div className="faq-question-content">
-                                    <h4>How can I contact support?</h4>
-                                    <p>Multiple support channels available for your convenience.</p>
-                                </div>
-                                <div className="faq-toggle">
-                                    <i className="fas fa-plus"></i>
-                                </div>
-                            </div>
-                            <div className="faq-answer">
-                                <div className="faq-answer-content">
-                                    <p>We're here to help through multiple channels:</p>
-                                    <ul>
-                                        <li><strong>Phone Support:</strong> Available during business hours</li>
-                                        <li><strong>Email Support:</strong> Response within 24 hours</li>
-                                        <li><strong>Live Chat:</strong> Available on our website</li>
-                                        <li><strong>In-Person Support:</strong> Visit our center</li>
-                                        <li><strong>Social Media:</strong> Message us on Facebook or Instagram</li>
-                                    </ul>
-                                    <p>Our support team is dedicated to helping you succeed in your learning journey.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-            </section>
-
-            {/* Reviews Section - Website-Inspired Design */}
-            {homeReviews && homeReviews.length > 0 && (
-                <section className="web-reviews-section py-5" id="reviews">
-                    <div className="container">
-                        {/* Section Header */}
-                        <div className="text-center mb-5">
-                            <div className="web-badge">
-                                <i className="fas fa-heart"></i>
-                                <span>STUDENT SUCCESS</span>
-                            </div>
-                            <h2 className="web-title">What Our Students Say</h2>
-                            <p className="web-subtitle">
-                                Real stories from real students who transformed their careers
-                            </p>
-                        </div>
-
-                        {/* Reviews Container */}
-                        <div className="web-reviews-wrapper">
-                            <div className="web-reviews-grid">
-                                {homeReviews.slice(0, 3).map((review, index) => (
-                                    <div key={review.id} className="web-review-card" data-index={index}>
-                                        <div className="web-review-header">
-                                            <div className="web-avatar-section">
-                                                <div className="web-avatar">
-                                                    {review.photo ? (
-                                                        <img src={`/storage/${review.photo}`} alt={review.name} />
-                                                    ) : (
-                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
-                                                    )}
-                                                </div>
-                                                <div className="web-verified-badge">
-                                                    <i className="fas fa-check-circle"></i>
-                                                </div>
-                                            </div>
-                                            <div className="web-review-meta">
-                                                <h4 className="web-student-name">{review.name}</h4>
-                                                <div className="web-rating-wrapper">
-                                                    <div className="web-stars">
-                                                        {[1,2,3,4,5].map((star) => (
-                                                            <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
-                                                        ))}
-                                                    </div>
-                                                    <span className="web-rating-text">{review.rating}.0</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="web-review-content">
-                                            <div className="web-quote-icon">
-                                                <i className="fas fa-quote-left"></i>
-                                            </div>
-                                            <p className="web-review-text">{review.review}</p>
-                                        </div>
-                                        
-                                        <div className="web-review-footer">
-                                            <div className="web-course-info">
-                                                <i className="fas fa-graduation-cap"></i>
-                                                <span>Completed Course</span>
-                                            </div>
-                                            <div className="web-date-info">
-                                                <i className="fas fa-clock"></i>
-                                                <span>Recently</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            
-                            {/* Additional Reviews Row */}
-                            <div className="web-reviews-grid web-reviews-offset">
-                                {homeReviews.slice(3, 6).map((review, index) => (
-                                    <div key={review.id} className="web-review-card" data-index={index + 3}>
-                                        <div className="web-review-header">
-                                            <div className="web-avatar-section">
-                                                <div className="web-avatar">
-                                                    {review.photo ? (
-                                                        <img src={`/storage/${review.photo}`} alt={review.name} />
-                                                    ) : (
-                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ff6b35&color=fff`} alt={review.name} />
-                                                    )}
-                                                </div>
-                                                <div className="web-verified-badge">
-                                                    <i className="fas fa-check-circle"></i>
-                                                </div>
-                                            </div>
-                                            <div className="web-review-meta">
-                                                <h4 className="web-student-name">{review.name}</h4>
-                                                <div className="web-rating-wrapper">
-                                                    <div className="web-stars">
-                                                        {[1,2,3,4,5].map((star) => (
-                                                            <i key={star} className={star <= review.rating ? "fas fa-star" : "far fa-star"}></i>
-                                                        ))}
-                                                    </div>
-                                                    <span className="web-rating-text">{review.rating}.0</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="web-review-content">
-                                            <div className="web-quote-icon">
-                                                <i className="fas fa-quote-left"></i>
-                                            </div>
-                                            <p className="web-review-text">{review.review}</p>
-                                        </div>
-                                        
-                                        <div className="web-review-footer">
-                                            <div className="web-course-info">
-                                                <i className="fas fa-graduation-cap"></i>
-                                                <span>Completed Course</span>
-                                            </div>
-                                            <div className="web-date-info">
-                                                <i className="fas fa-clock"></i>
-                                                <span>Recently</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* View All Button */}
-                        <div className="text-center mt-5">
-                            <Link href="/reviews" className="web-view-all">
-                                <span>View All Success Stories</span>
-                                <i className="fas fa-arrow-right"></i>
-                            </Link>
-                        </div>
-                    </div>
-                </section>
-            )}
+                <Link href="/about" className="learnmore">
+                    Read More
+                    <i className="fas fa-arrow-right ms-2"></i>
+                </Link>
+            </div>
+        </div>
+    </div>
+</section>
 
             {/* Contact Section */}
-            <section id="contact" className="py-5 bg-white" style={{borderTop: '1px solid #f8f9fa', paddingTop: '6rem', paddingBottom: '6rem'}}>
+            <section id="contact" className="pt-5" style={{borderTop: '1px solid #f8f9fa'}}>
                 <div className="container">
                     <div className="row g-4 align-items-stretch">
                         <div className="mb-4 col-lg-6 col-12">

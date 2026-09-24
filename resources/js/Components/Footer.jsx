@@ -5,7 +5,7 @@ export default function Footer({ address }) {
 
     return (
         <footer className="edu-footer">
-            <div className="container py-5">
+            <div className="container pt-5 pb-2">
                 <div className="text-center row gy-4 align-items-stretch text-lg-start">
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
                         <div className="mb-3 footer-brand">
@@ -16,8 +16,12 @@ export default function Footer({ address }) {
                         <h5 className="footer-title">Quick Links</h5>
                         <ul className="p-0 m-0 footer-links">
                             <li><Link href="/">Home</Link></li>
-                            <li><Link href="/courses/monthl">Courses</Link></li>
-                            <li><Link href="/event">Events</Link></li>
+                            <li><Link href="/courses">Web Development</Link></li>
+                            <li><Link href="/courses">Data Science and AI</Link></li>
+                            <li><Link href="/courses">Mobile Development</Link></li>
+                            <li><Link href="/courses">ICT</Link></li>
+                            <li><Link href="/project">Project</Link></li>
+                            <li><Link href="/about">About Us</Link></li>
                         </ul>
                     </div>
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
@@ -38,10 +42,10 @@ export default function Footer({ address }) {
                         <a href="#contact" className="footer-cta">Join Our Classes</a>
                     </div>
                 </div>
-                <hr className="my-4 footer-divider" />
+                <hr className="my-1 footer-divider" />
                 <div className="row">
                     <div className="text-center col small" style={{color: '#ff6b01'}}>
-                        &copy; 2024 YHA Computer Training Center. All rights reserved.
+                        &copy; 2024 YHA Academy Of Technology. All rights reserved.
                     </div>
                 </div>
             </div>

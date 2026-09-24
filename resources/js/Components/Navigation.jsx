@@ -1,65 +1,19 @@
-import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState, useRef } from 'react';
+import { Link, usePage } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
-export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
-    // Set default contact info if not provided
-    const defaultContactInfo = {
-        address: '123 University Street, Tech City',
-        phone: '+1 (555) 123-4567',
-        email: 'info@yhauniversity.edu'
-    };
-
-    const contactData = { ...defaultContactInfo, ...contactInfo };
+export default function Navigation({ prog, graph, ict }) {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 10);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     const { url } = usePage();
 
-    const isActive = (path) => {
-        if (path === '/') {
-            return url === '/' || url === '';
-        }
-        if (path === '/courses') {
-            return url === '/courses' || url.startsWith('/course');
-        }
-        return url.startsWith(path);
-    };
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
-    const isCourseActive = (courseType) => {
-        // Check if current URL contains course details for this specific course type
-        if (courseType === 'programming' && prog) {
-            return prog.some(course => url.includes(`/course/${course.id}`));
-        }
-        if (courseType === 'graphic' && graph) {
-            return graph.some(course => url.includes(`/course/${course.id}`));
-        }
-        if (courseType === 'ict' && ict) {
-            return ict.some(course => url.includes(`/course/${course.id}`));
-        }
-        return false;
-    };
-
-    const handleMobileMenuToggle = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-        setOpenDropdown(null); // Close all dropdowns when toggling menu
-    };
-
-    const handleDropdownToggle = (dropdownName) => {
-        if (window.innerWidth < 992) {
-            setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
-        }
-    };
-
-    // Close mobile menu when resizing to desktop
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 992) {
@@ -67,121 +21,148 @@ export default function Navigation({ prog, graph, ict, contactInfo = {} }) {
                 setOpenDropdown(null);
             }
         };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Close mobile menu when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (mobileMenuOpen && !event.target.closest('.tech-university-navbar')) {
+        const handleClickOutside = (e) => {
+            if (mobileMenuOpen && !e.target.closest(".tech-university-navbar")) {
                 setMobileMenuOpen(false);
                 setOpenDropdown(null);
             }
         };
-
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
     }, [mobileMenuOpen]);
 
-    return (
-        <>
-            {/* Main Navigation */}
-            <nav className={`tech-university-navbar ${scrolled ? 'scrolled' : ''}`}>
-                <div className={`hamburger ${mobileMenuOpen ? 'active' : ''}`} onClick={handleMobileMenuToggle}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <ul className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
+    const isActive = (path) => {
+        if (path === "/") return url === "/" || url === "";
+        return url.startsWith(path);
+    };
 
-                     <li className="nav-item">
-                        <Link className="logo" href="/">
-                            <img style={{width: '100px', height: '100px'}} src="/image/logo/logo.png" alt="YHA Logo" />
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className={`nav-link ${isActive('/') ? 'active' : ''}`} href="/"> Home</Link>
-                    </li>
-                    <li className={`nav-item has-sub ${openDropdown === 'programming' ? 'open' : ''}`}>
-                        <button 
-                            className={`nav-link ${isCourseActive('programming') ? 'active' : ''}`}
-                            onClick={() => handleDropdownToggle('programming')}
-                            style={{background: 'none', border: 'none', cursor: 'pointer'}}
-                        >
-                            <Link href="/courses" style={{textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                Programming <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i>
-                            </Link>
-                        </button>
-                        <ul className="sub-menu">
-                            {prog && prog.map((course) => (
-                                <li key={course.id}>
-                                    <Link href={`/course/${course.id}`}>
-                                       {course.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                    <li className={`nav-item has-sub ${openDropdown === 'graphic' ? 'open' : ''}`}>
-                        <button 
-                            className={`nav-link ${isCourseActive('graphic') ? 'active' : ''}`}
-                            onClick={() => handleDropdownToggle('graphic')}
-                            style={{background: 'none', border: 'none', cursor: 'pointer'}}
-                        >
-                            <Link href="/courses" style={{textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                Graphic Design <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i>
-                            </Link>
-                        </button>
-                        <ul className="sub-menu">
-                            {graph && graph.map((course) => (
-                                <li key={course.id}>
-                                    <Link href={`/course/${course.id}`}>
-                                       {course.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                    <li className={`nav-item has-sub ${openDropdown === 'ict' ? 'open' : ''}`}>
-                        <button 
-                            className={`nav-link ${isCourseActive('ict') ? 'active' : ''}`}
-                            onClick={() => handleDropdownToggle('ict')}
-                            style={{background: 'none', border: 'none', cursor: 'pointer'}}
-                        >
-                            <Link href="/courses" style={{textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                ICT <i className="fa-solid fa-chevron-down" style={{fontSize: '0.8em'}}></i>
-                            </Link>
-                        </button>
-                        <ul className="sub-menu">
-                            {ict && ict.map((course) => (
-                                <li key={course.id}>
-                                    <Link href={`/course/${course.id}`}>
-                                       {course.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                    <li className="nav-item">
-                        <Link className={`nav-link ${isActive('/project') ? 'active' : ''}`} href="/project"> Projects</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className={`nav-link ${isActive('/reviews') ? 'active' : ''}`} href="/reviews">Reviews</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className={`nav-link ${isActive('/about') ? 'active' : ''}`} href="/about"> About Us</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link href="/login" className="login-btn">
-                            <i className="fas fa-sign-in-alt"></i>
-                            <span>Login</span>
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
-        </>
+    const handleDropdownToggle = (name) => {
+        if (window.innerWidth < 992) {
+            setOpenDropdown(openDropdown === name ? null : name);
+        }
+    };
+
+    return (
+        <nav className={`tech-university-navbar ${scrolled ? "scrolled" : ""}`}>
+            {/* Logo */}
+            <Link className="logo-container" href="/">
+                <img
+                    className="logo-img"
+                    src="/image/logo/logo.png"
+                    alt="YHA Logo"
+                />
+                <div className="logo-text">
+                    <span>YHA ACADEMY</span>
+                    <span>OF TECHNOLOGY</span>
+                </div>
+            </Link>
+
+            {/* Hamburger */}
+            <div
+                className={`hamburger ${mobileMenuOpen ? "active" : ""}`}
+                onClick={() => {
+                    setMobileMenuOpen(!mobileMenuOpen);
+                    setOpenDropdown(null);
+                }}
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            {/* Menu */}
+            <ul className={`nav-menu ${mobileMenuOpen ? "open" : ""}`}>
+                <li className="nav-item">
+                    <Link className={`nav-link ${isActive("/") ? "active" : ""}`} href="/">
+                        Home
+                    </Link>
+                </li>
+
+                {/* Web Development */}
+                <li className={`nav-item has-sub ${openDropdown === "web" ? "open" : ""}`}>
+                    <button
+                        className="nav-link"
+                        onClick={() => handleDropdownToggle("web")}
+                    >
+                        Web Development
+                        <i className="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <ul className="sub-menu">
+                        {prog?.map((course) => (
+                            <li key={course.id}>
+                                <Link href={`/course/${course.id}`}>{course.name}</Link>
+                            </li>
+                        ))}
+                    </ul>
+                </li>
+
+                {/* Data Science & AI */}
+                <li className={`nav-item has-sub ${openDropdown === "data" ? "open" : ""}`}>
+                    <button
+                        className="nav-link"
+                        onClick={() => handleDropdownToggle("data")}
+                    >
+                        Data Science & AI
+                        <i className="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <ul className="sub-menu">
+                        {graph?.map((course) => (
+                            <li key={course.id}>
+                                <Link href={`/course/${course.id}`}>{course.name}</Link>
+                            </li>
+                        ))}
+                    </ul>
+                </li>
+
+                <li className="nav-item">
+                    <Link className={`nav-link ${isActive("/reviews") ? "active" : ""}`} href="/reviews">
+                        Mobile Development
+                    </Link>
+                </li>
+
+                {/* ICT */}
+                <li className={`nav-item has-sub ${openDropdown === "ict" ? "open" : ""}`}>
+                    <button
+                        className="nav-link"
+                        onClick={() => handleDropdownToggle("ict")}
+                    >
+                        ICT
+                        <i className="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <ul className="sub-menu">
+                        {ict?.map((course) => (
+                            <li key={course.id}>
+                                <Link href={`/course/${course.id}`}>{course.name}</Link>
+                            </li>
+                        ))}
+                    </ul>
+                </li>
+
+                <li className="nav-item">
+                    <Link className={`nav-link ${isActive("/project") ? "active" : ""}`} href="/project">
+                        Projects
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link className={`nav-link ${isActive("/about") ? "active" : ""}`} href="/about">
+                        About Us
+                    </Link>
+                </li>
+            </ul>
+
+            {/* Login */}
+            <div className="right-login-section">
+                <Link href="/login" className="login-btn">
+                    <i className="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </Link>
+            </div>
+        </nav>
     );
 }
-

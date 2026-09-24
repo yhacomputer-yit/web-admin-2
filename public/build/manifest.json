@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CWvPZIR8.css",
+    "file": "assets/app-BZ8O2jtw.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -9,7 +9,7 @@
     ]
   },
   "resources/css/components/navigation.css": {
-    "file": "assets/navigation-BQpZNmWK.css",
+    "file": "assets/navigation-3UZiDkk7.css",
     "src": "resources/css/components/navigation.css",
     "isEntry": true,
     "name": "navigation",
@@ -17,9 +17,9 @@
       "navigation.css"
     ]
   },
-  "resources/css/homepage.css": {
-    "file": "assets/homepage-Daidjpc-.css",
-    "src": "resources/css/homepage.css",
+  "resources/css/pages/homepage.css": {
+    "file": "assets/homepage-Cr-oHcHj.css",
+    "src": "resources/css/pages/homepage.css",
     "isEntry": true,
     "name": "homepage",
     "names": [
@@ -27,12 +27,13 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-D8h_Gl8N.js",
+    "file": "assets/app-Im5lLQAW.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "css": [
-      "assets/app-CTzLta0V.css"
+      "assets/app-D9IBQWnb.css",
+      "assets/homepage-Cr-oHcHj.css"
     ]
   }
 }
