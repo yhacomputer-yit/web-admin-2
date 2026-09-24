@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
-import '../../css/pages/course-detail.css';   // သီးခြား css file သုံးပါ
+import '../../css/pages/course-detail.css';
 
 export default function CourseDetail({ course, subjects, prog, graph, ict, address }) {
     return (
