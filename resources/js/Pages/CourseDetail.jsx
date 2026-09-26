@@ -1,69 +1,53 @@
 import { Link } from '@inertiajs/react';
+import { useRef } from 'react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 import '../../css/pages/course-detail.css';
 
-export default function CourseDetail({ course, subjects, prog, graph, ict, address }) {
+export default function CourseDetail({ course, subjects, relatedCourses = [], prog, graph, ict, address }) {
+    const scrollRef = useRef(null);
+
+    const scroll = (direction) => {
+        if (scrollRef.current) {
+            const amount = 340;
+            scrollRef.current.scrollBy({
+                left: direction === 'left' ? -amount : amount,
+                behavior: 'smooth',
+            });
+        }
+    };
+
     return (
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
 
-            {/* ========== Course Hero ========== */}
+            {/* ========== Course Hero – New Full Image Style ========== */}
             <section className="cd-hero">
-                <div className="container">
-                    <div className="row align-items-center gy-4">
-                        <div className="col-lg-6">
-                            <div className="cd-breadcrumb">
-                                <Link href="/">Home</Link>
-                                <span>/</span>
-                                <Link href="/courses">Courses</Link>
-                                <span>/</span>
-                                <span className="current">{course?.name}</span>
-                            </div>
+                <div
+                    className="cd-hero-bg"
+                    style={{ backgroundImage: `url(/storage/${course?.image})` }}
+                ></div>
+                <div className="cd-hero-overlay"></div>
 
-                            <h1 className="cd-title">{course?.name}</h1>
-                            <p className="cd-desc">{course?.description}</p>
-
-                            <div className="cd-meta">
-                                <div className="cd-meta-item">
-                                    <i className="fas fa-clock"></i>
-                                    <span>{course?.duration} Hours</span>
-                                </div>
-                                <div className="cd-meta-item">
-                                    <i className="fas fa-users"></i>
-                                    <span>Live Classes</span>
-                                </div>
-                                <div className="cd-meta-item">
-                                    <i className="fas fa-certificate"></i>
-                                    <span>Certificate</span>
-                                </div>
-                            </div>
-
-                            <div className="cd-actions">
-                                <a href="#subjects" className="cd-btn primary">
-                                    <i className="fas fa-list"></i>
-                                    View Subjects
-                                </a>
-                            </div>
+                <div className="container cd-container">
+                    <div className="cd-hero-content">
+                        <div className="cd-breadcrumb">
+                            <Link href="/">Home</Link>
+                            <span>/</span>
+                            <Link href="/courses">Courses</Link>
+                            <span>/</span>
+                            <span className="current">{course?.name}</span>
                         </div>
 
-                        <div className="col-lg-6">
-                            <div className="cd-image-wrap">
-                                <img
-                                    src={`/storage/${course?.image}`}
-                                    alt={course?.name}
-                                    className="cd-image"
-                                />
-                                <div className="cd-badge">Featured Course</div>
-                            </div>
-                        </div>
+                        <h1 className="cd-title">{course?.name}</h1>
+
                     </div>
                 </div>
             </section>
 
             {/* ========== About + Sidebar ========== */}
             <section className="cd-about">
-                <div className="container">
+                <div className="container cd-container">
                     <div className="row gy-4">
                         <div className="col-lg-8">
                             <h2 className="cd-section-title">About This Course</h2>
@@ -114,7 +98,7 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
 
             {/* ========== Subjects ========== */}
             <section id="subjects" className="cd-subjects">
-                <div className="container">
+                <div className="container cd-container">
                     <div className="text-center mb-5">
                         <h2 className="cd-section-title">Course Subjects</h2>
                         <p className="cd-section-subtitle">
@@ -146,6 +130,75 @@ export default function CourseDetail({ course, subjects, prog, graph, ict, addre
                     </div>
                 </div>
             </section>
+
+            {/* ========== Related Courses ========== */}
+            {relatedCourses && relatedCourses.length > 0 && (
+                <section className="cd-related">
+                    <div className="container cd-container">
+                        <div className="cd-related-header">
+                            <div>
+                                <h2 className="cd-section-title mb-1">Related Courses</h2>
+                                <p className="cd-section-subtitle text-start mb-0">
+                                    Explore more courses you might like
+                                </p>
+                            </div>
+
+                            <div className="cd-related-arrows">
+                                <button
+                                    type="button"
+                                    className="cd-arrow-btn"
+                                    onClick={() => scroll('left')}
+                                    aria-label="Scroll left"
+                                >
+                                    <i className="fas fa-chevron-left"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="cd-arrow-btn"
+                                    onClick={() => scroll('right')}
+                                    aria-label="Scroll right"
+                                >
+                                    <i className="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="cd-related-track" ref={scrollRef}>
+                            {relatedCourses.map((item) => (
+                                <div key={item.id} className="cd-related-card">
+                                    <div className="cd-related-img-wrap">
+                                        <img
+                                            src={`/storage/${item.image}`}
+                                            alt={item.name}
+                                            className="cd-related-img"
+                                        />
+                                    </div>
+                                    <div className="cd-related-body">
+                                        <h3 className="cd-related-title">{item.name}</h3>
+                                        <p className="cd-related-desc">
+                                            {item.code || ''}
+                                        </p>
+                                        <div className="cd-related-footer">
+                                            <div>
+                                                <span className="cd-related-fee-label">Course Fee</span>
+                                                <span className="cd-related-fee">
+                                                    Ks {Number(item.normal_price || 0).toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <Link
+                                                href={`/courses/${item.id}`}
+                                                className="cd-related-link"
+                                            >
+                                                Learn More →
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             <Footer address={address} />
         </div>

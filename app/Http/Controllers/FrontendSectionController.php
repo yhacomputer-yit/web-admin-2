@@ -36,7 +36,7 @@ class FrontendSectionController extends Controller
         $progType = course_type::where('name', 'Programming')->first();
         $graphType = course_type::where('name', 'Graphic Design')->first();
         $ictType = course_type::where('name', 'ICT')->first();
-        
+
         $courses = Course::all();
         $address = Address::get();
 
@@ -74,6 +74,29 @@ class FrontendSectionController extends Controller
             'address' => $address,
         ], $data);
     }
+public function course(Request $request, $id)
+{
+    $data = $this->share();
+
+    $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
+    $course = Course::where('id', $id)->first();
+
+
+    $relatedCourses = Course::where('id', '!=', $id)
+        ->orderBy('created_at', 'desc')
+        ->take(8)
+        ->get(['id', 'name', 'image', 'normal_price']);
+
+    return inertia('CourseDetail', [
+        'course'         => $course,
+        'subjects'       => $subjects,
+        'relatedCourses' => $relatedCourses,
+        'prog'           => $data['prog'],
+        'graph'          => $data['graph'],
+        'ict'            => $data['ict'],
+        'address'        => $data['address'],
+    ]);
+}
     public function courses(){
 
         $monthies = Monthly::with('course')->paginate(6, ['*'], 'monthly');
@@ -183,10 +206,10 @@ class FrontendSectionController extends Controller
 
     public function courseList(){
         $data = $this->share();
-        
+
         // Get all courses with their course types
         $courses = Course::with('courseType')->orderBy('created_at', 'desc')->get();
-        
+
         return inertia('CourseList', [
             'courses' => $courses,
             'prog' => $data['prog'],
@@ -196,22 +219,22 @@ class FrontendSectionController extends Controller
         ]);
     }
 
-    public function course(Request $request, $id){
-        $data = $this->share();
-        
+    // public function course(Request $request, $id){
+    //     $data = $this->share();
 
-        $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
-        $course = Course::where('id', $id)->first();
 
-        return inertia('CourseDetail', [
-            'ict' => $data['ict'],
-            'course' => $course,  // This was missing - the course data
-            'subjects' => $subjects,
-            'address' => $data['address'],
-            'prog' => $data['prog'],
-            'graph' => $data['graph'],
-        ]);
-    }
+    //     $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
+    //     $course = Course::where('id', $id)->first();
+
+    //     return inertia('CourseDetail', [
+    //         'ict' => $data['ict'],
+    //         'course' => $course,  // This was missing - the course data
+    //         'subjects' => $subjects,
+    //         'address' => $data['address'],
+    //         'prog' => $data['prog'],
+    //         'graph' => $data['graph'],
+    //     ]);
+    // }
 //return view("frontend_section.course");
 
     public function projects(Request $request, $c_id = 1){

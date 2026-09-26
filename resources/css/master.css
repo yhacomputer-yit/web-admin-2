@@ -34,8 +34,9 @@
     body {
         background: var(--white);
         color: #333;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Work Sans', sans-serif;
         overflow-x: hidden;
+        font-size: clamp(14px, 2vw, 18px);
     }
 
     /* Glassmorphism Navbar - REMOVED (using tech-university-navbar instead) */
@@ -78,6 +79,7 @@
         font-weight: 700;
         margin-bottom: 1rem;
         letter-spacing: 1px;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
     }
 
     #footer ul {
@@ -92,7 +94,7 @@
     #footer ul li a {
         color: var(--footer-link);
         text-decoration: none;
-        font-size: 1rem;
+        font-size: clamp(0.85rem, 2vw, 1rem);
         transition: color 0.2s;
     }
 
@@ -103,7 +105,7 @@
     #footer .footer-contact span, #footer .footer-contact a {
         display: block;
         color: #bbb;
-        font-size: 1rem;
+        font-size: clamp(0.85rem, 2vw, 1rem);
         margin-bottom: 0.5rem;
         text-decoration: none;
     }
@@ -123,7 +125,7 @@
         border-radius: 50%;
         background: #333;
         color: #fff;
-        font-size: 1.3rem;
+        font-size: clamp(1.1rem, 2.5vw, 1.3rem);
         transition: background 0.2s, color 0.2s, transform 0.2s;
     }
 
@@ -146,7 +148,7 @@
     }
 
     #footer .footer-logo span {
-        font-size: 1rem;
+        font-size: clamp(0.85rem, 2vw, 1rem);
         color: #bbb;
         letter-spacing: 1px;
     }
@@ -156,7 +158,7 @@
         color: #bbb;
         text-align: center;
         padding: 12px 0 8px 0;
-        font-size: 0.97rem;
+        font-size: clamp(0.82rem, 2vw, 0.97rem);
         margin-top: 0;
         letter-spacing: 1px;
     }
