@@ -43,7 +43,7 @@
   border: none;
   background: transparent;
   outline: none;
-  font-size: clamp(0.82rem, 1.5vw, 0.92rem);
+  font-size: clamp(0.75rem, 1.3vw, 0.84rem);
   padding: 0.65rem 0;
   color: #1e293b;
   min-width: 0;
@@ -64,7 +64,7 @@
   border-radius: 8px;
   padding: 0 1.4rem;
   font-weight: 600;
-  font-size: clamp(0.82rem, 1.5vw, 0.92rem);
+  font-size: clamp(0.75rem, 1.3vw, 0.84rem);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.2s;
@@ -85,7 +85,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   font-weight: 600;
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  font-size: clamp(0.74rem, 1.3vw, 0.82rem);
   color: #1e293b;
   cursor: pointer;
   margin-bottom: 1rem;
@@ -94,7 +94,7 @@
 .ps-filter-toggle .fa-chevron-down,
 .ps-filter-toggle .fa-chevron-up {
   margin-left: auto;
-  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
+  font-size: clamp(0.6rem, 1.1vw, 0.7rem);
   color: #94a3b8;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .ps-sidebar-header h3 {
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  font-size: clamp(0.74rem, 1.3vw, 0.82rem);
   font-weight: 700;
   color: #1e293b;
   margin: 0;
@@ -150,7 +150,7 @@
   background: none;
   border: none;
   color: #ff6b35;
-  font-size: clamp(0.68rem, 1.2vw, 0.78rem);
+  font-size: clamp(0.62rem, 1.1vw, 0.7rem);
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
@@ -161,7 +161,7 @@
 }
 
 .ps-filter-title {
-  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
+  font-size: clamp(0.6rem, 1.1vw, 0.68rem);
   font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
@@ -184,7 +184,7 @@
   border: none;
   background: transparent;
   border-radius: 8px;
-  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+  font-size: clamp(0.7rem, 1.3vw, 0.78rem);
   color: #475569;
   cursor: pointer;
   text-align: left;
@@ -203,7 +203,7 @@
 }
 
 .ps-filter-list li button span {
-  font-size: clamp(0.62rem, 1.2vw, 0.72rem);
+  font-size: clamp(0.57rem, 1.1vw, 0.65rem);
   background: #f1f5f9;
   color: #64748b;
   padding: 0.12rem 0.4rem;
@@ -237,7 +237,7 @@
 }
 
 .ps-results-info {
-  font-size: clamp(0.78rem, 1.5vw, 0.88rem);
+  font-size: clamp(0.72rem, 1.3vw, 0.8rem);
   color: #64748b;
 }
 
@@ -260,7 +260,7 @@
   color: #ff6b35;
   padding: 0.2rem 0.55rem;
   border-radius: 20px;
-  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
+  font-size: clamp(0.6rem, 1.1vw, 0.68rem);
   font-weight: 600;
 }
 
@@ -269,7 +269,7 @@
   border: none;
   color: #ff6b35;
   cursor: pointer;
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-size: clamp(0.78rem, 1.7vw, 0.9rem);
   line-height: 1;
   padding: 0;
 }
@@ -327,7 +327,7 @@
   color: #ff6b35;
   padding: 0.2rem 0.55rem;
   border-radius: 20px;
-  font-size: clamp(0.52rem, 1.2vw, 0.62rem);
+  font-size: clamp(0.48rem, 1.1vw, 0.56rem);
   font-weight: 600;
   text-transform: uppercase;
   max-width: 90%;
@@ -345,7 +345,7 @@
 }
 
 .ps-row-title {
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-size: clamp(0.88rem, 1.7vw, 0.96rem);
   font-weight: 700;
   margin: 0;
   line-height: 1.3;
@@ -361,7 +361,7 @@
 }
 
 .ps-row-student {
-  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+  font-size: clamp(0.7rem, 1.3vw, 0.78rem);
   color: #ff6b35;
   font-weight: 600;
   margin: 0;
@@ -371,9 +371,9 @@
 }
 
 .ps-row-desc {
-  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+  font-size: clamp(0.7rem, 1.3vw, 0.78rem);
   color: #64748b;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -393,7 +393,7 @@
   color: #ff6b35;
   padding: 0.18rem 0.5rem;
   border-radius: 6px;
-  font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+  font-size: clamp(0.55rem, 1.1vw, 0.65rem);
   font-weight: 600;
 }
 
@@ -403,7 +403,7 @@
   gap: 0.35rem;
   color: #ff6b35;
   font-weight: 600;
-  font-size: clamp(0.72rem, 1.5vw, 0.82rem);
+  font-size: clamp(0.68rem, 1.3vw, 0.76rem);
   text-decoration: none;
   margin-top: 0.3rem;
   width: fit-content;
@@ -439,14 +439,14 @@
 }
 
 .ps-empty i {
-  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-size: clamp(1.7rem, 3.2vw, 2.1rem);
   color: #ff6b35;
   opacity: 0.6;
   margin-bottom: 0.8rem;
 }
 
 .ps-empty h3 {
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
   color: #1e293b;
   margin-bottom: 0.35rem;
 }
@@ -473,7 +473,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: clamp(0.78rem, 1.5vw, 0.88rem);
+  font-size: clamp(0.72rem, 1.3vw, 0.8rem);
   color: #475569;
 }
 
@@ -495,7 +495,7 @@
 
 .ps-page-info {
   text-align: center;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   color: #94a3b8;
   margin-top: 0.7rem;
 }

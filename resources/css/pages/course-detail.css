@@ -77,11 +77,11 @@
 /* Course name */
 .cd-page-title {
   font-family: "Work Sans", sans-serif;
-  font-size: clamp(1.7rem, 4vw + 0.3rem, 2.4rem);
+  font-size: clamp(1.45rem, 3.2vw + 0.25rem, 2rem);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   color: #1e293b;
-  margin: 0 0 1.25rem;
+  margin: 0 0 1.1rem;
 }
 
 /* About Section */
@@ -91,15 +91,15 @@
 }
 
 .cd-section-title {
-  font-size: clamp(1.35rem, 3vw + 0.2rem, 1.9rem);
+  font-size: clamp(1.15rem, 2.4vw + 0.18rem, 1.55rem);
   font-weight: 700;
   color: #ff6b35;
   margin: 0 0 0.6rem;
 }
 
 .cd-about-text {
-  font-size: clamp(0.92rem, 2vw + 0.1rem, 1.05rem);
-  line-height: 1.75;
+  font-size: clamp(0.8125rem, 1.5vw + 0.1rem, 0.95rem);
+  line-height: 1.8;
   color: #475569;
 }
 
@@ -119,10 +119,10 @@
 }
 
 .cd-sidebar-title {
-  font-size: clamp(1.1rem, 2.4vw, 1.25rem);
+  font-size: clamp(0.98rem, 2vw, 1.1rem);
   font-weight: 700;
   color: #1e293b;
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.25rem;
 }
 
 .cd-info-item {
@@ -138,20 +138,20 @@
 
 .cd-info-item i {
   color: #ff6b35;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   width: 22px;
   text-align: center;
 }
 
 .cd-info-item .label {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   color: #64748b;
   margin-bottom: 0.15rem;
 }
 
 .cd-info-item .value {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1e293b;
 }
@@ -171,7 +171,7 @@
 }
 
 .cd-section-subtitle {
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  font-size: clamp(0.8125rem, 1.6vw, 0.95rem);
   color: #64748b;
   margin: 0;
   max-width: none;
@@ -207,12 +207,12 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   flex-shrink: 0;
 }
 
 .cd-subject-title {
-  font-size: 0.92rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -228,16 +228,16 @@
 }
 
 .cd-empty i {
-  font-size: 2.8rem;
-  color: #ff6b35;
-  opacity: 0.7;
-  margin-bottom: 1rem;
+    font-size: 2.3rem;
+    color: #ff6b35;
+    opacity: 0.7;
+    margin-bottom: 1rem;
 }
 
 .cd-empty h3 {
-  font-size: 1.35rem;
-  color: #1e293b;
-  margin-bottom: 0.4rem;
+    font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.2rem);
+    color: #1e293b;
+    margin-bottom: 0.4rem;
 }
 
 .cd-empty p {
@@ -277,7 +277,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .cd-arrow-btn:hover {
@@ -344,17 +344,17 @@
 }
 
 .cd-related-title {
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.08rem);
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 0.5rem;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .cd-related-desc {
-  font-size: 0.88rem;
+  font-size: clamp(0.78rem, 0.74rem + 0.2vw, 0.85rem);
   color: #64748b;
-  line-height: 1.55;
+  line-height: 1.65;
   margin: 0 0 1.2rem;
   flex: 1;
   display: -webkit-box;
@@ -375,19 +375,19 @@
 
 .cd-related-fee-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #94a3b8;
   margin-bottom: 0.15rem;
 }
 
 .cd-related-fee {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #ff6b35;
 }
 
 .cd-related-link {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #ff6b35;
   text-decoration: none;
@@ -434,7 +434,7 @@
   }
 
   .cd-page-title {
-    font-size: 1.55rem;
+    font-size: 1.35rem;
   }
 
   .cd-subject-card {
@@ -444,11 +444,11 @@
   .cd-subject-num {
     width: 28px;
     height: 28px;
-    font-size: 0.8rem;
+    font-size: 0.74rem;
   }
 
   .cd-subject-title {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 }
 
@@ -467,7 +467,7 @@
   }
 
   .cd-page-title {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
   }
 
   .cd-related-card {

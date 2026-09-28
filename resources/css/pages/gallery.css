@@ -9,17 +9,19 @@
 }
 
 .gallery-hero h1 {
-    font-size: 2.5rem;
+    font-size: clamp(1.9rem, 1.5rem + 1.8vw, 2.2rem);
     font-weight: 800;
     margin-bottom: 1rem;
     letter-spacing: 1px;
+    line-height: 1.25;
 }
 
 .gallery-hero p {
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 0.8rem + 0.4vw, 0.95rem);
     opacity: 0.9;
     max-width: 600px;
     margin: 0 auto;
+    line-height: 1.7;
 }
 
 .gallery-content {
@@ -87,12 +89,12 @@
 }
 
 .gallery-overlay i {
-    font-size: 2rem;
+    font-size: 1.7rem;
     margin-bottom: 0.5rem;
 }
 
 .gallery-overlay-text {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 600;
 }
 
@@ -104,11 +106,11 @@
     }
     
     .gallery-hero h1 {
-        font-size: 2rem;
+        font-size: 1.7rem;
     }
     
     .gallery-hero p {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
     
     .gallery-grid {
@@ -124,11 +126,11 @@
     }
     
     .gallery-hero h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
     
     .gallery-hero p {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     
     .gallery-content {

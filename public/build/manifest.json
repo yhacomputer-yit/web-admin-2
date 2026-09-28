@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BZ8O2jtw.css",
+    "file": "assets/app-vzptNC-D.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -9,7 +9,7 @@
     ]
   },
   "resources/css/components/navigation.css": {
-    "file": "assets/navigation-3UZiDkk7.css",
+    "file": "assets/navigation-BYzsBggi.css",
     "src": "resources/css/components/navigation.css",
     "isEntry": true,
     "name": "navigation",
@@ -18,7 +18,7 @@
     ]
   },
   "resources/css/pages/homepage.css": {
-    "file": "assets/homepage-Cr-oHcHj.css",
+    "file": "assets/homepage-CvrpdrjO.css",
     "src": "resources/css/pages/homepage.css",
     "isEntry": true,
     "name": "homepage",
@@ -27,13 +27,13 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-Im5lLQAW.js",
+    "file": "assets/app-Vi5qkr5h.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "css": [
-      "assets/app-D9IBQWnb.css",
-      "assets/homepage-Cr-oHcHj.css"
+      "assets/app-BF4tiL-M.css",
+      "assets/homepage-CvrpdrjO.css"
     ]
   }
 }

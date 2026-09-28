@@ -95,16 +95,16 @@
         align-items: center;
     }
 
-    .glass-navbar .search-bar input {
-        width: 100%;
-        padding: 0.5rem 2.2rem 0.5rem 1rem;
-        border-radius: 20px;
-        border: 1px solid #eee;
-        background: rgba(255,255,255,0.7);
-        font-size: 1rem;
-        outline: none;
-        transition: border 0.2s;
-    }
+        .glass-navbar .search-bar input {
+          width: 100%;
+          padding: 0.5rem 2.2rem 0.5rem 1rem;
+          border-radius: 20px;
+          border: 1px solid #eee;
+          background: rgba(255,255,255,0.7);
+          font-size: 0.9375rem;
+          outline: none;
+          transition: border 0.2s;
+        }
 
     .glass-navbar .search-bar input:focus {
         border: 1.5px solid var(--maincolor);
@@ -128,11 +128,11 @@
         list-style: none;
     }
 
-    .glass-navbar .nav-link {
-        color: #222;
-        font-size: 15px;
-        font-weight: 500;
-        padding: 0.5rem 0.7rem;
+        .glass-navbar .nav-link {
+          color: #222;
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 0.45rem 0.65rem;
         border-radius: 7px;
         text-decoration: none;
         transition: background 0.2s, color 0.2s;
@@ -182,12 +182,12 @@
         width: 100%;
     }
 
-    .glass-navbar .sub-menu a {
-        color: #222;
-        padding: 0.5rem 1.2rem;
-        display: flex;
-        align-items: center;
-        font-size: 0.97rem;
+        .glass-navbar .sub-menu a {
+          color: #222;
+          padding: 0.45rem 1.1rem;
+          display: flex;
+          align-items: center;
+          font-size: 0.875rem;
         border-radius: 0;
         text-decoration: none;
         transition: background 0.2s, color 0.2s;
@@ -625,17 +625,19 @@
         .edu-footer {
           background: linear-gradient(120deg, #181c24 60%, #23272f 100%);
           color: #eee;
-          font-size: 1rem;
+          font-size: clamp(0.875rem, 0.83rem + 0.15vw, 0.9375rem);
+          line-height: 1.65;
           margin-top: 0;
         }
         .footer-brand img { height: 48px; }
-        .footer-desc { color: #bbb; font-size: 1rem; margin-bottom: 0.5rem; }
-        .footer-title { color: #ff6b01; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+        .footer-desc { color: #bbb; font-size: clamp(0.8125rem, 0.78rem + 0.12vw, 0.875rem); margin-bottom: 0.5rem; }
+        .footer-title { color: #ff6b01; font-size: clamp(0.9rem, 0.85rem + 0.2vw, 1rem); font-weight: 700; margin-bottom: 0.85rem; line-height: 1.3; }
         .footer-links, .footer-contact { list-style: none; padding: 0; margin: 0; }
-        .footer-links li, .footer-contact li { margin-bottom: 0.5rem; }
-        .footer-links a { color: #eee; text-decoration: none; transition: color 0.2s; }
+        .footer-links li, .footer-contact li { margin-bottom: 0.45rem; line-height: 1.6; }
+        .footer-links a { color: #eee; text-decoration: none; font-size: clamp(0.875rem, 0.83rem + 0.15vw, 0.9375rem); transition: color 0.2s; }
         .footer-links a:hover { color: #ff6b01; }
-        .footer-contact i { color: #ff6b01; margin-right: 0.5em; }
+        .footer-contact li { font-size: clamp(0.875rem, 0.83rem + 0.15vw, 0.9375rem); }
+        .footer-contact i { color: #ff6b01; margin-right: 0.5em; font-size: 0.95em; }
         .footer-social {
           display: flex;
           gap: 0.7em;
@@ -645,14 +647,15 @@
         .footer-social a {
           display: flex; align-items: center; justify-content: center;
           color: #fff; background: #23272f; border-radius: 50%;
-          width: 36px; height: 36px; font-size: 1.2rem;
+          width: 32px; height: 32px; font-size: clamp(1rem, 1.9vw, 1.1rem);
           transition: background 0.2s, color 0.2s;
         }
         .footer-social a:hover { background: #ff6b01; color: #23272f; }
         .footer-cta {
-          display: inline-block; background: #ff6b01; color: #fff; padding: 0.5em 1.2em;
+          display: inline-block; background: #ff6b01; color: #fff; padding: 0.45em 1.1em;
           border-radius: 20px; font-weight: 600; text-decoration: none; transition: background 0.2s, color 0.2s;
           margin-top: 0.5em;
+          font-size: clamp(0.8125rem, 0.78rem + 0.12vw, 0.875rem);
         }
         .footer-cta:hover { background: #fff; color: #ff6b01; }
         .footer-divider { border-color: #333; }
@@ -664,9 +667,9 @@
           .footer-title, .footer-links, .footer-contact, .footer-cta { text-align: center !important; }
         }
         @media (max-width: 576px) {
-          .footer-title { font-size: 1rem; }
-          .footer-links a, .footer-contact li { font-size: 0.98rem; }
-          .footer-cta { font-size: 0.98rem; }
+          .footer-title { font-size: 0.875rem; }
+          .footer-links a, .footer-contact li { font-size: 0.8125rem; }
+          .footer-cta { font-size: 0.75rem; }
         }
       </style>
     </footer>

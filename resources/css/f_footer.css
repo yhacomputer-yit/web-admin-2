@@ -17,7 +17,7 @@
 #footer .col-xl-4 {
   line-height: 1.8;
   letter-spacing: 1px;
-  font-size: clamp(0.85rem, 1.7vw + 0.12rem, 0.98rem);
+  font-size: clamp(0.78rem, 1.2vw + 0.15rem, 0.9rem);
 }
 
 #footer ul {
@@ -34,7 +34,7 @@
   color: var(--white, #ffffff);
   transition: all 0.3s ease-in-out;
   font-weight: 300;
-  font-size: clamp(0.85rem, 1.7vw + 0.12rem, 0.98rem);
+  font-size: clamp(0.78rem, 1.2vw + 0.15rem, 0.9rem);
   text-decoration: none;
 }
 
@@ -64,7 +64,7 @@
 /* Titles / headings inside footer */
 #footer h5,
 #footer .footer-title {
-  font-size: clamp(1rem, 2.2vw + 0.15rem, 1.2rem);
+  font-size: clamp(0.9rem, 1.6vw + 0.12rem, 1.05rem);
   font-weight: 600;
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
   color: var(--white, #ffffff);
@@ -72,7 +72,7 @@
 
 #footer p,
 #footer span {
-  font-size: clamp(0.85rem, 1.7vw + 0.12rem, 0.98rem);
+  font-size: clamp(0.78rem, 1.2vw + 0.15rem, 0.9rem);
   line-height: 1.7;
 }
 
@@ -87,7 +87,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  font-size: clamp(0.8rem, 1.6vw + 0.1rem, 0.92rem);
+  font-size: clamp(0.75rem, 1.2vw + 0.1rem, 0.85rem);
 }
 
 #footer .copyright .right {
@@ -98,7 +98,7 @@
 }
 
 #footer .copyright i {
-  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
   color: var(--white, #ffffff);
   margin-right: 0.4rem;
   transition: transform 0.3s ease;
@@ -117,7 +117,7 @@
 
 #footer .footer-social a {
   color: var(--white, #ffffff);
-  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
   transition: color 0.25s ease, transform 0.25s ease;
 }
 
@@ -133,7 +133,7 @@
   background: var(--maincolor, #ff6b35);
   color: #fff;
   border-radius: 50px;
-  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
+  font-size: clamp(0.75rem, 1.3vw, 0.82rem);
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -150,7 +150,7 @@
 .offcanvas-body .items {
   color: var(--bg, #1e293b);
   margin: 10px 0;
-  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-size: clamp(0.8125rem, 1.5vw, 0.9rem);
 }
 
 .offcanvas-body .items i {
@@ -161,7 +161,7 @@
 @media (max-width: 1200px) {
   #footer .col-xl-4 span,
   #footer .col-xl-4 p {
-    font-size: clamp(0.82rem, 1.6vw + 0.1rem, 0.92rem);
+    font-size: clamp(0.75rem, 1.2vw + 0.1rem, 0.85rem);
   }
 }
 
@@ -213,6 +213,6 @@
 
   #footer h5,
   #footer .footer-title {
-    font-size: clamp(0.95rem, 3vw, 1.1rem);
+    font-size: clamp(0.85rem, 2.4vw, 1rem);
   }
 }

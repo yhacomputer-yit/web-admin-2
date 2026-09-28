@@ -9,10 +9,35 @@
     display: none;
 }
 
+/* ========== BASE TYPOGRAPHY ========== */
 body {
     font-family: 'Work Sans', sans-serif;
-    font-size: clamp(14px, 2vw, 18px);
+    /* 15px -> 16px reading size */
+    font-size: clamp(0.9375rem, 0.85rem + 0.2vw, 1rem);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+/* Body copy: 15px -> 16px */
+p {
+    font-size: clamp(0.9375rem, 0.88rem + 0.2vw, 1rem);
+    line-height: 1.7;
+}
+
+/* Fluid heading scale with clear but compact hierarchy */
+h1, h2, h3, h4, h5, h6 {
+    color: #1e293b;
+    line-height: 1.25;
+    text-wrap: balance;
+}
+
+h1 { font-size: clamp(1.65rem, 1.2rem + 2vw, 2.5rem); line-height: 1.15; }
+h2 { font-size: clamp(1.4rem, 1.05rem + 1.5vw, 2.1rem); }
+h3 { font-size: clamp(1.175rem, 0.95rem + 1vw, 1.65rem); }
+h4 { font-size: clamp(1.05rem, 0.9rem + 0.7vw, 1.4rem); }
+h5 { font-size: clamp(0.95rem, 0.85rem + 0.5vw, 1.2rem); }
+h6 { font-size: clamp(0.85rem, 0.8rem + 0.35vw, 1.05rem); }
 
 /* Frontend page layout fixes */
 .frontend-page {

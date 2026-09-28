@@ -33,14 +33,15 @@
 
 .login-modal-header h4 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 1.1rem + 0.5vw, 1.35rem);
     font-weight: 600;
+    line-height: 1.3;
 }
 
 .close-modal {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
     color: #666;
     padding: 0;
@@ -79,7 +80,7 @@
 }
 
 .login-modal .invalid-feedback {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     margin-top: 0.25rem;
 }
 
@@ -144,10 +145,10 @@
     }
     
     .login-modal-header h4 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
     
     .close-modal {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
     }
 }

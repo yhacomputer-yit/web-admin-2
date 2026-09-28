@@ -124,7 +124,7 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                                 )}
                             </div>
 
-                            <div className="ps-filter-group">
+                            {/* <div className="ps-filter-group">
                                 <h4 className="ps-filter-title">Category</h4>
                                 <ul className="ps-filter-list">
                                     {[
@@ -145,7 +145,7 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                                         </li>
                                     ))}
                                 </ul>
-                            </div>
+                            </div> */}
 
                             <div className="ps-filter-group">
                                 <h4 className="ps-filter-title">Course / Class</h4>
