@@ -66,12 +66,12 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                 <div className="container cd-container">
                     <div className="row gy-4 align-items-start">
                         {/* Left - Subjects */}
-                        <div className="col-lg-6">
+                        <div className="col-lg-6 pt-4">
                             <div className="cd-subjects-header mb-4">
                                 <h2 className="cd-section-title">Course Subjects</h2>
-                                <p className="cd-section-subtitle">
+                                {/* <p className="cd-section-subtitle">
                                     Comprehensive curriculum designed for your success
-                                </p>
+                                </p> */}
                             </div>
 
                             <div className="row g-3">

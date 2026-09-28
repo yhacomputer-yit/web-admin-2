@@ -90,7 +90,7 @@ export default function Navigation({ prog, graph, ict }) {
                         onClick={() => handleDropdownToggle("web")}
                     >
                         Web Development
-                        <i className="fa-solid fa-chevron-down"></i>
+                        {/* <i className="fa-solid fa-chevron-down"></i> */}
                     </button>
                     <ul className="sub-menu">
                         {prog?.map((course) => (
@@ -108,7 +108,7 @@ export default function Navigation({ prog, graph, ict }) {
                         onClick={() => handleDropdownToggle("data")}
                     >
                         Data Science & AI
-                        <i className="fa-solid fa-chevron-down"></i>
+                        {/* <i className="fa-solid fa-chevron-down"></i> */}
                     </button>
                     <ul className="sub-menu">
                         {graph?.map((course) => (
@@ -132,7 +132,7 @@ export default function Navigation({ prog, graph, ict }) {
                         onClick={() => handleDropdownToggle("ict")}
                     >
                         ICT
-                        <i className="fa-solid fa-chevron-down"></i>
+                        {/* <i className="fa-solid fa-chevron-down"></i> */}
                     </button>
                     <ul className="sub-menu">
                         {ict?.map((course) => (

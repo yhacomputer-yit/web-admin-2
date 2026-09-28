@@ -84,7 +84,6 @@
   font-family: inherit;
 }
 
-.nav-link:hover,
 .nav-link.active {
   color: #ff6b01;
   border-bottom-color: #ff6b01;

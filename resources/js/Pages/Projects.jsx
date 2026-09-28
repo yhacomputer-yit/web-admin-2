@@ -361,12 +361,12 @@ export default function Projects({
                                                                 ? `/storage/${project.student_photo}`
                                                                 : project.student?.photo
                                                                 ? `/storage/${project.student.photo}`
-                                                                : '/image/logo/logo.png'
+                                                                : '/image/logo/stud1.jpeg'
                                                         }
                                                         alt="Student"
                                                         onError={(e) => {
                                                             e.target.src =
-                                                                '/image/logo/logo.png';
+                                                                '/image/logo/stud1.jpeg';
                                                         }}
                                                     />
                                                 </div>
