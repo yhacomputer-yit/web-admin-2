@@ -34,6 +34,14 @@ export default function Projects({
         ).length;
     };
 
+    const getSubjectCount = (id) => {
+        const allowedCourseIds = subjectCourseMap[id] || subjectCourseMap[String(id)] || [];
+        return allowedCourseIds.reduce(
+            (total, courseId) => total + Number(getCourseCount(courseId) || 0),
+            0
+        );
+    };
+
     const filteredProjects = useMemo(() => {
         return projectsData.filter((project) => {
             // ===== Search =====
@@ -68,11 +76,10 @@ export default function Projects({
                 }
             }
 
-            // ===== Subject filter (Course မှတဆင့်) =====
+            // ===== Subject filter  =====
             if (subjectId !== 'all') {
                 const allowedCourseIds = subjectCourseMap[subjectId] || subjectCourseMap[String(subjectId)] || [];
 
-                // allowedCourseIds ကို string array အဖြစ် ပြောင်း
                 const allowed = allowedCourseIds.map(String);
                 const pCourseId = String(project.course_id || project.course?.id || '');
 
@@ -217,6 +224,7 @@ export default function Projects({
                                             onClick={() => handleSubject('all')}
                                         >
                                             All Subjects
+                                            <span>{projectsData.length}</span>
                                         </button>
                                     </li>
                                     {subjects.map((sub) => (
@@ -231,6 +239,7 @@ export default function Projects({
                                                 onClick={() => handleSubject(sub.id)}
                                             >
                                                 {sub.name}
+                                                <span>{getSubjectCount(sub.id)}</span>
                                             </button>
                                         </li>
                                     ))}
