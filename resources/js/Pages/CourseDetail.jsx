@@ -21,26 +21,15 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
 
-            {/* ========== Course Hero – New Full Image Style ========== */}
+            {/* ========== Course Hero (image only) ========== */}
             <section className="cd-hero">
-                <div
-                    className="cd-hero-bg"
-                    style={{ backgroundImage: `url(/storage/${course?.image})` }}
-                ></div>
-                <div className="cd-hero-overlay"></div>
-
                 <div className="container cd-container">
-                    <div className="cd-hero-content">
-                        <div className="cd-breadcrumb">
-                            <Link href="/">Home</Link>
-                            <span>/</span>
-                            <Link href="/courses">Courses</Link>
-                            <span>/</span>
-                            <span className="current">{course?.name}</span>
-                        </div>
-
-                        <h1 className="cd-title">{course?.name}</h1>
-
+                    <div className="cd-hero-inner">
+                        <div
+                            className="cd-hero-bg"
+                            style={{ backgroundImage: `url(/storage/${course?.image})` }}
+                        ></div>
+                        <div className="cd-hero-overlay"></div>
                     </div>
                 </div>
             </section>
@@ -50,6 +39,8 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                 <div className="container cd-container">
                     <div className="row gy-4">
                         <div className="col-lg-8">
+                            <h1 className="cd-page-title">{course?.name}</h1>
+
                             <h2 className="cd-section-title">About This Course</h2>
                             <div
                                 className="cd-about-text"
@@ -99,17 +90,17 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
             {/* ========== Subjects ========== */}
             <section id="subjects" className="cd-subjects">
                 <div className="container cd-container">
-                    <div className="text-center mb-5">
+                    <div className="cd-subjects-header mb-4">
                         <h2 className="cd-section-title">Course Subjects</h2>
                         <p className="cd-section-subtitle">
                             Comprehensive curriculum designed for your success
                         </p>
                     </div>
 
-                    <div className="row g-4">
+                    <div className="row g-3">
                         {subjects && subjects.length > 0 ? (
                             subjects.map((subject, index) => (
-                                <div key={subject.id} className="col-lg-4 col-md-6">
+                                <div key={subject.id} className="col-lg-2 col-md-4 col-sm-6">
                                     <div className="cd-subject-card">
                                         <div className="cd-subject-num">{index + 1}</div>
                                         <h3 className="cd-subject-title">

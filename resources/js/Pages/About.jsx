@@ -26,7 +26,7 @@ export default function About({ prog, graph, ict, address }) {
                         {/* Left - Image */}
                         <div className="about-hero-image">
                             <img
-                                src="/image/logo/logo.png"
+                                src="/image/logo/about.jpg"
                                 alt="YHA Computer Training Center"
                             />
                         </div>
@@ -42,12 +42,21 @@ export default function About({ prog, graph, ict, address }) {
                             </h2>
 
                             <p className="about-hero-text">
-                                YHA Computer Training Center is a leading technology education
-                                institute dedicated to empowering students with practical skills
-                                in programming, design, data science, and ICT. Since our founding,
-                                we have been committed to delivering industry-relevant training
-                                that transforms careers and builds the next generation of tech
-                                professionals.
+                              မင်္ဂလာပါ ခင်ဗျား။
+
+ကျွန်တော်တို့ YHA Academy of Technology မှ နွေးထွေးစွာ ကြိုဆိုနှုတ်ဆက်အပ်ပါသည်။
+
+YHA Academy ကို ၂၀၁၇ ခုနှစ်၊ ဇွန်လတွင် စတင်တည်ထောင်ခဲ့ပြီး နည်းပညာနယ်ပယ်မှ Software Developer ဘဝ အတွေ့အကြုံများနှင့် သင်ကြားရေး အတွေ့အကြုံများကို အခြေခံကာ မိမိတို့ လူ့ဘောင်အတွက် စွမ်းဆောင်ရည်မြင့် လူငယ်လူရွယ်များကို မွေးထုတ်ပေးနိုင်ရန် ရည်ရွယ်ဖွင့်လှစ်ခဲ့ပါသည်။
+
+ကျွန်တော်တို့ သင်တန်းကျောင်းတွင်-
+
+ကမ္ဘာ့ထိပ်တန်း တက္ကသိုလ်များ၏ သင်ကြားနည်းစနစ်များနှင့် ပြင်ပပညာရှင်များ၏ အကြံပြုချက်များကို အခြေခံထားသော Programming သင်ရိုးညွှန်းတမ်းများ ဖြစ်ခြင်း၊
+
+ဝါသနာပါရာ နယ်ပယ်အလိုက် လက်တွေ့ Project များကို အခြေပြု သင်ကြားပေးခြင်း၊
+
+ကျောင်းသားတစ်ဦးချင့်စီအတွက် ထိရောက်သော အကြံဉာဏ်နှင့် လမ်းညွှန်မှုများ ပေးအပ်နိုင်ခြင်း စသည့် အားသာချက်များဖြင့် စနစ်တကျ သင်ကြားပေးလျက် ရှိပါသည်။
+
+အနာဂတ် နည်းပညာခရီ်းလမ်းကို ယုံကြည်မှုရှိရှိ အတူတကွ လျှောက်လှမ်းလိုသူ လူငယ်များအားလုံးကို ကြိုဆိုဖိတ်ခေါ်အပ်ပါသည်။
                             </p>
                         </div>
                     </div>
