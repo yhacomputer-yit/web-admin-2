@@ -288,6 +288,8 @@ export default function Projects({ projects, prog, graph, ict, address }) {
                                                     alt="Student"
                                                     onError={(e) => { e.target.src = '/image/logo/logo.png'; }}
                                                 />
+                                                {/* student attended university name here  */}
+                                                <h1>Dangon University</h1>
                                             </div>
                                         </div>
                                     ))

@@ -21,7 +21,7 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
         <div className="frontend-page">
             <Navigation prog={prog} graph={graph} ict={ict} />
 
-            {/* ========== Course Hero (image only) ========== */}
+            {/* ========== Hero ========== */}
             <section className="cd-hero">
                 <div className="container cd-container">
                     <div className="cd-hero-inner">
@@ -34,21 +34,72 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                 </div>
             </section>
 
-            {/* ========== About + Sidebar ========== */}
+            {/* ========== About (col-6) | Image (col-6) ========== */}
             <section className="cd-about">
                 <div className="container cd-container">
-                    <div className="row gy-4">
-                        <div className="col-lg-8">
+                    <div className="row gy-4 align-items-start">
+                        {/* Left - About */}
+                        <div className="col-lg-6">
                             <h1 className="cd-page-title">{course?.name}</h1>
-
-                            <h2 className="cd-section-title">About This Course</h2>
                             <div
                                 className="cd-about-text"
                                 dangerouslySetInnerHTML={{ __html: course?.about }}
                             />
                         </div>
 
-                        <div className="col-lg-4">
+                        {/* Right - Image */}
+                        <div className="col-lg-6">
+                            <div className="cd-about-image-wrap">
+                                <img
+                                    src={`/storage/${course?.image}`}
+                                    alt={course?.name}
+                                    className="cd-about-image"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ========== Course Subjects | Course Information ========== */}
+            <section id="subjects" className="cd-subjects">
+                <div className="container cd-container">
+                    <div className="row gy-4 align-items-start">
+                        {/* Left - Subjects */}
+                        <div className="col-lg-6">
+                            <div className="cd-subjects-header mb-4">
+                                <h2 className="cd-section-title">Course Subjects</h2>
+                                <p className="cd-section-subtitle">
+                                    Comprehensive curriculum designed for your success
+                                </p>
+                            </div>
+
+                            <div className="row g-3">
+                                {subjects && subjects.length > 0 ? (
+                                    subjects.map((subject, index) => (
+                                        <div key={subject.id} className="col-md-6 col-sm-6">
+                                            <div className="cd-subject-card">
+                                                <div className="cd-subject-num">{index + 1}</div>
+                                                <h3 className="cd-subject-title">
+                                                    {subject.subject?.name}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="col-12">
+                                        <div className="cd-empty">
+                                            <i className="fas fa-book-open"></i>
+                                            <h3>No Subjects Available</h3>
+                                            <p>Course subjects will be updated soon.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right - Course Information */}
+                        <div className="col-lg-6">
                             <div className="cd-sidebar">
                                 <h3 className="cd-sidebar-title">Course Information</h3>
 
@@ -83,41 +134,6 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                                 )}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ========== Subjects ========== */}
-            <section id="subjects" className="cd-subjects">
-                <div className="container cd-container">
-                    <div className="cd-subjects-header mb-4">
-                        <h2 className="cd-section-title">Course Subjects</h2>
-                        <p className="cd-section-subtitle">
-                            Comprehensive curriculum designed for your success
-                        </p>
-                    </div>
-
-                    <div className="row g-3">
-                        {subjects && subjects.length > 0 ? (
-                            subjects.map((subject, index) => (
-                                <div key={subject.id} className="col-lg-2 col-md-4 col-sm-6">
-                                    <div className="cd-subject-card">
-                                        <div className="cd-subject-num">{index + 1}</div>
-                                        <h3 className="cd-subject-title">
-                                            {subject.subject?.name}
-                                        </h3>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="col-12">
-                                <div className="cd-empty">
-                                    <i className="fas fa-book-open"></i>
-                                    <h3>No Subjects Available</h3>
-                                    <p>Course subjects will be updated soon.</p>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </section>
@@ -177,7 +193,7 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                                                 </span>
                                             </div>
                                             <Link
-                                                href={`/courses/${item.id}`}
+                                                href={`/course/${item.id}`}
                                                 className="cd-related-link"
                                             >
                                                 Learn More →
