@@ -112,36 +112,43 @@ public function course(Request $request, $id)
         ]);
 
     }
-    public function project($c_id = 1){
-        $data = $this->share();
-        $prog = 1;
-        $photo = 2;
+    public function project($c_id = 1)
+{
+    $data = $this->share();
 
-        if($c_id == 2){
-            $projects = Project::with('course:id,name')
-            ->whereHas('course', function ($query) use ($photo) {
-                $query->where('type', $photo); // Fetch courses of type 2 (Graphic Design)
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(9);
-        } else{
-            $projects = Project::with('course:id,name')
-            ->whereHas('course', function ($query) use ($prog) {
-                $query->where('type', $prog); // Fetch courses of type 1 (Programming)
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(9);
-        }
-         $data = $this->share();
+    $projects = Project::with('course:id,name')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        return inertia('Projects', [
-            'projects' => $projects,
-            'prog' => $data['prog'],
-            'graph' => $data['graph'],
-            'ict' => $data['ict'],
-            'address' => $data['address'],
-        ]);
-    }
+    // Course counts
+    $courseCounts = Project::select('course_id', DB::raw('count(*) as total'))
+        ->groupBy('course_id')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [(string) $item->course_id => $item->total];
+        });
+
+    // Subjects
+    $subjects = \App\Models\Subject::orderBy('name')->get(['id', 'name']);
+
+    $subjectCourseMap = \App\Models\ClassModel::select('subject_id', 'course_id')
+        ->get()
+        ->groupBy('subject_id')
+        ->map(function ($items) {
+            return $items->pluck('course_id')->unique()->values();
+        });
+
+    return inertia('Projects', [
+        'projects'          => $projects,
+        'prog'              => $data['prog'],
+        'graph'             => $data['graph'],
+        'ict'               => $data['ict'],
+        'address'           => $data['address'],
+        'subjects'          => $subjects,
+        'courseCounts'      => $courseCounts,
+        'subjectCourseMap'  => $subjectCourseMap,
+    ]);
+}
 
     public function gallery()
     {
