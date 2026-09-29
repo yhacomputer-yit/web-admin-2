@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EnrollmentController extends Controller
@@ -33,10 +34,11 @@ class EnrollmentController extends Controller
     // edit enrollment
     public function edit($id)
     {
-        $enrollment = StudentEnrollment::findOrFail($id);
+        $enrollment = StudentEnrollment::with('student')->findOrFail($id);
 
         return view('admin.enrollment.edit', array_merge($this->formData(), [
             'enrollment' => $enrollment,
+            'selectedStudent' => $enrollment->student,
         ]));
     }
 
@@ -72,12 +74,49 @@ class EnrollmentController extends Controller
     }
 
     /**
+     * Autocomplete lookup for the student picker. Searches across name,
+     * username, phone, email, NRC and the numeric student id.
+     */
+    public function searchStudents(Request $request)
+    {
+        $term = trim((string) $request->input('q', ''));
+
+        $students = Student::query()
+            ->when($term !== '', function ($q) use ($term) {
+                $like = "%{$term}%";
+                $q->where(function ($sub) use ($like, $term) {
+                    $sub->where('name', 'like', $like)
+                        ->orWhere('username', 'like', $like)
+                        ->orWhere('phone', 'like', $like)
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('nrc', 'like', $like);
+
+                    if (ctype_digit($term)) {
+                        $sub->orWhere('id', (int) $term);
+                    }
+                });
+            })
+            ->orderBy('name')
+            ->limit(20)
+            ->get(['id', 'name', 'username', 'phone', 'email', 'image', 'status']);
+
+        return response()->json($students->map(fn ($s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'username' => $s->username,
+            'phone' => $s->phone,
+            'email' => $s->email,
+            'status' => $s->status,
+            'image' => $s->image ? Storage::url($s->image) : null,
+        ]));
+    }
+
+    /**
      * Options needed by the create/edit forms.
      */
     private function formData()
     {
         return [
-            'students' => Student::orderBy('name')->get(['id', 'name', 'username']),
             'courses' => Course::orderBy('name')->get(['id', 'name']),
             'sections' => Section::orderBy('start', 'asc')->get(['id', 'name']),
         ];

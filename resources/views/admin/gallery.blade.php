@@ -15,7 +15,11 @@
         <div class="row mb-2">
 
             {{-- Class Section  --}}
-            <div class="fs-4 mb-4"> <i class="bx bx-image fs-3 mb-1"></i>Gallery</div>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div class="fs-4"> <i class="bx bx-image fs-3 mb-1"></i>Gallery</div>
+                <a style="background-color: #ff6c0f; color:white;" href="{{ route('gallery.createPage') }}" class="btn d-inline"> <i
+                        class="bx bx-plus"></i> Gallery</a>
+            </div>
 
             <div class="col-12 mb-5">
                 @if (count($gallerys) > 0)
@@ -63,8 +67,6 @@
                     <div class="fs-6 text-uppercase text-center my-4">No Record!</div>
                 @endif
                 {{ $gallerys->links() }}
-                <a style="background-color: #ff6c0f; color:white;" href="{{ route('gallery.createPage') }}" class="btn mb-5 d-inline"> <i
-                        class="bx bx-plus"></i> Gallery</a>
             </div>
 
         </div>

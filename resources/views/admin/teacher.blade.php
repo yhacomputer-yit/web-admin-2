@@ -12,7 +12,11 @@
 
         {{-- Instructor Data Table  --}}
         {{-- Data Table > Instructor  --}}
-        <div class="fs-4 text-bolder mb-2">Instructors</div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div class="fs-4 text-bolder">Instructors</div>
+            <a style="background-color: #ff6c0f; color:white;" href="{{ route('teacher.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i> Instructor
+            </a>
+        </div>
         <div class="row mb-2">
             {{-- Data Table  --}}
             @if (count($teachers) > 0)
@@ -76,9 +80,6 @@
         </div>
         {{-- Pagination  --}}
         {{ $teachers->appends(['position' => $positions->currentPage(), 'teach' => $teaches->currentPage()])->links() }}
-        {{-- Button  --}}
-        <a style="background-color: #ff6c0f; color:white;" href="{{ route('teacher.createPage') }}" class="btn mb-5"> <i class="bx bx-plus"></i> Instructor
-        </a>
 
 
 
@@ -90,7 +91,10 @@
             
             {{-- Position Table  --}}
             <div class="col-md-6">
-                <div class="fs-4 text-bolder mb-2">Position</div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                    <div class="fs-4 text-bolder">Position</div>
+                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('position.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i> Position </a>
+                </div>
                 @if (count($positions) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded my-2">
                         <table class="table">
@@ -132,8 +136,6 @@
                 @endif
                 {{-- Pagination  --}}
                 {{ $positions->appends(['teacher' => $teachers->currentPage(), 'teach' => $teaches->currentPage()])->links() }}
-                {{-- Button  --}}
-                <a style="background-color: #ff6c0f; color:white;" href="{{ route('position.createPage') }}" class="btn mb-5"> <i class="bx bx-plus"></i> Position </a>
             </div>
 
 
@@ -141,7 +143,10 @@
 
             {{-- Teach Table  --}}
             <div class="col-md-6">
-                <div class="fs-4 text-bolder mb-2">Teach</div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                    <div class="fs-4 text-bolder">Teach</div>
+                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('teach.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i> Teach </a>
+                </div>
                 @if (count($teaches) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded my-2">
                         <table class="table">
@@ -194,8 +199,6 @@
                 @endif
                 {{-- Pagination  --}}
                 {{ $teaches->appends(['teacher' => $teachers->currentPage(), 'position' => $positions->currentPage()])->links() }}
-                {{-- Button  --}}
-                <a style="background-color: #ff6c0f; color:white;" href="{{ route('teach.createPage') }}" class="btn mb-5"> <i class="bx bx-plus"></i> Teach </a>
             </div>
 
 

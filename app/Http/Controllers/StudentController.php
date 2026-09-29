@@ -11,6 +11,53 @@ use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
+    // student profile page
+    public function show($id)
+    {
+        $student = Student::with(['enrollments.course', 'enrollments.section'])->findOrFail($id);
+
+        return view('admin.student.show', compact('student'));
+    }
+
+    /**
+     * Change the status of many students at once.
+     */
+    public function bulkStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:students,id',
+            'status' => 'required|in:active,inactive',
+        ], [
+            'ids.required' => 'Select at least one student.',
+        ]);
+
+        $count = Student::whereIn('id', $validated['ids'])
+            ->update(['status' => $validated['status']]);
+
+        return redirect()->route('admin.student')->with([
+            'success' => 'Updated ' . $count . ' student' . ($count === 1 ? '' : 's')
+                . ' to ' . $validated['status'] . '.',
+        ]);
+    }
+
+    /**
+     * Generate a new password for a student. It is hashed and only shown once.
+     */
+    public function resetPassword($id)
+    {
+        $student = Student::findOrFail($id);
+        $plain = Student::generatePassword();
+
+        $student->password = bcrypt($plain);
+        $student->save();
+
+        return redirect()->back()->with([
+            'success' => 'New password for ' . $student->name . ' is: ' . $plain,
+            'new_password' => ['student' => $student->name, 'password' => $plain],
+        ]);
+    }
+
     // direct to create page
     public function createPage()
     {
@@ -125,7 +172,7 @@ class StudentController extends Controller
     // get request data
     private function get_request_data(Request $request)
     {
-        return [
+        $data = [
             'name' => $request->input('name'),
             'nickname' => $request->input('nickname'),
             'father_name' => $request->input('father_name'),
@@ -147,6 +194,18 @@ class StudentController extends Controller
             'password' => $request->input('password'),
             'status' => $request->input('status', 'inactive'),
         ];
+
+        // on update only write the fields that were actually submitted, so a
+        // partial post cannot silently wipe the fields it left out
+        if ($request->filled('id')) {
+            $data = array_filter(
+                $data,
+                fn ($value, $key) => $request->has($key),
+                ARRAY_FILTER_USE_BOTH
+            );
+        }
+
+        return $data;
     }
 
     // validation the request data

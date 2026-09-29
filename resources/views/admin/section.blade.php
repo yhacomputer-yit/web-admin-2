@@ -18,7 +18,11 @@
 
             {{-- Section Table  --}}
             <div class="col-md-8">
-                <span class="fs-4"> <i class="bx bx-hourglass fs-4 mb-1"></i> Section</span>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span class="fs-4"> <i class="bx bx-hourglass fs-4 mb-1"></i> Section</span>
+                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('section.createPage') }}" class="btn d-inline"> <i
+                            class="bx bx-plus"></i> Section</a>
+                </div>
 
                 @if (count($sections) > 0)
                     <div class="table-responsive text-nowrap bg-light rounded shadow my-3">
@@ -67,9 +71,6 @@
                 @endif
                 {{-- Pagination  --}}
                 {{ $sections->appends(['course_section' => $courseSections->currentPage()])->links() }}
-                {{-- Button  --}}
-                <a style="background-color: #ff6c0f; color:white;" href="{{ route('section.createPage') }}" class="btn mb-5 d-inline"> <i
-                        class="bx bx-plus"></i> Section</a>
             </div>
 
         </div>

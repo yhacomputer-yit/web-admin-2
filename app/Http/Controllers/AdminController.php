@@ -92,21 +92,72 @@ class AdminController extends Controller
     }
 
     // direct student page
-    public function student(){
-        $students = Student::withCount('enrollments')
-                        ->orderBy('updated_at', 'desc')
-                        ->paginate(10, ['*'], 'student');
+    public function student(Request $request){
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
 
-        return view('admin.student', ['students' => $students]);
+        $status = $request->input('status');
+        $courseId = $request->input('course_id');
+        $minCourses = $request->input('min_courses');
+        $search = trim((string) $request->input('search', ''));
+
+        $students = Student::with(['enrollments.course', 'enrollments.section'])
+                        ->withCount('enrollments')
+                        ->when(in_array($status, ['active', 'inactive'], true),
+                            fn ($q) => $q->where('status', $status))
+                        ->when($courseId,
+                            fn ($q) => $q->whereHas('enrollments',
+                                fn ($e) => $e->where('course_id', $courseId)))
+                        ->when($minCourses !== null && $minCourses !== '',
+                            fn ($q) => $q->having('enrollments_count', '>=', (int) $minCourses))
+                        ->when($search !== '', function ($q) use ($search) {
+                            $q->where(function ($sub) use ($search) {
+                                $sub->where('name', 'like', "%{$search}%")
+                                    ->orWhere('username', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%")
+                                    ->orWhere('nrc', 'like', "%{$search}%");
+                            });
+                        })
+                        ->orderBy('updated_at', 'desc')
+                        ->paginate($perPage, ['*'], 'student')
+                        ->withQueryString();
+
+        $courses = Course::orderBy('name')->get(['id', 'name']);
+
+        return view('admin.student', compact('students', 'courses', 'perPage'));
     }
 
     // direct course enrollment page
-    public function enrollment(){
-        $enrollments = StudentEnrollment::with(['student', 'course', 'section'])
-                        ->orderByDesc('enroll_date')
-                        ->paginate(10, ['*'], 'enrollment');
+    public function enrollment(Request $request){
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
 
-        return view('admin.enrollment', ['enrollments' => $enrollments]);
+        $courseId = $request->input('course_id');
+        $search = trim((string) $request->input('search', ''));
+
+        // group enrollments under their student so names are not repeated per row
+        $students = Student::with(['enrollments.course', 'enrollments.section'])
+            ->withCount('enrollments')
+            ->has('enrollments')
+            ->when($courseId, fn ($q) => $q->whereHas('enrollments',
+                fn ($e) => $e->where('course_id', $courseId)))
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhereHas('enrollments', function ($e) use ($search) {
+                            $e->whereHas('course', fn ($c) => $c->where('name', 'like', "%{$search}%"));
+                        });
+                });
+            })
+            ->orderBy('name')
+            ->paginate($perPage, ['*'], 'enrollment')
+            ->withQueryString();
+
+        $courses = Course::orderBy('name')->get(['id', 'name']);
+
+        return view('admin.enrollment', compact('students', 'courses', 'perPage'));
     }
 
     // direct project page

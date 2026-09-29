@@ -25,6 +25,13 @@
 
     <div class="menu-inner-shadow"></div>
 
+    {{-- collapse / expand the sidebar to an icon-only rail  --}}
+    <button type="button" id="sidebarToggle" class="sidebar-toggle"
+        aria-controls="layout-menu" aria-expanded="true" aria-label="Collapse sidebar"
+        title="Collapse sidebar">
+        <i class="bx bx-chevron-left"></i>
+    </button>
+
     <ul class="menu-inner py-1">
          <li class="menu-item">
             <a href="{{ route('admin.home') }}" class="menu-link">
@@ -126,7 +133,7 @@
         {{-- POS List --}}
         <li class="menu-item dropdown">
             <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                <i class="fa-solid fa-file-invoice-dollar mr-4"></i>
+                <i class="menu-icon fa-solid fa-file-invoice-dollar"></i>
                 <div data-i18n="Dashboards">POS</div>
             </a>
             <ul class="dropdown-menu">
@@ -142,3 +149,63 @@
 </aside>
 
 <!-- / Menu -->
+
+<script>
+(function () {
+    const KEY = 'yha.sidebar.collapsed';
+    const root = document.documentElement;
+    const btn = document.getElementById('sidebarToggle');
+    const menu = document.getElementById('layout-menu');
+    if (!btn || !menu) return;
+
+    // labels come from the markup so the tooltip can never drift from the menu text
+    menu.querySelectorAll('.menu-inner > .menu-item > .menu-link').forEach(function (link) {
+        const label = link.querySelector('div:not(.menu-block)');
+        if (label && !link.dataset.label) {
+            link.dataset.label = label.textContent.trim();
+        }
+    });
+
+    function isCollapsed() {
+        return root.classList.contains('sidebar-collapsed');
+    }
+
+    function syncButton() {
+        const collapsed = isCollapsed();
+        btn.setAttribute('aria-expanded', String(!collapsed));
+        btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        btn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    }
+
+    function setCollapsed(collapsed, persist) {
+        root.classList.toggle('sidebar-collapsed', collapsed);
+        if (persist) {
+            try {
+                if (collapsed) { localStorage.setItem(KEY, '1'); }
+                else { localStorage.removeItem(KEY); }
+            } catch (e) { /* private mode: just don't remember it */ }
+        }
+        syncButton();
+    }
+
+    btn.addEventListener('click', function () {
+        setCollapsed(!isCollapsed(), true);
+    });
+
+    // reset the rail on small screens where the template uses an overlay menu
+    let mq = window.matchMedia('(min-width: 1200px)');
+    function applyViewport(e) {
+        if (!e.matches) {
+            root.classList.remove('sidebar-collapsed');
+        } else {
+            let saved = null;
+            try { saved = localStorage.getItem(KEY); } catch (err) { /* ignore */ }
+            root.classList.toggle('sidebar-collapsed', saved === '1');
+        }
+        syncButton();
+    }
+    applyViewport(mq);
+    if (mq.addEventListener) { mq.addEventListener('change', applyViewport); }
+    else if (mq.addListener) { mq.addListener(applyViewport); }
+})();
+</script>

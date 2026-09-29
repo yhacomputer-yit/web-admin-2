@@ -192,6 +192,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/createPage', [StudentController::class, 'createPage'])->name('student.createPage');
             Route::post('/create', [StudentController::class, 'create'])->name('student.create');
             Route::post('/generate-credentials', [StudentController::class, 'generateCredentials'])->name('student.generateCredentials');
+            Route::get('/{id}', [StudentController::class, 'show'])->name('student.show')->whereNumber('id');
+            Route::post('/bulk-status', [StudentController::class, 'bulkStatus'])->name('student.bulkStatus');
+            Route::get('/reset-password/{id}', [StudentController::class, 'resetPassword'])->name('student.resetPassword');
             Route::get('/edit/{id}', [StudentController::class, 'edit'])->name('student.edit');
             Route::post('/update/{id}', [StudentController::class, 'update'])->name('student.update');
             Route::get('/delete/{id}', [StudentController::class, 'delete'])->name('student.delete');
@@ -201,6 +204,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('enrollment')->group(function() {
             Route::get('/createPage', [EnrollmentController::class, 'createPage'])->name('enrollment.createPage');
             Route::post('/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
+            Route::post('/search-students', [EnrollmentController::class, 'searchStudents'])->name('enrollment.searchStudents');
             Route::get('/edit/{id}', [EnrollmentController::class, 'edit'])->name('enrollment.edit');
             Route::post('/update/{id}', [EnrollmentController::class, 'update'])->name('enrollment.update');
             Route::get('/delete/{id}', [EnrollmentController::class, 'delete'])->name('enrollment.delete');

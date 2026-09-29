@@ -2,21 +2,11 @@
 @php($enrollment = $enrollment ?? null)
 
 <div class="row g-3">
-    <div class="col-md-6">
-        <label for="student_id" class="form-label h6 my-2">Student <span class="text-danger">*</span></label>
-        <select name="student_id" id="student_id" class="form-select @error('student_id') is-invalid @enderror" required>
-            <option value="">Select Student</option>
-            @foreach ($students as $student)
-                <option value="{{ $student->id }}"
-                    @selected((string) old('student_id', $enrollment?->student_id) === (string) $student->id)>
-                    {{ $student->name }}@if ($student->username) ({{ $student->username }})@endif
-                </option>
-            @endforeach
-        </select>
-        @error('student_id')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+    @include('admin.enrollment.partials.student-picker', [
+        'selectedStudent' => old('student_id')
+            ? \App\Models\Student::find(old('student_id'))
+            : ($enrollment?->student),
+    ])
 
     <div class="col-md-6">
         <label for="course_id" class="form-label h6 my-2">Course <span class="text-danger">*</span></label>

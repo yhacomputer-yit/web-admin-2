@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Collapsible admin sidebar
+   - Default: full sidebar with labels
+   - Collapsed: icon-only rail, labels shown as tooltips on hover
+   Toggle button + state is handled in admin/components/aside.blade.php
+   ========================================================================== */
+
+:root {
+    --sidebar-width: 16.25rem;
+    /* matches the template's own collapsed width so its metrics stay valid */
+    --sidebar-collapsed-width: 5.25rem;
+}
+
+/* ---------- Collapsed state ---------- */
+html.sidebar-collapsed #layout-menu {
+    width: var(--sidebar-collapsed-width);
+    /* Must clear the content area: .layout-menu .menu carries a
+       transform, which creates a stacking context, so the tooltip's own
+       z-index is trapped inside it and can never rise above this value. */
+    z-index: 1080;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 3px 0 12px rgba(0, 0, 0, 0.06);
+}
+
+html.sidebar-collapsed #layout-menu .app-brand {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+html.sidebar-collapsed #layout-menu .app-brand-logo img,
+html.sidebar-collapsed #layout-menu .app-brand-logo.demo img {
+    width: 34px;
+    height: auto;
+}
+
+html.sidebar-collapsed #layout-menu .app-brand-text {
+    display: none;
+}
+
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item {
+    width: var(--sidebar-collapsed-width);
+}
+
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item > .menu-link {
+    padding-left: 1rem;
+    padding-right: 0;
+}
+
+/* Hide the label AND pull it out of the flex flow.
+   opacity alone is not enough: the label keeps `flex: 0 1 auto`, so it still
+   claims space and squeezes the icon out of the rail. */
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item div:not(.menu-block) {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Centre the icon in the rail. Negative margin + full-rail width is the same
+   technique the template uses for its own collapsed menu, so the glyph lands
+   dead centre instead of drifting left of the visible area. */
+html.sidebar-collapsed #layout-menu .menu-icon {
+    flex: 0 0 auto;
+    margin-left: -2rem;
+    margin-right: 0;
+    width: var(--sidebar-collapsed-width);
+    text-align: center;
+    font-size: 1.35rem;
+}
+
+/* no sub-menu chevron in the rail */
+html.sidebar-collapsed #layout-menu .menu-item > .menu-toggle::after {
+    display: none;
+}
+
+/* keep the POS sub-menu usable: fly it out to the right of the rail.
+   the item must be the positioning context, otherwise `top: 0` would
+   resolve against the (fixed) sidebar and pin the list to the very top. */
+html.sidebar-collapsed #layout-menu .menu-item.dropdown {
+    position: relative;
+}
+
+html.sidebar-collapsed #layout-menu .menu-item.dropdown .dropdown-menu {
+    left: 100%;
+    top: 0;
+    margin-left: 0.35rem;
+    z-index: 1060;
+}
+
+/* ---------- Content area follows the rail ----------
+   The template reserves the menu gutter with
+   `.layout-menu-fixed:not(.layout-menu-collapsed) .layout-page { padding-left: 16.25rem }`.
+   That rule keys off the template's own collapsed class, so shrinking #layout-menu
+   alone leaves a 16.25rem hole and the content never reclaims the space.
+   Scoped to >=1200px, because below that the template uses the overlay menu
+   and .layout-page has no left padding to begin with. */
+@media (min-width: 1200px) {
+    html.sidebar-collapsed.layout-menu-fixed:not(.layout-menu-collapsed) .layout-page {
+        padding-left: var(--sidebar-collapsed-width);
+    }
+
+    .layout-page {
+        transition: padding-left 0.25s ease;
+    }
+
+    #layout-menu {
+        transition: width 0.25s ease;
+    }
+}
+
+/* ---------- Hover tooltip ---------- */
+#layout-menu .menu-inner > .menu-item > .menu-link {
+    position: relative;
+}
+
+/* Nothing in the template clips the rail today, but these containers are the
+   ones that would clip it if the sidebar ever gained a transform or a
+   max-width constraint. Cheap insurance, and the tooltip genuinely depends on
+   escaping the rail. */
+html.sidebar-collapsed #layout-menu,
+html.sidebar-collapsed #layout-menu .menu,
+html.sidebar-collapsed #layout-menu .menu-inner,
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item {
+    overflow: visible !important;
+}
+
+/* Lift the transformed .menu so the tooltip's stacking context clears the
+   content area as well - z-index on the tooltip alone is not enough. */
+html.sidebar-collapsed #layout-menu .menu {
+    position: relative;
+    z-index: 1081;
+}
+
+/* the tooltip itself. No template rule targets `.menu-link::after`, so this
+   pseudo-element is free for the label pill. */
+#layout-menu .menu-inner > .menu-item > .menu-link::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 0.65rem);
+    top: 50%;
+    transform: translateY(-50%) translateX(-0.35rem);
+    padding: 0.3rem 0.65rem;
+    border-radius: 0.375rem;
+    background: #1e1e2d;
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    z-index: 1090;
+}
+
+/* only show tooltips while the rail is collapsed */
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item > .menu-link:hover::after,
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item > .menu-link:focus-visible::after {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* keyboard users get the same tooltip on focus */
+html.sidebar-collapsed #layout-menu .menu-inner > .menu-item > .menu-link:focus-visible::after {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* ---------- Active item indicator ---------- */
+html.sidebar-collapsed #layout-menu .menu-item.active > .menu-link {
+    background-color: #ff6c0f;
+}
+
+html.sidebar-collapsed #layout-menu .menu-item.active > .menu-link .menu-icon {
+    color: #fff;
+}
+
+/* ---------- Toggle button ---------- */
+.sidebar-toggle {
+    position: absolute;
+    top: 4.6rem;
+    right: -0.7rem;
+    z-index: 1060;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 50%;
+    background: #fff;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.12);
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+    background: #ff6c0f;
+    border-color: #ff6c0f;
+    color: #fff;
+}
+
+.sidebar-toggle:focus-visible {
+    outline: 2px solid #ff6c0f;
+    outline-offset: 2px;
+}
+
+.sidebar-toggle i {
+    transition: transform 0.2s ease;
+}
+
+html.sidebar-collapsed .sidebar-toggle i {
+    transform: rotate(180deg);
+}
+
+/* only meaningful on large screens; below that the template uses an overlay menu */
+@media (min-width: 1200px) {
+    #layout-menu .sidebar-toggle {
+        display: inline-flex;
+    }
+}
+
+/* ---------- Small screens: ignore the rail entirely ---------- */
+@media (max-width: 1199.98px) {
+    html.sidebar-collapsed #layout-menu {
+        width: var(--sidebar-width);
+    }
+
+    html.sidebar-collapsed #layout-menu .app-brand-text {
+        display: inline;
+    }
+
+    html.sidebar-collapsed #layout-menu .menu-inner > .menu-item div:not(.menu-block) {
+        opacity: 1;
+        visibility: visible;
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+    }
+
+    html.sidebar-collapsed #layout-menu .menu-link::after {
+        display: none;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    #layout-menu .menu-link::after,
+    .sidebar-toggle i {
+        transition: none;
+    }
+}

@@ -22,7 +22,10 @@
              {{-- Course Type  --}}
              <div class="row mb-4">
                 <div class="col">
-                    <h4> <i class="bx bx-book-add fs-3"></i> Course Type</h4>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h4> <i class="bx bx-book-add fs-3"></i> Course Type</h4>
+                        <a style="background-color: #ff6c0f; color:white;" href="{{ route('courseType.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i>Course Type</a>
+                    </div>
                     @if (count($courseTypes) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded mb-3">
                         <table class="table">
@@ -65,15 +68,17 @@
                         <h6 class="text-center text-secondary mt-3 text-uppercase">No Course Type</h6>
                     @endif
                     {{-- Pagination  --}}
-                    {{ $courseTypes->appends(['course' => $courses->currentPage(), 'subject' => $subjects->currentPage(), 'class' => $classes->currentPage()])->links() }}
-                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('courseType.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Course Type</a>
+                {{ $courseTypes->appends(['course' => $courses->currentPage(), 'subject' => $subjects->currentPage(), 'class' => $classes->currentPage()])->links() }}
                 </div>
             </div>
 
              {{-- Subject  --}}
              <div class="row mb-4">
                 <div class="col">
-                    <h4> <i class="bx bx-book-open fs-3"></i> Subject</h4>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h4> <i class="bx bx-book-open fs-3"></i> Subject</h4>
+                        <a style="background-color: #ff6c0f; color:white;" href="{{ route('subject.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i>Subject</a>
+                    </div>
                     @if (count($subjects) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded mb-3">
                         <table class="table">
@@ -114,14 +119,16 @@
                         <h6 class="text-center text-secondary mt-3 text-uppercase">No Subject</h6>
                     @endif
                     {{-- Pagination  --}}
-                    {{ $subjects->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
-                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('subject.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Subject</a>
+                {{ $subjects->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
                 </div>
             </div>
             {{-- Course --}}
             <div class="row mb-4">
                 <div class="col">
-                    <h4> <i class="bx bx-book-alt fs-3"></i> Course</h4>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h4> <i class="bx bx-book-alt fs-3"></i> Course</h4>
+                        <a style="background-color: #ff6c0f; color:white;" href="{{ route('course.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i>Course</a>
+                    </div>
                     @if (count($courses) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded mb-3">
                         <table class="table">
@@ -168,14 +175,16 @@
                         <h6 class="text-center text-secondary mt-3 text-uppercase">No Course</h6>
                     @endif
                     {{-- Pagination  --}}
-                    {{ $courses->appends(['subject' => $subjects->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
-                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('course.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Course</a>
+                {{ $courses->appends(['subject' => $subjects->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
                 </div>
             </div>
 
             {{-- Class List  --}}
             <div class="row mb-4">
-                <h4> <i class="bx bx-book-bookmark fs-3"></i> Class</h4>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h4> <i class="bx bx-book-bookmark fs-3"></i> Class</h4>
+                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('class.createPage') }}" class="btn d-inline"> <i class="bx bx-plus"></i>Class</a>
+                </div>
                 <div class="col-12">
                     @if (count($classes) > 0)
                     <div class="table-responsive text-nowrap bg-light shadow rounded">
@@ -281,7 +290,6 @@
             </div>
             {{-- Pagination  --}}
                     {{ $classes->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'subject' => $subjects->currentPage()])->links() }}
-            <a style="background-color: #ff6c0f; color:white;" href="{{ route('class.createPage') }}" class="btn mb-5"> <i class="bx bx-plus"></i>Class</a>
 
 
 

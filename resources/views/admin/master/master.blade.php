@@ -7,6 +7,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
+    <script>
+        // restore the collapsed rail before first paint so the sidebar never flashes open
+        try {
+            if (window.matchMedia('(min-width: 1200px)').matches
+                && localStorage.getItem('yha.sidebar.collapsed') === '1') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        } catch (e) { /* storage unavailable: keep the default full sidebar */ }
+    </script>
+
     <title>YHA | @yield('title')</title>
 
     <meta name="description" content="" />
@@ -30,6 +40,7 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('admin/assets/css/demo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/admin-sidebar.css') }}" />
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
