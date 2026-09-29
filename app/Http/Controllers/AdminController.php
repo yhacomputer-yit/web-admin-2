@@ -13,7 +13,8 @@ use App\Models\Section;
 use App\Models\Teacher;
 use App\Models\Welcome;
 use App\Models\Position;
-use App\Models\Register;
+use App\Models\Student;
+use App\Models\StudentEnrollment;
 use App\Models\Subject;
 use App\Models\course_type;
 use App\Models\AboutDesc;
@@ -92,9 +93,20 @@ class AdminController extends Controller
 
     // direct student page
     public function student(){
-        $students = Register::all();
+        $students = Student::withCount('enrollments')
+                        ->orderBy('updated_at', 'desc')
+                        ->paginate(10, ['*'], 'student');
 
         return view('admin.student', ['students' => $students]);
+    }
+
+    // direct course enrollment page
+    public function enrollment(){
+        $enrollments = StudentEnrollment::with(['student', 'course', 'section'])
+                        ->orderByDesc('enroll_date')
+                        ->paginate(10, ['*'], 'enrollment');
+
+        return view('admin.enrollment', ['enrollments' => $enrollments]);
     }
 
     // direct project page
@@ -113,14 +125,14 @@ class AdminController extends Controller
 
     // direct timetable page
     public function timetable(){
-        $timetables = TimeTable::select('subjects.name as subject', 'registers.name as student',
+        $timetables = TimeTable::select('subjects.name as subject', 'students.name as student',
                         'sections.name as section', 'teachers.name as teacher', 'courses.name as course',
                         'date', 'time_tables.id as id')
                         ->leftJoin('courses', 'time_tables.course_id', '=', 'courses.id')
                         ->leftJoin('subjects', 'time_tables.subject_id', '=', 'subjects.id')
                         ->leftJoin('sections', 'time_tables.section_id', '=', 'sections.id')
                         ->leftJoin('teachers', 'time_tables.teacher_id', '=', 'teachers.id')
-                        ->leftJoin('registers', 'time_tables.student_id', '=', 'registers.id')
+                        ->leftJoin('students', 'time_tables.student_id', '=', 'students.id')
                         ->get();
         // dd($timetables->toArray());
         return view('admin.timetable', compact('timetables'));

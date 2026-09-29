@@ -15,6 +15,8 @@ use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\CourseTypeController;
 use App\Http\Controllers\TeacherController;
@@ -53,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/course', [AdminController::class, 'course'])->name('admin.course');
         Route::get('/section', [AdminController::class, 'section'])->name('admin.section');
         Route::get('/student', [AdminController::class, 'student'])->name('admin.student');
+        Route::get('/enrollment', [AdminController::class, 'enrollment'])->name('admin.enrollment');
         Route::get('/timetable', [AdminController::class, 'timetable'])->name('admin.timetable');
         Route::get('/project', [AdminController::class, 'project'])->name('admin.project');
         Route::get('/gallery', [AdminController::class, 'gallery'])->name('admin.gallery');
@@ -188,9 +191,19 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('student')->group(function() {
             Route::get('/createPage', [StudentController::class, 'createPage'])->name('student.createPage');
             Route::post('/create', [StudentController::class, 'create'])->name('student.create');
+            Route::post('/generate-credentials', [StudentController::class, 'generateCredentials'])->name('student.generateCredentials');
             Route::get('/edit/{id}', [StudentController::class, 'edit'])->name('student.edit');
             Route::post('/update/{id}', [StudentController::class, 'update'])->name('student.update');
             Route::get('/delete/{id}', [StudentController::class, 'delete'])->name('student.delete');
+        });
+
+        // for course enrollment (student <----> course)
+        Route::prefix('enrollment')->group(function() {
+            Route::get('/createPage', [EnrollmentController::class, 'createPage'])->name('enrollment.createPage');
+            Route::post('/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
+            Route::get('/edit/{id}', [EnrollmentController::class, 'edit'])->name('enrollment.edit');
+            Route::post('/update/{id}', [EnrollmentController::class, 'update'])->name('enrollment.update');
+            Route::get('/delete/{id}', [EnrollmentController::class, 'delete'])->name('enrollment.delete');
         });
 
         // for timetable
@@ -239,6 +252,12 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// student area: guarded by the "student" auth guard
+Route::middleware(['student_auth'])->prefix('student-portal')->group(function () {
+    Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('student.dashboard');
+    Route::post('/logout', [StudentPortalController::class, 'logout'])->name('student.logout');
+});
 
 // unified register routes for all users
 Route::get('/register', [AuthController::class, 'register'])->name('register');

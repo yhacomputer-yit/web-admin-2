@@ -13,16 +13,27 @@ class AuthController extends Controller
         return Inertia::render('Login');
     }
 
-    // process login for all users (admin and regular users)
+    // process login: students (username) first, then admin / regular users (email)
     public function loginProcess(Request $request){
+        // accept either field name so cached/older login forms keep working
+        $request->merge([
+            'username' => $request->input('username') ?: $request->input('email'),
+        ]);
+
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|string',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $studentRedirect = $this->attemptStudentLogin($request, $credentials);
+
+        if ($studentRedirect !== null) {
+            return $studentRedirect;
+        }
+
+        if (Auth::attempt(['email' => $credentials['username'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
-            
+
             // Check if user is admin
             if(Auth::user()->role == 'admin'){
                 $redirectUrl = route('admin.home');
@@ -32,10 +43,10 @@ class AuthController extends Controller
                 // If role is not recognized, logout and show error
                 Auth::logout();
                 if ($request->expectsJson()) {
-                    return response()->json(['errors' => ['email' => 'Invalid user role.']], 422);
+                    return response()->json(['errors' => ['username' => 'Invalid user role.']], 422);
                 }
                 return back()->withErrors([
-                    'email' => 'Invalid user role.',
+                    'username' => 'Invalid user role.',
                 ]);
             }
 
@@ -50,12 +61,55 @@ class AuthController extends Controller
 
         // Return JSON errors for AJAX requests
         if ($request->expectsJson()) {
-            return response()->json(['errors' => ['email' => 'The provided credentials do not match our records.']], 422);
+            return response()->json(['errors' => ['username' => 'The provided credentials do not match our records.']], 422);
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'username' => 'The provided credentials do not match our records.',
         ]);
+    }
+
+    /**
+     * Try the student guard. Returns a response when the login identifier
+     * belongs to a student account (success or inactive), null otherwise.
+     */
+    private function attemptStudentLogin(Request $request, array $credentials)
+    {
+        $student = \App\Models\Student::where('username', $credentials['username'])->first();
+
+        if (!$student) {
+            return null;
+        }
+
+        // verify the password before revealing anything about the account
+        if (!Auth::guard('student')->attempt([
+            'username' => $student->username,
+            'password' => $credentials['password'],
+        ])) {
+            if ($request->expectsJson()) {
+                return response()->json(['errors' => ['password' => 'The provided credentials do not match our records.']], 422);
+            }
+            return back()->withErrors(['password' => 'The provided credentials do not match our records.']);
+        }
+
+        if (!$student->isActive()) {
+            Auth::guard('student')->logout();
+
+            if ($request->expectsJson()) {
+                return response()->json(['errors' => ['username' => 'Your account is inactive. Please contact the admin.']], 403);
+            }
+            return back()->withErrors(['username' => 'Your account is inactive. Please contact the admin.']);
+        }
+
+        $request->session()->regenerate();
+
+        $redirectUrl = route('student.dashboard');
+
+        if ($request->expectsJson()) {
+            return response()->json(['redirect' => $redirectUrl]);
+        }
+
+        return redirect($redirectUrl);
     }
 
     // handle logout

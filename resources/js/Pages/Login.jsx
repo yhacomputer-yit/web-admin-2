@@ -171,8 +171,28 @@ export default function Login() {
                 <h2 style={styles.title}>Welcome Back</h2>
                 <p style={styles.subtitle}>Sign in to your account to continue</p>
 
-                {errors.general && (
+                {Object.keys(errors).filter((k) => k !== 'general').length > 0 && (
                     <div style={{
+                        background: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        color: '#dc2626',
+                        padding: '0.75rem',
+                        borderRadius: '0.5rem',
+                        marginBottom: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style={{ marginRight: '0.5rem' }}>
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L8.586 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {Object.keys(errors)
+                            .filter((k) => k !== 'general')
+                            .map((k) => errors[k])
+                            .join(' ')}
+                    </div>
+                )}
+
+                {errors.general && (                    <div style={{
                         background: '#fef2f2',
                         border: '1px solid #fecaca',
                         color: '#dc2626',
@@ -193,27 +213,27 @@ export default function Login() {
                     <input type="hidden" name="_token" value={csrfToken} />
 
                     <div style={styles.inputGroup}>
-                        <label style={styles.label}>Email Address</label>
+                        <label style={styles.label}>Email or Username</label>
                         <input
-                            type="email"
-                            name="email"
-                            autoComplete="email"
+                            type="text"
+                            name="username"
+                            autoComplete="username"
                             required
-                            placeholder="Enter your email"
+                            placeholder="Enter your email or student username"
                             style={styles.input}
                             onFocus={(e) => Object.assign(e.target.style, styles.inputFocus)}
                             onBlur={(e) => {
                                 e.target.style.outline = 'none';
-                                e.target.style.borderColor = errors.email ? '#ef4444' : '#d1d5db';
+                                e.target.style.borderColor = errors.username ? '#ef4444' : '#d1d5db';
                                 e.target.style.boxShadow = 'none';
                             }}
                         />
-                        {errors.email && (
+                        {errors.username && (
                             <div style={styles.error}>
                                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style={{ marginRight: '0.25rem' }}>
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                 </svg>
-                                {errors.email}
+                                {errors.username}
                             </div>
                         )}
                     </div>

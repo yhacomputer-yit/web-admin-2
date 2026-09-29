@@ -81,6 +81,13 @@
                 <div data-i18n="Dashboards">Student</div>
             </a>
         </li>
+        <!-- Course Enrollment -->
+        <li class="menu-item {{ request()->routeIs('admin.enrollment') ? 'active' : '' }}">
+            <a href="{{ route('admin.enrollment') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-book-add"></i>
+                <div data-i18n="Dashboards">Course Enrollment</div>
+            </a>
+        </li>
         <!-- Project -->
         <li class="menu-item {{ request()->routeIs('admin.project') ? 'active' : '' }}">
             <a href="{{ route('admin.project') }}" class="menu-link">

@@ -9,7 +9,7 @@ use App\Models\Teacher;
 use App\Models\TimeTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Register;
+use App\Models\Student;
 
 class TimeTableController extends Controller
 {
@@ -34,10 +34,10 @@ class TimeTableController extends Controller
     public function edit($id){
         $courses = Course::get();
         $subjects = Subject::get();
-        $students = Register::get();
+        $students = Student::orderBy('name')->get();
         $sections = Section::get();
         $teachers = Teacher::get();
-        $data = TimeTable::select('subjects.id as subject', 'registers.id as student', 
+        $data = TimeTable::select('subjects.id as subject', 'students.id as student',
         'sections.id as section', 'teachers.id as teacher', 'courses.id as course',
         'date', 'time_tables.id as id', 'time_tables.assistant_id as assistant', 'time_tables.description as description')
         ->where('time_tables.id', $id)
@@ -45,7 +45,7 @@ class TimeTableController extends Controller
         ->leftJoin('subjects', 'time_tables.subject_id', '=', 'subjects.id')
         ->leftJoin('sections', 'time_tables.section_id', '=', 'sections.id')
         ->leftJoin('teachers', 'time_tables.teacher_id', '=', 'teachers.id')
-        ->leftJoin('registers', 'time_tables.student_id', '=', 'registers.id')
+        ->leftJoin('students', 'time_tables.student_id', '=', 'students.id')
         ->first();
         // dd($data->toArray());
         return view('admin.timetable.edit', compact('data', 'courses', 'subjects', 'sections', 'teachers','students'));

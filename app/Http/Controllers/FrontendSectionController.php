@@ -17,7 +17,7 @@ use App\Models\Teacher;
 use App\Models\Voucher;
 use App\Models\Welcome;
 use App\Models\finalPay;
-use App\Models\Register;
+use App\Models\Student;
 use App\Models\AboutDesc;
 use App\Models\SubjectDetail;
 use App\Models\EventDetail;
@@ -316,7 +316,7 @@ public function course(Request $request, $id)
 
     public function getPhone(Request $request){
         $phoneNumber = $request->input('ph');
-        $user = Register::where('phone', $phoneNumber)->first();
+        $user = Student::where('phone', $phoneNumber)->first();
 
         if ($user) {
             return response()->json(['name' => $user->name]);

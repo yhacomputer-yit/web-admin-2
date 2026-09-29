@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Section;
+use App\Models\Student;
 use App\Models\Subject;
-use App\Models\Register;
 use App\Models\course_type;
 use App\Models\CourseSubjectInstructor;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +49,12 @@ class Course extends Model
     public function monthlies()
     {
         return $this->hasMany(Monthly::class);
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'student_enrollments', 'course_id', 'student_id')
+            ->withPivot(['section_id', 'enroll_date']);
     }
 
 

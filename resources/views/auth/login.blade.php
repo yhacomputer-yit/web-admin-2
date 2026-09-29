@@ -106,14 +106,17 @@
         @endif
 
         <!-- Login Form -->
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.process') }}">
             @csrf
 
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
+                <label for="username" class="form-label">Email or Username</label>
                 <div class="input-group">
-                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                    <input id="email" type="email" name="email" class="form-control" value="{{ old('email') }}" required autofocus autocomplete="username">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                    <input id="username" type="text" name="username" class="form-control" value="{{ old('username') }}" required autofocus autocomplete="username">
+                    @error('username')
+                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
 
@@ -122,6 +125,9 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                     <input id="password" type="password" name="password" class="form-control" required autocomplete="current-password">
+                    @error('password')
+                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
 
