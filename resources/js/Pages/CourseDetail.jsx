@@ -43,7 +43,7 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                             <h1 className="cd-page-title">{course?.name}</h1>
                             <div
                                 className="cd-about-text"
-                                dangerouslySetInnerHTML={{ __html: course?.about }}
+                                dangerouslySetInnerHTML={{ __html: course?.description }}
                             />
                         </div>
 

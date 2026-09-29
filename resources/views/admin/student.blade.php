@@ -159,11 +159,11 @@
                                     <a href="{{ route('student.edit', ['id' => $student->id]) }}" class="text-decoration-none me-2">
                                         <i class="bx bx-edit-alt me-1"></i> Edit
                                     </a>
-                                    <a href="{{ route('student.resetPassword', ['id' => $student->id]) }}"
+                                    {{-- <a href="{{ route('student.resetPassword', ['id' => $student->id]) }}"
                                         class="text-decoration-none me-2 text-warning"
                                         onclick="return confirm('Generate a new password for {{ $student->name }}?')">
                                         <i class="bx bx-key me-1"></i> Reset Pass
-                                    </a>
+                                    </a> --}}
                                     <a href="{{ route('student.delete', ['id' => $student->id]) }}"
                                         class="text-decoration-none text-danger"
                                         onclick="return confirm('Delete {{ $student->name }}?')">
