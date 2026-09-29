@@ -1,12 +1,13 @@
 import { Link, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 
-export default function Navigation({ prog, graph, ict }) {
+export default function Navigation() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
 
     const { url } = usePage();
+    const { courseTypes = [] } = usePage().props;
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -83,65 +84,27 @@ export default function Navigation({ prog, graph, ict }) {
                     </Link>
                 </li>
 
-                {/* Web Development */}
-                <li className={`nav-item has-sub ${openDropdown === "web" ? "open" : ""}`}>
-                    <button
-                        className="nav-link"
-                        onClick={() => handleDropdownToggle("web")}
+                {/* Course Types (dynamic) */}
+                {courseTypes?.map((type) => (
+                    <li
+                        key={type.id}
+                        className={`nav-item has-sub ${openDropdown === String(type.id) ? "open" : ""}`}
                     >
-                        Web Development
-                        {/* <i className="fa-solid fa-chevron-down"></i> */}
-                    </button>
-                    <ul className="sub-menu">
-                        {prog?.map((course) => (
-                            <li key={course.id}>
-                                <Link href={`/course/${course.id}`}>{course.name}</Link>
-                            </li>
-                        ))}
-                    </ul>
-                </li>
-
-                {/* Data Science & AI */}
-                <li className={`nav-item has-sub ${openDropdown === "data" ? "open" : ""}`}>
-                    <button
-                        className="nav-link"
-                        onClick={() => handleDropdownToggle("data")}
-                    >
-                        Data Science & AI
-                        {/* <i className="fa-solid fa-chevron-down"></i> */}
-                    </button>
-                    <ul className="sub-menu">
-                        {graph?.map((course) => (
-                            <li key={course.id}>
-                                <Link href={`/course/${course.id}`}>{course.name}</Link>
-                            </li>
-                        ))}
-                    </ul>
-                </li>
-
-                <li className="nav-item">
-                    <Link className={`nav-link ${isActive("/reviews") ? "active" : ""}`} href="/reviews">
-                        Mobile Development
-                    </Link>
-                </li>
-
-                {/* ICT */}
-                <li className={`nav-item has-sub ${openDropdown === "ict" ? "open" : ""}`}>
-                    <button
-                        className="nav-link"
-                        onClick={() => handleDropdownToggle("ict")}
-                    >
-                        ICT
-                        {/* <i className="fa-solid fa-chevron-down"></i> */}
-                    </button>
-                    <ul className="sub-menu">
-                        {ict?.map((course) => (
-                            <li key={course.id}>
-                                <Link href={`/course/${course.id}`}>{course.name}</Link>
-                            </li>
-                        ))}
-                    </ul>
-                </li>
+                        <button
+                            className="nav-link"
+                            onClick={() => handleDropdownToggle(String(type.id))}
+                        >
+                            {type.name}
+                        </button>
+                        <ul className="sub-menu">
+                            {type.courses?.map((course) => (
+                                <li key={course.id}>
+                                    <Link href={`/course/${course.id}`}>{course.name}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ))}
 
                 <li className="nav-item">
                     <Link className={`nav-link ${isActive("/project") ? "active" : ""}`} href="/project">

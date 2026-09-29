@@ -14,149 +14,45 @@ export default function Homepage({
     homeReviews,
     sliders,
     teacher,
-    prog,
-    graph,
-    ict,
 }) {
     const [typedText, setTypedText] = useState("");
     const [typingKey, setTypingKey] = useState(0);
     const [activeFilter, setActiveFilter] = useState("all");
     const fullText = "Unlock your full potential through curiosity";
-    const { url } = usePage();
+    const { url, courseTypes = [] } = usePage().props;
 
-    // Combine all navigation courses for display with real database data
-    const monthliesData = [];
+    const typeList = Array.isArray(courseTypes) ? courseTypes : [];
 
-    // Add Programming courses with real data
-    if (prog && prog.length > 0) {
-        prog.forEach((course, index) => {
-            monthliesData.push({
-                id: course.id,
-                course: {
-                    name: course.name || course.title || course.course_name,
-                    description:
-                        course.description ||
-                        course.desc ||
-                        course.about ||
-                        `Learn ${course.name || course.title || course.course_name} with expert instructors and hands-on projects`,
-                    normal_price:
-                        course.price ||
-                        course.fee ||
-                        course.cost ||
-                        course.normal_price ||
-                        course.special_price,
-                    duration: course.duration || course.period || "3 Months",
-                    level:
-                        course.level ||
-                        course.difficulty ||
-                        (index % 3 === 0
-                            ? "Beginner"
-                            : index % 3 === 1
-                              ? "Intermediate"
-                              : "Advanced"),
-                },
-                m_img:
-                    course.image ||
-                    course.img ||
-                    course.photo ||
-                    `courses/programming-${index + 1}.jpg`,
-                instructor:
-                    course.instructor || course.teacher || "Expert Instructor",
-                category: "programming",
-            });
-        });
-    }
+    // Build one flat list of every course grouped by its course type
+    const coursesData = typeList.flatMap((type) =>
+        (type.courses || []).map((course, index) => ({
+            id: course.id,
+            category: type.name,
+            categoryId: String(type.id),
+            name: course.name,
+            description:
+                course.description ||
+                `Learn ${course.name} with expert instructors and hands-on projects`,
+            normal_price: course.normal_price ?? course.special_price,
+            duration: course.duration || "3 Months",
+            image: course.image,
+            level:
+                index % 3 === 0
+                    ? "Beginner"
+                    : index % 3 === 1
+                      ? "Intermediate"
+                      : "Advanced",
+        }))
+    );
 
-    // Add Graphic Design courses with real data
-    if (graph && graph.length > 0) {
-        graph.forEach((course, index) => {
-            monthliesData.push({
-                id: course.id + 1000, // Different ID to avoid conflicts
-                course: {
-                    name: course.name || course.title || course.course_name,
-                    description:
-                        course.description ||
-                        course.desc ||
-                        course.about ||
-                        `Master ${course.name || course.title || course.course_name} with industry-standard tools and techniques`,
-                    normal_price:
-                        course.price ||
-                        course.fee ||
-                        course.cost ||
-                        course.normal_price ||
-                        course.special_price,
-                    duration: course.duration || course.period || "3 Months",
-                    level:
-                        course.level ||
-                        course.difficulty ||
-                        (index % 3 === 0
-                            ? "Beginner"
-                            : index % 3 === 1
-                              ? "Intermediate"
-                              : "Advanced"),
-                },
-                m_img:
-                    course.image ||
-                    course.img ||
-                    course.photo ||
-                    `courses/design-${index + 1}.jpg`,
-                instructor:
-                    course.instructor || course.teacher || "Expert Instructor",
-                category: "graphic",
-            });
-        });
-    }
-
-    // Add ICT courses with real data
-    if (ict && ict.length > 0) {
-        ict.forEach((course, index) => {
-            monthliesData.push({
-                id: course.id + 2000, // Different ID to avoid conflicts
-                course: {
-                    name: course.name || course.title || course.course_name,
-                    description:
-                        course.description ||
-                        course.desc ||
-                        course.about ||
-                        `Become proficient in ${course.name || course.title || course.course_name} for career advancement`,
-                    normal_price:
-                        course.price ||
-                        course.fee ||
-                        course.cost ||
-                        course.normal_price ||
-                        course.special_price,
-                    duration: course.duration || course.period || "3 Months",
-                    level:
-                        course.level ||
-                        course.difficulty ||
-                        (index % 3 === 0
-                            ? "Beginner"
-                            : index % 3 === 1
-                              ? "Intermediate"
-                              : "Advanced"),
-                },
-                m_img:
-                    course.image ||
-                    course.img ||
-                    course.photo ||
-                    `courses/ict-${index + 1}.jpg`,
-                instructor:
-                    course.instructor || course.teacher || "Expert Instructor",
-                category: "ict",
-            });
-        });
-    }
-
-    // Filter courses based on active filter
-    const filteredCourses = monthliesData.filter((course) => {
+    const filteredCourses = coursesData.filter((course) => {
         if (activeFilter === "all") return true;
-        return course.category === activeFilter;
+        return course.categoryId === activeFilter;
     });
 
-    // Get course counts for each category
-    const getCourseCount = (category) => {
-        if (category === "all") return monthliesData.length;
-        return monthliesData.filter((course) => course.category === category)
+    const getCourseCount = (categoryId) => {
+        if (categoryId === "all") return coursesData.length;
+        return coursesData.filter((course) => course.categoryId === categoryId)
             .length;
     };
 
@@ -252,17 +148,7 @@ export default function Homepage({
     const addr = address && address.length > 0 ? address[0] : null;
     return (
         <div className="frontend-page" key={url}>
-            <Navigation
-                prog={prog}
-                graph={graph}
-                ict={ict}
-                contactInfo={{
-                    address:
-                        addr?.address || "123 University Street, Tech City",
-                    phone: addr?.yphNo || "+1 (555) 123-4567",
-                    email: addr?.yEmail || "info@yhauniversity.edu",
-                }}
-            />
+            <Navigation />
             {/* Modern Tech University Hero Section */}
             <section id="home" className="tech-university-hero">
                 {/* Video Background */}
@@ -342,31 +228,36 @@ export default function Homepage({
                         </div>
                     </div>
 
+
+
                     {/* Modern Courses Grid */}
                     <div className="row g-2">
                         {filteredCourses && filteredCourses.length > 0 ? (
-                            filteredCourses.map((monthly, index) => (
+                            filteredCourses.map((course) => (
                                 <div
-                                    key={monthly.id}
+                                    key={course.id}
                                     className="col-xl-4 col-lg-4 col-md-6"
                                 >
                                     <div className="modern-course-card">
                                         {/* Course Image */}
                                         <div className="modern-image-container">
                                             <img
-                                                src={`/storage/${monthly.m_img}`}
-                                                alt={monthly.course?.name}
+                                                src={
+                                                    course.image
+                                                        ? `/storage/${course.image}`
+                                                        : "/image/no-image.jpg"
+                                                }
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src =
+                                                        "/image/no-image.jpg";
+                                                }}
+                                                alt={course.name}
                                                 className="modern-course-image"
                                             />
                                             <div className="modern-overlay">
                                                 <div className="modern-category">
-                                                    {monthly.category ===
-                                                    "programming"
-                                                        ? "Programming"
-                                                        : monthly.category ===
-                                                            "graphic"
-                                                          ? "Graphic"
-                                                          : "ICT"}
+                                                    {course.category}
                                                 </div>
                                             </div>
                                         </div>
@@ -374,10 +265,10 @@ export default function Homepage({
                                         {/* Course Content */}
                                         <div className="modern-course-content">
                                             <h3 className="modern-course-title">
-                                                {monthly.course?.name}
+                                                {course.name}
                                             </h3>
                                             <p className="modern-course-description">
-                                                {monthly.course?.description}
+                                                {course.description}
                                             </p>
                                         </div>
 
@@ -391,14 +282,15 @@ export default function Homepage({
                                                     <span className="modern-currency">
                                                         Ks
                                                     </span>
-                                                    {monthly.course
-                                                        ?.normal_price
-                                                        ? monthly.course.normal_price.toLocaleString()
+                                                    {course.normal_price
+                                                        ? Number(
+                                                              course.normal_price,
+                                                          ).toLocaleString()
                                                         : "Contact for price"}
                                                 </div>
                                             </div>
                                             <Link
-                                                href={`/course/${monthly.id}`}
+                                                href={`/course/${course.id}`}
                                                 className="learnmore"
                                             >
                                                 <span>Learn More</span>
@@ -469,7 +361,9 @@ export default function Homepage({
                                 <h3 className="stat-label">
                                     Number of Courses
                                 </h3>
-                                <div className="stat-number">99+</div>
+                                <div className="stat-number">
+                                    {coursesData.length}+
+                                </div>
                                 <div className="stat-description">
                                     Comprehensive learning paths
                                 </div>

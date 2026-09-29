@@ -319,6 +319,25 @@
   opacity: 1;
 }
 
+.modern-filter-btn {
+  background: #fff;
+  color: #333;
+  border: 1.5px solid #ffe0c2;
+  border-radius: 30px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modern-filter-btn:hover,
+.modern-filter-btn.active {
+  background: linear-gradient(90deg, #ffb347, #ff6b01);
+  color: #fff;
+  border-color: transparent;
+}
+
 .modern-category,
 .modern-project-category {
   background: #fff;

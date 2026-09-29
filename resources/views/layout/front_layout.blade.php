@@ -504,30 +504,16 @@
             <li class="nav-item">
                 <a class="nav-link active" href="{{route('user.home')}}"><i class="fa-solid fa-house"></i> Home</a>
             </li>
-            <li class="nav-item has-sub">
-                <a class="nav-link" href="#"><i class="fa-solid fa-code"></i> Programming <i class="fa-solid fa-chevron-down" style="font-size:0.8em;"></i></a>
-                <ul class="sub-menu">
-                    @foreach ($prog as $course)
-                        <li><a href="{{ route('user.course', ['id' => $course->id]) }}"><i class="fa-solid fa-arrow-right"></i> {{ $course->name }}</a></li>
-                    @endforeach
-                </ul>
-            </li>
-            <li class="nav-item has-sub">
-                <a class="nav-link" href="#"><i class="fa-solid fa-pen-nib"></i> Graphic Design <i class="fa-solid fa-chevron-down" style="font-size:0.8em;"></i></a>
-                <ul class="sub-menu">
-                    @foreach ($graph as $course)
-                        <li><a href="{{ route('user.course', ['id' => $course->id]) }}"><i class="fa-solid fa-arrow-right"></i> {{ $course->name }}</a></li>
-                    @endforeach
-                </ul>
-            </li>
-            <li class="nav-item has-sub">
-                <a class="nav-link" href="#"><i class="fa-solid fa-network-wired"></i> ICT <i class="fa-solid fa-chevron-down" style="font-size:0.8em;"></i></a>
-                <ul class="sub-menu">
-                    @foreach ($ict as $course)
-                        <li><a href="{{ route('user.course', ['id' => $course->id]) }}"><i class="fa-solid fa-arrow-right"></i> {{ $course->name }}</a></li>
-                    @endforeach
-                </ul>
-            </li>
+            @foreach ($courseTypes as $type)
+                <li class="nav-item has-sub">
+                    <a class="nav-link" href="#"><i class="fa-solid fa-book-open"></i> {{ $type->name }} <i class="fa-solid fa-chevron-down" style="font-size:0.8em;"></i></a>
+                    <ul class="sub-menu">
+                        @foreach ($type->courses as $course)
+                            <li><a href="{{ route('user.course', ['id' => $course->id]) }}"><i class="fa-solid fa-arrow-right"></i> {{ $course->name }}</a></li>
+                        @endforeach
+                    </ul>
+                </li>
+            @endforeach
             <li class="nav-item">
                 <a class="nav-link" href="{{route('user.courses')}}"><i class="fa-solid fa-calendar-days"></i> Monthly Courses</a>
             </li>

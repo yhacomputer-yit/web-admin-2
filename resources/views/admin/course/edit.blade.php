@@ -47,16 +47,21 @@
                                 @enderror
                             </div>
 
+                            {{-- Course Type --}}
                             <div class="mb-3 form-group">
-                                <label for="type" class="form-label h6 my-2">Course Types</label>
-                                <select class="form-control" name="type" id="type">
-                                    <option value="">{{ $course_types->name}}</option>
-                                    <option value="1">Programming</option>
-                                    <option value="2">Graphic Design</option>
-                                    <option value="3">ICT</option>
+                                <label for="type" class="form-label h6 my-2">Course Type</label>
+                                <select name="type" class="form-control @error('type') is-invalid @enderror" id="type">
+                                    <option value="" disabled>Select Course Type</option>
+                                    @foreach($courseTypes as $courseType)
+                                        <option value="{{ $courseType->id }}" {{ (string) old('type', $data->type) === (string) $courseType->id ? 'selected' : '' }}>
+                                            {{ $courseType->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('type')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
 
@@ -87,23 +92,7 @@
                                 @enderror
                             </div>
 
-                            {{-- About  --}}
-                            <div class="mb-3 form-group">
-                                <label for="about" class="form-label h6 my-2">About</label>
-                                <textarea name="about" rows="7" style="resize: none;" class="form-control @error('about') is-invalid @enderror" id="summernote" placeholder="About">{{ $data->about }}</textarea>
-                                @error('about')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
 
-                            {{-- Link  --}}
-                            <div class="mb-3 form-group">
-                                <label for="link" class="form-label h6 my-2">Link</label>
-                                <textarea name="link" rows="3" style="resize: none;" class="form-control @error('link') is-invalid @enderror" id="link" placeholder="Link">{{ $data->links }}</textarea>
-                                @error('link')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
 
                             {{-- Image  --}}
                             <div class="mb-3 form-group">

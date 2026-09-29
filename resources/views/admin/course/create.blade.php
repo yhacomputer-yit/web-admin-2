@@ -106,27 +106,7 @@
                                 @enderror
                             </div>
 
-                            {{-- About  --}}
-                            <div class="mb-3 form-group">
-                                <label for="about" class="form-label h6 my-2">About</label>
-                                <textarea name="about" rows="7" style="resize: none;" class="form-control @error('about') is-invalid @enderror" id="summernote" placeholder="About">{{ old('about') }}</textarea>
-                                @error('about')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- Link  --}}
-                            <div class="mb-3 form-group">
-                                <label for="links" class="form-label h6 my-2">Link</label>
-                                <textarea name="links" rows="3" style="resize: none;" class="form-control @error('links') is-invalid @enderror" id="links" placeholder="Link">{{ old('links') }}</textarea>
-                                @error('links')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                        
 
                             <button style="background-color: #ff6c0f; color:white;" class="btn mt-3">
                                 <i class="bx bx-down-arrow-alt"></i> Save

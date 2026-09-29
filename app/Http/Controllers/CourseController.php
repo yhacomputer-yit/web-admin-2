@@ -21,9 +21,9 @@ class CourseController extends Controller
     // edit course page
     public function edit($id){
         $data = Course::where('id', $id)->first();
-        $course_types = course_type::where('id', $data->type)->first();
+        $courseTypes = course_type::select('id', 'name')->get();
 
-        return view('admin.course.edit', compact('data','course_types'));
+        return view('admin.course.edit', compact('data', 'courseTypes'));
     }
     // create course
     public function create(Request $request)
@@ -37,8 +37,6 @@ class CourseController extends Controller
             'special_price' => 'nullable|numeric',
             'type' => 'required|exists:course_types,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'about' => 'required|string',
-            'links' => 'nullable|string',
         ]);
 
         // Get the request data including the new fields
@@ -49,8 +47,6 @@ class CourseController extends Controller
             'normal_price',
             'special_price',
             'type',
-            'about',
-            'links',
         ]);
 
         // Handle the image upload if present
@@ -62,6 +58,7 @@ class CourseController extends Controller
 
         // Create the course with the collected data
         Course::create($data);
+        cache()->forget('nav_course_types_v2');
 
         // Redirect with a success message
         return redirect()->route('admin.course')->with(['success' => 'Added course ' . $data['name']]);
@@ -91,6 +88,7 @@ class CourseController extends Controller
 
         // Update the course with new data, including the 'about' and 'link' fields
         Course::where('id', $id)->update($data);
+        cache()->forget('nav_course_types_v2');
 
         // Redirect back to the course list with a success message
         return redirect()->route('admin.course')->with(['success' => 'Updated course ' . $request->name . ' successfully']);
@@ -105,6 +103,7 @@ class CourseController extends Controller
             Storage::delete('public/'.$old);
         }
         Course::where('id', $id)->delete();
+        cache()->forget('nav_course_types_v2');
         return redirect()->route('admin.course')->with(['success' => 'Deleted '.$course->name.' course.']);
     }
 
@@ -119,8 +118,6 @@ class CourseController extends Controller
             'duration' => $request->duration,
             'normal_price' => $request->normal_price,
             'special_price' => $request->special_price,
-            'about' => $request->about,  // Added this line
-            'links' => $request->link,    // Added this line
         ];
         return $array;
     }
