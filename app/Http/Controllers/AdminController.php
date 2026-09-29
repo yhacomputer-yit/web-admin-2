@@ -15,6 +15,7 @@ use App\Models\Welcome;
 use App\Models\Position;
 use App\Models\Register;
 use App\Models\Subject;
+use App\Models\course_type;
 use App\Models\AboutDesc;
 use App\Models\TimeTable;
 use Illuminate\Http\Request;
@@ -59,6 +60,9 @@ class AdminController extends Controller
         // dd($classes->toArray());
         $courses = Course::orderBy('updated_at', 'desc')->paginate(5, ['*'], 'course');
         $subjects = Subject::orderBy('updated_at', 'desc')->paginate(5, ['*'], 'subject');
+        $courseTypes = course_type::withCount('courses')
+                            ->orderBy('updated_at', 'desc')
+                            ->paginate(5, ['*'], 'courseType');
         $monthlies = Monthly::with(['course', 'section'])
                             ->orderBy('updated_at', 'desc')
                             ->paginate(5, ['*'], 'monthly');
@@ -74,7 +78,7 @@ class AdminController extends Controller
         }])
         ->paginate(5, ['*'], 'class');
 
-        return view('admin.course', compact('courses', 'subjects', 'classes','monthlies'));
+        return view('admin.course', compact('courses', 'subjects', 'classes', 'monthlies', 'courseTypes'));
     }
 
     // direct section page

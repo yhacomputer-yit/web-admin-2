@@ -19,6 +19,57 @@
                 </div>
             </div>
 
+             {{-- Course Type  --}}
+             <div class="row mb-4">
+                <div class="col">
+                    <h4> <i class="bx bx-book-add fs-3"></i> Course Type</h4>
+                    @if (count($courseTypes) > 0)
+                    <div class="table-responsive text-nowrap bg-light shadow rounded mb-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Courses</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                @foreach ($courseTypes as $courseType)
+                                    <tr>
+                                        <td>#{{ $courseType->id }}</td>
+                                        <td>{{ $courseType->name }}</td>
+                                        <td>{{ $courseType->courses_count }}</td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('courseType.edit', $courseType->id) }}"><i
+                                                            class="bx bx-edit-alt me-1"></i> Edit</a>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('courseType.delete', $courseType->id) }}"><i
+                                                            class="bx bx-trash me-1"></i> Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @else
+                        <h6 class="text-center text-secondary mt-3 text-uppercase">No Course Type</h6>
+                    @endif
+                    {{-- Pagination  --}}
+                    {{ $courseTypes->appends(['course' => $courses->currentPage(), 'subject' => $subjects->currentPage(), 'class' => $classes->currentPage()])->links() }}
+                    <a style="background-color: #ff6c0f; color:white;" href="{{ route('courseType.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Course Type</a>
+                </div>
+            </div>
+
              {{-- Subject  --}}
              <div class="row mb-4">
                 <div class="col">
@@ -63,7 +114,7 @@
                         <h6 class="text-center text-secondary mt-3 text-uppercase">No Subject</h6>
                     @endif
                     {{-- Pagination  --}}
-                    {{ $subjects->appends(['course' => $courses->currentPage(), 'class' => $classes->currentPage()])->links() }}
+                    {{ $subjects->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
                     <a style="background-color: #ff6c0f; color:white;" href="{{ route('subject.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Subject</a>
                 </div>
             </div>
@@ -117,7 +168,7 @@
                         <h6 class="text-center text-secondary mt-3 text-uppercase">No Course</h6>
                     @endif
                     {{-- Pagination  --}}
-                    {{ $courses->appends(['subject' => $subjects->currentPage(), 'class' => $classes->currentPage()])->links() }}
+                    {{ $courses->appends(['subject' => $subjects->currentPage(), 'courseType' => $courseTypes->currentPage(), 'class' => $classes->currentPage()])->links() }}
                     <a style="background-color: #ff6c0f; color:white;" href="{{ route('course.createPage') }}" class="btn mb-4"> <i class="bx bx-plus"></i>Course</a>
                 </div>
             </div>
@@ -229,7 +280,7 @@
                 </div>
             </div>
             {{-- Pagination  --}}
-            {{ $classes->appends(['course' => $courses->currentPage(), 'subject' => $subjects->currentPage()])->links() }}
+                    {{ $classes->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'subject' => $subjects->currentPage()])->links() }}
             <a style="background-color: #ff6c0f; color:white;" href="{{ route('class.createPage') }}" class="btn mb-5"> <i class="bx bx-plus"></i>Class</a>
 
 
@@ -278,7 +329,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    {{ $monthlies->links() }}
+                    {{ $monthlies->appends(['course' => $courses->currentPage(), 'courseType' => $courseTypes->currentPage(), 'subject' => $subjects->currentPage(), 'class' => $classes->currentPage()])->links() }}
 
                 </div>
             </div>

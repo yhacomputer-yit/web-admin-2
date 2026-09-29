@@ -16,6 +16,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\CourseTypeController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\TimeTableController;
@@ -145,6 +146,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [SubjectController::class, 'edit'])->name('subject.edit');
             Route::post('/update', [SubjectController::class, 'update'])->name('subject.update');
             Route::get('/delete/{id}', [SubjectController::class, 'delete'])->name('subject.delete');
+        });
+
+        // for course type section
+        Route::prefix('courseType')->group(function () {
+            Route::get('/createPage', [CourseTypeController::class, 'createPage'])->name('courseType.createPage');
+            Route::post('/create', [CourseTypeController::class, 'create'])->name('courseType.create');
+            Route::get('/edit/{id}', [CourseTypeController::class, 'edit'])->name('courseType.edit');
+            Route::post('/update', [CourseTypeController::class, 'update'])->name('courseType.update');
+            Route::get('/delete/{id}', [CourseTypeController::class, 'delete'])->name('courseType.delete');
         });
 
         // for class section (course <---> subject)
