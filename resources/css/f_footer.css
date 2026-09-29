@@ -30,6 +30,9 @@
   margin-bottom: 0.35rem;
 }
 
+.footer-desc{
+    font-family: "Description", sans-serif;
+}
 #footer ul li a {
   color: var(--white, #ffffff);
   transition: all 0.3s ease-in-out;

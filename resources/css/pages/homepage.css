@@ -349,6 +349,7 @@
 
 .modern-course-description,
 .modern-project-description {
+  font-family: "Description", sans-serif;
   font-size: clamp(0.78rem, 1.4vw + 0.1rem, 0.88rem);
   color: #64748b;
   line-height: 1.7;
@@ -627,6 +628,7 @@
 }
 
 .contact-value-light {
+  font-family: "Description", sans-serif;
   color: #1e293b;
   flex: 1;
   font-size: clamp(0.8125rem, 1.5vw, 0.92rem);

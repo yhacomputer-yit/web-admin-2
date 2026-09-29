@@ -4,6 +4,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+
+@font-face {
+  font-family: "Description";
+  src: url("/font/description.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
         --primary-orange: #FF6B01;
         --orange-light: #FFB347;
@@ -30,6 +39,11 @@
     .bg-gray-light { background-color: var(--gray-light) !important; }
     .border-orange-glow { border-left: 4px solid var(--primary-orange); box-shadow: 0 0 20px var(--shadow-orange); }
     .shadow-orange-glow { box-shadow: 0 8px 32px var(--shadow-orange); }
+
+    /* Description font utility class */
+    .font-description {
+        font-family: "Description", sans-serif !important;
+    }
 
     body {
         background: var(--white);

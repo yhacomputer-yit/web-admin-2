@@ -371,6 +371,7 @@
 }
 
 .ps-row-desc {
+  font-family: "Description", sans-serif;
   font-size: clamp(0.7rem, 1.3vw, 0.78rem);
   color: #64748b;
   line-height: 1.6;

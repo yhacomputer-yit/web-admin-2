@@ -34,7 +34,7 @@ export default function CourseDetail({ course, subjects, relatedCourses = [], pr
                 </div>
             </section>
 
-            {/* ========== About (col-6) | Image (col-6) ========== */}
+            {/* ========== About ========== */}
             <section className="cd-about">
                 <div className="container cd-container">
                     <div className="row gy-4 align-items-start">

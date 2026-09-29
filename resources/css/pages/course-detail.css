@@ -97,7 +97,20 @@
   margin: 0 0 0.6rem;
 }
 
-.cd-about-text {
+@font-face {
+  font-family: "Description";
+  src: url("/font/description.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.cd-about-text,
+.cd-about-text p,
+.cd-about-text span,
+.cd-about-text strong,
+.cd-about-text li {
+  font-family: "Description", sans-serif !important;
   font-size: clamp(0.8125rem, 1.5vw + 0.1rem, 0.95rem);
   line-height: 1.8;
   color: #475569;

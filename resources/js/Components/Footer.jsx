@@ -27,7 +27,7 @@ export default function Footer({ address }) {
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
                         <h5 className="footer-title">Contact</h5>
                         <ul className="p-0 m-0 footer-contact">
-                            <li><i className="fa-solid fa-location-dot"></i> {footerAddr?.address ?? '-'}</li>
+                            <li className='footer-desc'><i className="fa-solid fa-location-dot"></i> {footerAddr?.address ?? '-'}</li>
                             <li><i className="fa-solid fa-phone"></i> {footerAddr?.yphNo ?? '-'}</li>
                             <li><i className="fa-solid fa-envelope"></i> {footerAddr?.yEmail ?? '-'}</li>
                         </ul>
