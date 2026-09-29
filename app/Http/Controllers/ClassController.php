@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Subject;
-use App\Models\Teacher;
-use App\Models\ClassModel;
+use App\Models\SubjectDetail;
 use Illuminate\Http\Request;
 use App\Models\CourseSubjectInstructor;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +22,7 @@ class ClassController extends Controller
     public function create(Request $request){ 
 
         Validator::make($request->all(), [
-            'courseId' => 'required|unique:class_models,course_id',
+            'courseId' => 'required|unique:subject_detail,course_id',
         ])->validate();
 
         $courseId = $request->courseId;
@@ -31,8 +30,8 @@ class ClassController extends Controller
 
         // dd($request->all());
         foreach ($subjectIds as $subjectId) {
-            // Create a new CourseSubjectInstructor instance
-            ClassModel::create([
+            // Create a new SubjectDetail record linking the course to the subject
+            SubjectDetail::create([
                 'course_id' => $courseId,
                 'subject_id' => $subjectId['id'],
             ]);
@@ -58,11 +57,11 @@ class ClassController extends Controller
 
         // dd($request->all());
         // delete all data
-        ClassModel::where('course_id', $courseId)->delete();
+        SubjectDetail::where('course_id', $courseId)->delete();
 
         foreach ($subjectIds as $subjectId) {
-            // Create a new CourseSubjectInstructor instance
-            ClassModel::create([
+            // Create a new SubjectDetail record linking the course to the subject
+            SubjectDetail::create([
                 'course_id' => $courseId,
                 'subject_id' => $subjectId['id'],
             ]);
@@ -72,7 +71,7 @@ class ClassController extends Controller
 
     // delete class
     public function delete($id){
-        ClassModel::where('course_id', $id)->delete();
+        SubjectDetail::where('course_id', $id)->delete();
         return redirect()->route('admin.course')->with(['success' => 'Deleted class successfully!']);
     }
 

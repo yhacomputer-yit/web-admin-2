@@ -19,7 +19,7 @@ use App\Models\Welcome;
 use App\Models\finalPay;
 use App\Models\Register;
 use App\Models\AboutDesc;
-use App\Models\ClassModel;
+use App\Models\SubjectDetail;
 use App\Models\EventDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,7 +78,7 @@ public function course(Request $request, $id)
 {
     $data = $this->share();
 
-    $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
+    $subjects = SubjectDetail::where('course_id', $id)->with('subject')->get();
     $course = Course::where('id', $id)->first();
 
 
@@ -131,7 +131,7 @@ public function course(Request $request, $id)
     // Subjects
     $subjects = \App\Models\Subject::orderBy('name')->get(['id', 'name']);
 
-    $subjectCourseMap = \App\Models\ClassModel::select('subject_id', 'course_id')
+    $subjectCourseMap = SubjectDetail::select('subject_id', 'course_id')
         ->get()
         ->groupBy('subject_id')
         ->map(function ($items) {
@@ -230,7 +230,7 @@ public function course(Request $request, $id)
     //     $data = $this->share();
 
 
-    //     $subjects = ClassModel::where('course_id', $id)->with('subject')->get();
+    //     $subjects = SubjectDetail::where('course_id', $id)->with('subject')->get();
     //     $course = Course::where('id', $id)->first();
 
     //     return inertia('CourseDetail', [
