@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/master.css'
 import '../css/f_footer.css'
+import '../css/pages/student-dashboard.css'
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 

@@ -1,6 +1,24 @@
 import { useState } from "react";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 
+const formatDate = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+};
+
+const monthYear = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+};
+
+const avatar = (src) => src ? `/storage/${src}` : "/image/no-image.jpg";
+
+const courseImg = (src) => src ? `/storage/${src}` : "/image/no-image.jpg";
+
 export default function StudentDashboard({ student, enrollments }) {
     const { url } = usePage();
     const [tab, setTab] = useState("courses");
@@ -13,20 +31,30 @@ export default function StudentDashboard({ student, enrollments }) {
         });
     };
 
-    const detail = [
+    const sectionCount = new Set(enrollments.map((e) => e.section_name).filter(Boolean)).size;
+    const joined = formatDate(student.register_date);
+    const firstCourse = enrollments.length
+        ? (enrollments[enrollments.length - 1]?.enroll_date)
+        : null;
+    const lastEnroll = enrollments.length ? enrollments[0]?.enroll_date : null;
+
+    const account = [
+        ["Username", student.username, false],
+        ["Email", student.email, true],
+        ["Phone", student.phone, true],
+    ];
+
+    const personal = [
         ["Full Name", student.name],
         ["Nick Name", student.nickname],
-        ["Username", student.username],
-        ["Email", student.email],
-        ["Phone", student.phone],
-        ["Address", student.address],
-        ["Date of Birth", student.date_of_birth],
+        ["Date of Birth", formatDate(student.date_of_birth)],
+        ["Gender", student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : null],
         ["NRC Number", student.nrc],
-        ["Gender", student.gender],
         ["Education", student.education],
         ["Native Town", student.native_town],
         ["Religious Status", student.religious_status],
         ["Race", student.race],
+        ["Address", student.address],
     ];
 
     return (
@@ -36,13 +64,13 @@ export default function StudentDashboard({ student, enrollments }) {
             <header className="stu-dash-header">
                 <div className="container d-flex align-items-center justify-content-between py-3">
                     <div className="d-flex align-items-center gap-3">
-                        <img src="/image/logo/logo.png" alt="YHA" width="42" height="42" />
+                        <img src="/image/logo/logo.png" alt="YHA" width="40" height="40" className="stu-dash-logo" />
                         <div>
-                            <div className="fw-bold">Student Dashboard</div>
-                            <small className="text-muted">YHA Academy of Technology</small>
+                            <div className="stu-dash-title">Student Dashboard</div>
+                            <div className="stu-dash-subtitle">YHA Academy of Technology</div>
                         </div>
                     </div>
-                    <div className="d-flex align-items-center gap-3">
+                    <div className="d-flex align-items-center gap-2">
                         <span className={`badge ${student.status === "active" ? "text-bg-success" : "text-bg-secondary"}`}>
                             {student.status}
                         </span>
@@ -55,32 +83,62 @@ export default function StudentDashboard({ student, enrollments }) {
             </header>
 
             <main className="container py-4">
-                {/* Profile card */}
-                <div className="card shadow-sm mb-4">
-                    <div className="card-body d-flex flex-wrap align-items-center gap-4">
-                        <img
-                            src={student.image ? `/storage/${student.image}` : "/image/no-image.jpg"}
-                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/no-image.jpg"; }}
-                            alt={student.name}
-                            width="110"
-                            height="110"
-                            className="rounded-circle object-fit-cover border"
-                        />
-                        <div className="flex-grow-1">
-                            <h4 className="mb-1">{student.name}</h4>
-                            <p className="text-muted mb-2">
-                                {student.nickname ? `"${student.nickname}"` : "Student"} &middot; {student.username}
-                            </p>
-                            <div className="d-flex flex-wrap gap-3 small text-muted">
-                                <span><i className="fas fa-graduation-cap me-1"></i>{enrollments.length} course(s)</span>
-                                <span><i className="fas fa-calendar me-1"></i>Joined per enrollments below</span>
+                {/* Profile summary */}
+                <div className="stu-hero mb-3">
+                    <div className="p-3 p-md-4">
+                        <div className="row g-3 align-items-center">
+                            <div className="col-12 col-sm-auto">
+                                <img
+                                    src={avatar(student.image)}
+                                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/no-image.jpg"; }}
+                                    alt={student.name}
+                                    className="stu-hero-avatar"
+                                />
+                            </div>
+                            <div className="col-12 col-sm">
+                                <h1 className="stu-hero-name">{student.name}</h1>
+                                <div className="stu-hero-handle">
+                                    {student.nickname ? `"${student.nickname}"` : "Student"}
+                                    {" · "}
+                                    {student.username
+                                        ? <code>{student.username}</code>
+                                        : <span className="fst-italic">no username</span>}
+                                    {" · ID "}{student.id}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row g-2 mt-1">
+                            <div className="col-6 col-md-3">
+                                <div className="stu-stat">
+                                    <div className="stu-stat-label">Courses</div>
+                                    <div className="stu-stat-value">{enrollments.length}</div>
+                                </div>
+                            </div>
+                            <div className="col-6 col-md-3">
+                                <div className="stu-stat">
+                                    <div className="stu-stat-label">Sections</div>
+                                    <div className="stu-stat-value">{sectionCount}</div>
+                                </div>
+                            </div>
+                            <div className="col-6 col-md-3">
+                                <div className="stu-stat">
+                                    <div className="stu-stat-label">Joined</div>
+                                    <div className="stu-stat-value">{joined || "—"}</div>
+                                </div>
+                            </div>
+                            <div className="col-6 col-md-3">
+                                <div className="stu-stat">
+                                    <div className="stu-stat-label">First enrolled</div>
+                                    <div className="stu-stat-value">{formatDate(firstCourse) || "—"}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <ul className="nav nav-tabs mb-3">
+                <ul className="nav nav-tabs stu-tabs mb-3">
                     <li className="nav-item">
                         <button
                             className={`nav-link ${tab === "courses" ? "active" : ""}`}
@@ -100,64 +158,100 @@ export default function StudentDashboard({ student, enrollments }) {
                 </ul>
 
                 {tab === "courses" && (
-                    <div className="row g-3">
-                        {enrollments.length === 0 ? (
-                            <div className="col-12">
-                                <div className="card shadow-sm">
-                                    <div className="card-body text-center py-5">
-                                        <i className="fas fa-book-open fa-3x text-muted mb-3"></i>
-                                        <h5>No courses yet</h5>
-                                        <p className="text-muted mb-0">
-                                            You are not enrolled in any course. Please contact the admin.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            enrollments.map((e) => (
+                    enrollments.length === 0 ? (
+                        <div className="stu-empty">
+                            <div className="stu-empty-icon"><i className="fas fa-book-open"></i></div>
+                            <div className="stu-empty-title">No courses yet</div>
+                            <p className="stu-empty-text mt-2 mb-0">
+                                You are not enrolled in any course. Please contact the admin to get started.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="row g-3">
+                            {enrollments.map((e) => (
                                 <div className="col-md-6 col-lg-4" key={e.id}>
-                                    <div className="card shadow-sm h-100">
+                                    <div className="stu-card">
                                         <img
-                                            src={e.course_image ? `/storage/${e.course_image}` : "/image/no-image.jpg"}
+                                            src={courseImg(e.course_image)}
                                             onError={(ev) => { ev.currentTarget.onerror = null; ev.currentTarget.src = "/image/no-image.jpg"; }}
                                             alt={e.course_name}
-                                            className="card-img-top"
-                                            style={{ height: "160px", objectFit: "cover" }}
+                                            className="stu-card-img"
                                         />
-                                        <div className="card-body">
+                                        <div className="stu-card-body">
                                             {e.course_type && (
                                                 <span className="badge text-bg-warning mb-2">{e.course_type}</span>
                                             )}
-                                            <h6 className="card-title">{e.course_name}</h6>
-                                            <ul className="list-unstyled small text-muted mb-0">
-                                                <li><i className="fas fa-layer-group me-2"></i>Section: {e.section_name || "-"}</li>
-                                                <li><i className="fas fa-calendar me-2"></i>Enrolled: {e.enroll_date || "-"}</li>
-                                            </ul>
+                                            <h3 className="stu-card-title">{e.course_name || "Unknown course"}</h3>
+                                            <div className="stu-card-meta">
+                                                <div>
+                                                    <i className="fas fa-layer-group"></i>
+                                                    <span>Section: {e.section_name || "—"}</span>
+                                                </div>
+                                                <div>
+                                                    <i className="fas fa-calendar"></i>
+                                                    <span>Enrolled: {formatDate(e.enroll_date) || "—"}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                         {e.course_id && (
-                                            <div className="card-footer bg-transparent border-0">
-                                                <Link href={`/course/${e.course_id}`} className="btn btn-sm btn-outline-primary">
-                                                    View Course <i className="fas fa-arrow-right ms-1"></i>
+                                            <div className="stu-card-foot">
+                                                <Link href={`/course/${e.course_id}`} className="stu-btn">
+                                                    View Course <i className="fas fa-arrow-right"></i>
                                                 </Link>
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                            ))
-                        )}
-                    </div>
+                            ))}
+                        </div>
+                    )
                 )}
 
                 {tab === "profile" && (
-                    <div className="card shadow-sm">
-                        <div className="card-body">
-                            <div className="row g-3">
-                                {detail.map(([label, value]) => (
-                                    <div className="col-md-6 col-lg-4" key={label}>
-                                        <div className="small text-muted">{label}</div>
-                                        <div className="fw-semibold">{value || "-"}</div>
+                    <div className="row g-3">
+                        <div className="col-12 col-lg-6">
+                            <div className="stu-panel h-100">
+                                <div className="stu-panel-head"><i className="fas fa-user"></i> Account</div>
+                                <div className="stu-panel-body">
+                                    {account.map(([label, value, linkable]) => (
+                                        <div className="stu-row" key={label}>
+                                            <div className="stu-row-label">{label}</div>
+                                            <div className="stu-row-value">
+                                                {value ? (
+                                                    linkable ? (
+                                                        value === student.email
+                                                            ? <a href={`mailto:${value}`}>{value}</a>
+                                                            : <a href={`tel:${value}`}>{value}</a>
+                                                    ) : value
+                                                ) : (
+                                                    <span className="stu-row-blank">Not set</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div className="stu-row">
+                                        <div className="stu-row-label">Status</div>
+                                        <div className="stu-row-value">
+                                            {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                                        </div>
                                     </div>
-                                ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-12 col-lg-6">
+                            <div className="stu-panel h-100">
+                                <div className="stu-panel-head"><i className="fas fa-id-card"></i> Personal</div>
+                                <div className="stu-panel-body">
+                                    {personal.map(([label, value]) => (
+                                        <div className="stu-row" key={label}>
+                                            <div className="stu-row-label">{label}</div>
+                                            <div className="stu-row-value">
+                                                {value || <span className="stu-row-blank">—</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

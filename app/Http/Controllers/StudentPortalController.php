@@ -14,7 +14,7 @@ class StudentPortalController extends Controller
         $student = Auth::guard('student')->user();
 
         $enrollments = $student->enrollments()
-            ->with(['course:id,name,image,type', 'section:id,name'])
+            ->with(['course:id,name,image,type', 'course.courseType:id,name', 'section:id,name'])
             ->orderByDesc('enroll_date')
             ->get();
 
@@ -36,13 +36,14 @@ class StudentPortalController extends Controller
                 'race' => $student->race,
                 'image' => $student->image,
                 'status' => $student->status,
+                'register_date' => ($student->register_date ?: $student->created_at)?->format('Y-m-d'),
             ],
             'enrollments' => $enrollments->map(fn($e) => [
                 'id' => $e->id,
                 'course_id' => $e->course_id,
                 'course_name' => $e->course?->name,
                 'course_image' => $e->course?->image,
-                'course_type' => $e->course?->course_type ?? null,
+                'course_type' => $e->course?->courseType?->name,
                 'section_name' => $e->section?->name,
                 'enroll_date' => $e->enroll_date?->format('Y-m-d'),
             ])->values(),

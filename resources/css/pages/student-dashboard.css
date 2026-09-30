@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Student portal dashboard
+   The JSX uses .stu-dash* class names; these were never defined, so the page
+   previously rendered on Bootstrap defaults alone.
+   ========================================================================== */
+
+.stu-dash {
+    --sd-orange: #ff6c0f;
+    --sd-ink: #1e1e2d;
+    --sd-muted: #6b7280;
+    --sd-line: #eceef2;
+
+    min-height: 100vh;
+    background: #f7f8fa;
+    color: var(--sd-ink);
+}
+
+/* ---------- Header ---------- */
+.stu-dash-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #fff;
+    border-bottom: 1px solid var(--sd-line);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.stu-dash-logo {
+    object-fit: contain;
+}
+
+.stu-dash-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stu-dash-subtitle {
+    font-size: 0.8125rem;
+    color: var(--sd-muted);
+}
+
+/* ---------- Profile header card ---------- */
+.stu-hero {
+    position: relative;
+    background: #fff;
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px rgba(16, 24, 40, 0.05);
+    overflow: hidden;
+}
+
+.stu-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: var(--sd-orange);
+}
+
+.stu-hero-avatar {
+    width: 92px;
+    height: 92px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--sd-line), 0 4px 12px rgba(16, 24, 40, 0.1);
+}
+
+.stu-hero-name {
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.stu-hero-handle {
+    font-size: 0.875rem;
+    color: var(--sd-muted);
+    margin-top: 0.15rem;
+}
+
+.stu-hero-handle code {
+    color: var(--sd-ink);
+    background: #f4f5f7;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.3rem;
+}
+
+/* ---------- Quick stats ---------- */
+.stu-stat {
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--sd-line);
+    border-radius: 0.5rem;
+    background: #fbfbfc;
+}
+
+.stu-stat-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sd-muted);
+}
+
+.stu-stat-value {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+/* ---------- Tabs ---------- */
+.stu-tabs {
+    border: 0;
+    gap: 0.25rem;
+}
+
+.stu-tabs .nav-link {
+    border: 0;
+    border-radius: 0.45rem;
+    padding: 0.5rem 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sd-muted);
+}
+
+.stu-tabs .nav-link:hover {
+    color: var(--sd-orange);
+    background: #fff8f2;
+}
+
+.stu-tabs .nav-link.active {
+    color: #fff;
+    background: var(--sd-orange);
+}
+
+/* ---------- Course cards ---------- */
+.stu-card {
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--sd-line);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.stu-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+.stu-card-img {
+    height: 150px;
+    object-fit: cover;
+    background: #f0f1f4;
+    border-bottom: 1px solid var(--sd-line);
+}
+
+.stu-card-body {
+    padding: 1rem 1.1rem;
+    flex: 1 1 auto;
+}
+
+.stu-card-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 0.5rem;
+}
+
+.stu-card-meta {
+    font-size: 0.8125rem;
+    color: var(--sd-muted);
+}
+
+.stu-card-meta div {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.12rem 0;
+}
+
+.stu-card-meta i {
+    width: 1rem;
+    color: var(--sd-orange);
+}
+
+.stu-card-foot {
+    padding: 0 1.1rem 1rem;
+}
+
+.stu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--sd-orange);
+    border-radius: 0.45rem;
+    background: var(--sd-orange);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.stu-btn:hover {
+    background: #e8610c;
+    border-color: #e8610c;
+    color: #fff;
+}
+
+/* ---------- Empty state ---------- */
+.stu-empty {
+    background: #fff;
+    border: 1px solid var(--sd-line);
+    border-radius: 0.75rem;
+    padding: 3rem 1rem;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.stu-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 50%;
+    background: #fff3e9;
+    color: var(--sd-orange);
+    font-size: 1.7rem;
+    margin-bottom: 0.9rem;
+}
+
+.stu-empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.stu-empty-text {
+    font-size: 0.875rem;
+    color: var(--sd-muted);
+    max-width: 26rem;
+    margin: 0 auto;
+}
+
+/* ---------- Profile tab ---------- */
+.stu-panel {
+    background: #fff;
+    border: 1px solid var(--sd-line);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.stu-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--sd-line);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.stu-panel-head i {
+    color: var(--sd-orange);
+    font-size: 1.125rem;
+}
+
+.stu-panel-body {
+    padding: 0.4rem 1.2rem 0.9rem;
+}
+
+.stu-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--sd-line);
+}
+
+.stu-row:last-child {
+    border-bottom: 0;
+}
+
+.stu-row-label {
+    flex: 0 0 40%;
+    font-size: 0.8125rem;
+    color: var(--sd-muted);
+}
+
+.stu-row-value {
+    flex: 1 1 auto;
+    font-size: 0.875rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.stu-row-value a {
+    color: var(--sd-orange);
+    text-decoration: none;
+}
+
+.stu-row-value a:hover {
+    text-decoration: underline;
+}
+
+.stu-row-blank {
+    font-weight: 400;
+    color: #b6bac2;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 575.98px) {
+    .stu-hero-avatar {
+        width: 66px;
+        height: 66px;
+    }
+
+    .stu-hero-name {
+        font-size: 1.15rem;
+    }
+
+    .stu-dash-subtitle {
+        display: none;
+    }
+}
