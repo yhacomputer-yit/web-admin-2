@@ -51,4 +51,8 @@
     </div>
 </main>
 
+@push('scripts')
+    <script src="{{ asset('admin/course-section-link.js') }}"></script>
+@endpush
+
 @endsection

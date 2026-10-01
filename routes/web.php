@@ -24,6 +24,8 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\CourseSectionController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\FrontendSectionController;
 
 // Homepage route
@@ -180,12 +182,42 @@ Route::middleware(['auth'])->group(function () {
 
         // for couse_section page (course <----> section)
         Route::prefix('course/section')->group(function() {
+            Route::get('/', [CourseSectionController::class, 'index'])->name('course.section.index');
+            Route::post('/sync', [CourseSectionController::class, 'sync'])->name('course.section.sync');
+            Route::get('/{courseId}/sections', [CourseSectionController::class, 'sectionsForCourse'])
+                ->name('course.section.forCourse')->whereNumber('courseId');
+
+            // legacy single-pair routes, kept so existing links keep working
             Route::get('/createPage', [CourseSectionController::class, 'createPage'])->name('course.section.createPage');
             Route::post('/create', [CourseSectionController::class, 'create'])->name('course.section.create');
             Route::get('/edit/{id}', [CourseSectionController::class, 'edit'])->name('course.section.edit');
             Route::post('/update', [CourseSectionController::class, 'update'])->name('course.section.update');
             Route::get('/delete/{id}', [CourseSectionController::class, 'delete'])->name('course.section.delete');
         });
+
+        // attendance marking
+        Route::prefix('attendance')->group(function() {
+            Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+            Route::get('/createPage', [AttendanceController::class, 'createPage'])->name('attendance.createPage');
+            Route::post('/create', [AttendanceController::class, 'store'])->name('attendance.store');
+            Route::patch('/{id}/status', [AttendanceController::class, 'updateStatus'])
+                ->name('attendance.updateStatus')->whereNumber('id');
+            Route::get('/course/{courseId}/sections', [AttendanceController::class, 'sectionsForCourse'])
+                ->name('attendance.forCourse')->whereNumber('courseId');
+            Route::get('/course/{courseId}/subjects', [AttendanceController::class, 'subjectsForCourse'])
+                ->name('attendance.subjectsForCourse')->whereNumber('courseId');
+            // close the class from the marking screen, where the admin already
+            // has the course + section in context
+            Route::post('/complete-class', [AttendanceController::class, 'completeClass'])
+                ->name('attendance.completeClass');
+            // exports the review page's own filtered view, status filter included
+            Route::get('/export', [AttendanceController::class, 'export'])
+                ->name('attendance.exportFiltered');
+        });
+
+        // attendance reports (read-only analytics)
+        Route::get('/attendance-report', [AttendanceReportController::class, 'index'])->name('attendance.report');
+        Route::get('/attendance-report/export', [AttendanceReportController::class, 'export'])->name('attendance.exportReport');
 
         // for student
         Route::prefix('student')->group(function() {
@@ -208,6 +240,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [EnrollmentController::class, 'edit'])->name('enrollment.edit');
             Route::post('/update/{id}', [EnrollmentController::class, 'update'])->name('enrollment.update');
             Route::get('/delete/{id}', [EnrollmentController::class, 'delete'])->name('enrollment.delete');
+            Route::post('/complete-class', [EnrollmentController::class, 'completeClass'])->name('enrollment.completeClass');
+            Route::get('/{courseId}/sections', [EnrollmentController::class, 'sectionsForCourse'])
+                ->name('enrollment.forCourse')->whereNumber('courseId');
         });
 
         // for timetable
@@ -260,6 +295,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // student area: guarded by the "student" auth guard
 Route::middleware(['student_auth'])->prefix('student-portal')->group(function () {
     Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('student.dashboard');
+    Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('student.attendance');
+    // UI-only pages for now: these render mock data until the real tables exist
+    Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('student.assignments');
+    Route::get('/courses', [StudentPortalController::class, 'courses'])->name('student.courses');
+    Route::get('/courses/{courseId}', [StudentPortalController::class, 'courseDetail'])
+        ->name('student.courseDetail')
+        ->whereNumber('courseId');
     Route::post('/logout', [StudentPortalController::class, 'logout'])->name('student.logout');
 });
 

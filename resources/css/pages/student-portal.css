@@ -1,0 +1,466 @@
+/* ==========================================================================
+   Student portal - assignments, course materials and shared page details
+   The sidebar/nav shell lives in ../layouts/student-layout.css.
+   ========================================================================== */
+
+/* ---------- Section heading ---------- */
+.stu-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.stu-section-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.stu-section-count {
+    font-size: 0.8125rem;
+    color: var(--sd-muted);
+}
+
+/* ---------- Inline button variant ---------- */
+.stu-btn-auto {
+    width: auto;
+    display: inline-flex;
+    padding: 0.4rem 0.85rem;
+}
+
+.stu-btn-ghost {
+    background: #f4f5f7;
+    border-color: #e3e5ea;
+    color: #9aa0ab;
+    cursor: not-allowed;
+}
+
+.stu-btn-ghost:hover {
+    background: #f4f5f7;
+    border-color: #e3e5ea;
+    color: #9aa0ab;
+}
+
+/* ---------- Assignment stat row ---------- */
+.sa-stat-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+/* four-tile variant (the dashboard attendance overview) */
+.sa-stat-row-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ---------- Filter chips + search ---------- */
+.sa-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sa-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sa-chip:hover {
+    border-color: var(--sa-orange);
+    color: var(--sa-orange);
+}
+
+.sa-chip.active {
+    background: var(--sd-orange);
+    border-color: var(--sd-orange);
+    color: #fff;
+}
+
+.sa-chip-count {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    background: rgba(16, 24, 40, 0.06);
+}
+
+.sa-chip.active .sa-chip-count {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.sa-search {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.5rem;
+    background: #fff;
+    /* without this the inner input's 100% width pushes the toolbar wider than
+       the column and the page starts scrolling sideways */
+    min-width: 0;
+    flex: 0 1 18rem;
+}
+
+.sa-search i {
+    color: var(--sa-muted);
+    font-size: 0.8125rem;
+}
+
+.sa-search-input {
+    border: 0;
+    outline: none;
+    font-size: 0.875rem;
+    color: var(--sa-ink);
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+}
+
+.sa-search-input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+/* ---------- Assignment list ---------- */
+.sa-assign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sa-assign {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.sa-assign:hover {
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.07);
+    border-color: #dfe2e8;
+}
+
+.sa-assign-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sa-assign-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.sa-assign-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+    /* a long unbroken assignment title must wrap, not widen the row */
+    overflow-wrap: anywhere;
+}
+
+.sa-assign-course {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    margin-top: 0.3rem;
+}
+
+.sa-assign-course i {
+    color: var(--sd-orange);
+}
+
+.sa-assign-foot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.6rem;
+}
+
+.sa-assign-deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sa-ink);
+}
+
+.sa-assign-deadline i {
+    color: var(--sa-muted);
+}
+
+.sa-due {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+}
+
+.sa-due-muted { background: #f3f4f6; color: #6b7280; }
+.sa-due-warn { background: #fef3c7; color: #b45309; }
+.sa-due-danger { background: #fee2e2; color: #b91c1c; }
+
+.sa-score {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+}
+
+.sa-score-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sa-muted);
+}
+
+.sa-score-value {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: #15803d;
+}
+
+.sa-assign-action {
+    flex: 0 0 auto;
+}
+
+/* ---------- Assignment badges ---------- */
+.sa-badge-pending { background: #fef3c7; color: #b45309; }
+.sa-badge-submitted { background: #dbeafe; color: #1d4ed8; }
+.sa-badge-late { background: #fee2e2; color: #b91c1c; }
+.sa-badge-graded { background: #dcfce7; color: #15803d; }
+
+/* ---------- Course detail ---------- */
+.sa-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    margin-bottom: 0.85rem;
+}
+
+.sa-breadcrumb a {
+    color: var(--sd-orange);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.sa-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.sa-breadcrumb i {
+    font-size: 0.625rem;
+}
+
+.sa-course-img {
+    width: 108px;
+    height: 108px;
+    object-fit: cover;
+    border-radius: 0.6rem;
+    border: 1px solid var(--sd-line);
+}
+
+.sa-course-desc {
+    font-size: 0.875rem;
+    color: var(--sa-muted);
+    margin: 0.35rem 0 0;
+    max-width: 46rem;
+}
+
+/* ---------- Material group heads ---------- */
+.sa-head-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.45rem;
+    font-size: 0.875rem;
+}
+
+.sa-head-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--sa-muted);
+    background: #f4f5f7;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+}
+
+/* per-type accent, applied to both the head icon and the row icon */
+.sa-type-book { background: #fff3e9; color: #ff6c0f; }
+.sa-type-video { background: #eff6ff; color: #2563eb; }
+.sa-type-link { background: #fef2f2; color: #dc2626; }
+.sa-type-resource { background: #f0fdf4; color: #16a34a; }
+
+/* ---------- Material list ---------- */
+.sa-mat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sa-mat {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.75rem 1.1rem;
+    border-bottom: 1px solid var(--sa-line);
+}
+
+.sa-mat:last-child {
+    border-bottom: 0;
+}
+
+.sa-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    flex: 0 0 auto;
+    font-size: 1rem;
+}
+
+.sa-mat-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sa-mat-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sa-ink);
+    overflow-wrap: anywhere;
+}
+
+.sa-mat-desc {
+    font-size: 0.75rem;
+    color: var(--sa-muted);
+    margin-top: 0.1rem;
+    overflow-wrap: anywhere;
+}
+
+.sa-mat-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #9aa0ab;
+    margin-top: 0.25rem;
+}
+
+.sa-mat-action {
+    flex: 0 0 auto;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    background: transparent;
+}
+
+/* the action inherits its group's accent so Download/Open reads per type */
+.sa-mat-action.sa-type-book { background: #fff3e9; color: #ff6c0f; border-color: #ffd9c0; }
+.sa-mat-action.sa-type-video { background: #eff6ff; color: #2563eb; border-color: #c7dcfd; }
+.sa-mat-action.sa-type-link { background: #fef2f2; color: #dc2626; border-color: #fbc9c9; }
+.sa-mat-action.sa-type-resource { background: #f0fdf4; color: #16a34a; border-color: #c3ecd2; }
+
+.sa-mat-action:hover {
+    filter: brightness(0.97);
+}
+
+/* ---------- Per-section empty state ---------- */
+.sa-mat-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+.sa-mat-empty i {
+    font-size: 1.35rem;
+    color: #c9ced8;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991.98px) {
+    .sa-stat-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .sa-assign {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .sa-assign-action .stu-btn-auto {
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sa-stat-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sa-stat-row-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sa-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sa-filters {
+        overflow-x: auto;
+        padding-bottom: 0.15rem;
+    }
+
+    .sa-assign-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .sa-course-img {
+        width: 76px;
+        height: 76px;
+    }
+
+    /* stack the action under the text so titles keep the full width */
+    .sa-mat {
+        flex-wrap: wrap;
+    }
+
+    .sa-mat-action {
+        width: 100%;
+        justify-content: center;
+    }
+}

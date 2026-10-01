@@ -50,8 +50,8 @@ export default function Login() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #ff6b01 0%, #ff852d 100%)',
-            padding: '2rem',
+            // background: 'linear-gradient(135deg, #ff6b01 0%, #ff852d 100%)',
+            // padding: '2rem',
             fontFamily: 'system-ui, -apple-system, sans-serif'
         },
         card: {

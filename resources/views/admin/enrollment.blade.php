@@ -87,24 +87,55 @@
                                         <th>Course</th>
                                         <th>Section</th>
                                         <th>Enroll Date</th>
-                                        <th style="width: 130px;">Action</th>
+                                        <th>Status</th>
+                                        <th style="width: 190px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $statusClass = [
+                                            \App\Models\StudentEnrollment::STATUS_ACTIVE => 'text-bg-success',
+                                            \App\Models\StudentEnrollment::STATUS_COMPLETED => 'text-bg-primary',
+                                            \App\Models\StudentEnrollment::STATUS_DROPPED => 'text-bg-secondary',
+                                        ];
+                                    @endphp
                                     @foreach ($student->enrollments as $enrollment)
                                         <tr>
                                             <td>{{ $enrollment->course?->name ?? '—' }}</td>
                                             <td>{{ $enrollment->section?->name ?? '—' }}</td>
                                             <td>{{ $enrollment->enroll_date?->format('Y-m-d') }}</td>
                                             <td>
+                                                <span class="badge {{ $statusClass[$enrollment->status] ?? 'text-bg-light border' }}">
+                                                    {{ ucfirst($enrollment->status ?? 'active') }}
+                                                </span>
+                                                @if ($enrollment->complete_date)
+                                                    <div class="text-muted" style="font-size:.7rem">
+                                                        {{ $enrollment->complete_date->format('Y-m-d') }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="text-nowrap">
+                                                @if ($enrollment->isActive() && $enrollment->section_id)
+                                                    <form method="POST" class="d-inline"
+                                                        action="{{ route('enrollment.completeClass') }}"
+                                                        onsubmit="return confirm('Mark {{ $enrollment->course?->name }} ({{ $enrollment->section?->name }}) as completed for {{ $student->name }}? Attendance can no longer be marked after this.')">
+                                                        @csrf
+                                                        <input type="hidden" name="course_id" value="{{ $enrollment->course_id }}">
+                                                        <input type="hidden" name="section_id" value="{{ $enrollment->section_id }}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning me-1"
+                                                            title="Complete this class">
+                                                            <i class="bx bx-check-circle me-1"></i>Complete
+                                                        </button>
+                                                    </form>
+                                                @endif
                                                 <a href="{{ route('enrollment.edit', ['id' => $enrollment->id]) }}"
-                                                    class="text-decoration-none me-2">
-                                                    <i class="bx bx-edit-alt"></i> Edit
+                                                    class="btn btn-sm btn-outline-secondary me-1">
+                                                    <i class="bx bx-edit-alt me-1"></i>Edit
                                                 </a>
                                                 <a href="{{ route('enrollment.delete', ['id' => $enrollment->id]) }}"
-                                                    class="text-decoration-none text-danger"
+                                                    class="btn btn-sm btn-outline-danger"
                                                     onclick="return confirm('Remove this enrollment?')">
-                                                    <i class="bx bx-trash"></i> Delete
+                                                    <i class="bx bx-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>

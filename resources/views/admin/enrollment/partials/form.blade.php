@@ -10,7 +10,8 @@
 
     <div class="col-md-6">
         <label for="course_id" class="form-label h6 my-2">Course <span class="text-danger">*</span></label>
-        <select name="course_id" id="course_id" class="form-select @error('course_id') is-invalid @enderror" required>
+        <select name="course_id" id="course_id" class="form-select @error('course_id') is-invalid @enderror" required
+            data-sections-url="{{ route('enrollment.forCourse', ['courseId' => '__COURSE__']) }}">
             <option value="">Select Course</option>
             @foreach ($courses as $course)
                 <option value="{{ $course->id }}"
@@ -26,8 +27,9 @@
 
     <div class="col-md-6">
         <label for="section_id" class="form-label h6 my-2">Section</label>
-        <select name="section_id" id="section_id" class="form-select @error('section_id') is-invalid @enderror">
-            <option value="">No Section</option>
+        <select name="section_id" id="section_id" class="form-select @error('section_id') is-invalid @enderror"
+            data-selected="{{ old('section_id', $enrollment?->section_id) }}">
+            <option value="">Select Course first</option>
             @foreach ($sections as $section)
                 <option value="{{ $section->id }}"
                     @selected((string) old('section_id', $enrollment?->section_id) === (string) $section->id)>
@@ -35,6 +37,7 @@
                 </option>
             @endforeach
         </select>
+        <div class="form-text d-none" id="sectionHint"></div>
         @error('section_id')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror

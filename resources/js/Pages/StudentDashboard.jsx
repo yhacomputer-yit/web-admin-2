@@ -1,5 +1,17 @@
-import { useState } from "react";
-import { Head, Link, router, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
+import StudentLayout from "../Layouts/StudentLayout";
+
+
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// three statuses are shown: attended (present), absent, and leave (late or
+// leave) -- status 4 (leave) and status 3 (late) share the leave dot
+const DOT = {
+    1: "sa-dot-attend",
+    2: "sa-dot-absent",
+    3: "sa-dot-leave",
+    4: "sa-dot-leave",
+};
 
 const formatDate = (value) => {
     if (!value) return null;
@@ -8,255 +20,165 @@ const formatDate = (value) => {
     return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 };
 
-const monthYear = (value) => {
-    if (!value) return null;
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
-};
+const avatar = (src) => (src ? `/storage/${src}` : "/image/no-image.jpg");
 
-const avatar = (src) => src ? `/storage/${src}` : "/image/no-image.jpg";
 
-const courseImg = (src) => src ? `/storage/${src}` : "/image/no-image.jpg";
+const pct = (value, total) => (total > 0 ? Math.round((value / total) * 1000) / 10 : 0);
 
-export default function StudentDashboard({ student, enrollments }) {
+export default function StudentDashboard({ student, enrollments, attendance }) {
     const { url } = usePage();
-    const [tab, setTab] = useState("courses");
-
-    const logout = (e) => {
-        e.preventDefault();
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        router.post('/student-portal/logout', { _token: token }, {
-            onFinish: () => { window.location.href = '/login'; },
-        });
-    };
 
     const sectionCount = new Set(enrollments.map((e) => e.section_name).filter(Boolean)).size;
     const joined = formatDate(student.register_date);
-    const firstCourse = enrollments.length
-        ? (enrollments[enrollments.length - 1]?.enroll_date)
-        : null;
-    const lastEnroll = enrollments.length ? enrollments[0]?.enroll_date : null;
+    const firstCourse = enrollments.length ? enrollments[enrollments.length - 1]?.enroll_date : null;
+    const latest = enrollments[0];
 
-    const account = [
-        ["Username", student.username, false],
-        ["Email", student.email, true],
-        ["Phone", student.phone, true],
-    ];
+    // the attendance overview is optional so the dashboard still renders if the
+    // prop is absent (e.g. a cached page from before the move)
+    const summary = attendance?.summary;
+    const calendar = attendance?.calendar;
 
-    const personal = [
-        ["Full Name", student.name],
-        ["Nick Name", student.nickname],
-        ["Date of Birth", formatDate(student.date_of_birth)],
-        ["Gender", student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : null],
-        ["NRC Number", student.nrc],
-        ["Education", student.education],
-        ["Native Town", student.native_town],
-        ["Religious Status", student.religious_status],
-        ["Race", student.race],
-        ["Address", student.address],
-    ];
+    // Monday-first grid; getDay() is Sunday-first, so shift by 6
+    const firstWeekday = calendar ? (new Date(calendar.year, calendar.month - 1, 1).getDay() + 6) % 7 : 0;
+    const daysInMonth = calendar ? new Date(calendar.year, calendar.month, 0).getDate() : 0;
+    const cells = calendar
+        ? [...Array(firstWeekday).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
+        : [];
+
+    const gotoMonth = (month) => {
+        router.get(`/student-portal/dashboard?month=${month}`, { preserveState: true });
+    };
+
+    const cards = summary
+        ? [
+            { key: "attended", label: "Attended", value: summary.present + summary.late, color: "sa-green", pct: `${summary.attended_percent}%` },
+            { key: "absent", label: "Absent", value: summary.absent, color: "sa-red" },
+            { key: "leave", label: "Leave", value: summary.leave, color: "sa-orange" },
+            { key: "total", label: "Total Classes", value: summary.total, color: "sa-blue" },
+        ]
+        : [];
 
     return (
-        <div className="stu-dash" key={url}>
-            <Head title="Student Dashboard" />
-
-            <header className="stu-dash-header">
-                <div className="container d-flex align-items-center justify-content-between py-3">
-                    <div className="d-flex align-items-center gap-3">
-                        <img src="/image/logo/logo.png" alt="YHA" width="40" height="40" className="stu-dash-logo" />
-                        <div>
-                            <div className="stu-dash-title">Student Dashboard</div>
-                            <div className="stu-dash-subtitle">YHA Academy of Technology</div>
+        <StudentLayout active="dashboard" title="Dashboard" status={student.status} key={url}>
+            {/* Profile summary */}
+            <div className="stu-hero mb-3">
+                <div className="p-3 p-md-4">
+                    <div className="row g-3 align-items-center">
+                        <div className="col-12 col-sm-auto">
+                            <img
+                                src={avatar(student.image)}
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/no-image.jpg"; }}
+                                alt={student.name}
+                                className="stu-hero-avatar"
+                            />
+                        </div>
+                        <div className="col-12 col-sm">
+                            <h1 className="stu-hero-name">{student.name}</h1>
+                            <div className="stu-hero-handle">
+                                {student.nickname ? `"${student.nickname}"` : "Student"}
+                                {" · "}
+                                {student.username
+                                    ? <code>{student.username}</code>
+                                    : <span className="fst-italic">no username</span>}
+                                {" · ID "}{student.id}
+                            </div>
                         </div>
                     </div>
-                    <div className="d-flex align-items-center gap-2">
-                        <span className={`badge ${student.status === "active" ? "text-bg-success" : "text-bg-secondary"}`}>
-                            {student.status}
-                        </span>
-                        <Link href="/" className="btn btn-sm btn-outline-secondary">Home</Link>
-                        <button type="button" onClick={logout} className="btn btn-sm btn-outline-danger">
-                            <i className="fas fa-sign-out-alt me-1"></i> Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
 
-            <main className="container py-4">
-                {/* Profile summary */}
-                <div className="stu-hero mb-3">
-                    <div className="p-3 p-md-4">
-                        <div className="row g-3 align-items-center">
-                            <div className="col-12 col-sm-auto">
-                                <img
-                                    src={avatar(student.image)}
-                                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/no-image.jpg"; }}
-                                    alt={student.name}
-                                    className="stu-hero-avatar"
-                                />
-                            </div>
-                            <div className="col-12 col-sm">
-                                <h1 className="stu-hero-name">{student.name}</h1>
-                                <div className="stu-hero-handle">
-                                    {student.nickname ? `"${student.nickname}"` : "Student"}
-                                    {" · "}
-                                    {student.username
-                                        ? <code>{student.username}</code>
-                                        : <span className="fst-italic">no username</span>}
-                                    {" · ID "}{student.id}
-                                </div>
+                    <div className="row g-2 mt-1">
+                        <div className="col-6 col-md-3">
+                            <div className="stu-stat">
+                                <div className="stu-stat-label">Courses</div>
+                                <div className="stu-stat-value">{enrollments.length}</div>
                             </div>
                         </div>
-
-                        <div className="row g-2 mt-1">
-                            <div className="col-6 col-md-3">
-                                <div className="stu-stat">
-                                    <div className="stu-stat-label">Courses</div>
-                                    <div className="stu-stat-value">{enrollments.length}</div>
-                                </div>
+                        {/* <div className="col-6 col-md-3">
+                            <div className="stu-stat">
+                                <div className="stu-stat-label">Sections</div>
+                                <div className="stu-stat-value">{sectionCount}</div>
                             </div>
-                            <div className="col-6 col-md-3">
-                                <div className="stu-stat">
-                                    <div className="stu-stat-label">Sections</div>
-                                    <div className="stu-stat-value">{sectionCount}</div>
-                                </div>
+                        </div> */}
+                        <div className="col-6 col-md-3">
+                            <div className="stu-stat">
+                                <div className="stu-stat-label">Joined</div>
+                                <div className="stu-stat-value">{joined || "—"}</div>
                             </div>
-                            <div className="col-6 col-md-3">
-                                <div className="stu-stat">
-                                    <div className="stu-stat-label">Joined</div>
-                                    <div className="stu-stat-value">{joined || "—"}</div>
-                                </div>
-                            </div>
-                            <div className="col-6 col-md-3">
-                                <div className="stu-stat">
-                                    <div className="stu-stat-label">First enrolled</div>
-                                    <div className="stu-stat-value">{formatDate(firstCourse) || "—"}</div>
-                                </div>
+                        </div>
+                        <div className="col-6 col-md-3">
+                            <div className="stu-stat">
+                                <div className="stu-stat-label">First enrolled</div>
+                                <div className="stu-stat-value">{formatDate(firstCourse) || "—"}</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Tabs */}
-                <ul className="nav nav-tabs stu-tabs mb-3">
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${tab === "courses" ? "active" : ""}`}
-                            onClick={() => setTab("courses")}
-                        >
-                            My Courses ({enrollments.length})
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${tab === "profile" ? "active" : ""}`}
-                            onClick={() => setTab("profile")}
-                        >
-                            My Profile
-                        </button>
-                    </li>
-                </ul>
-
-                {tab === "courses" && (
-                    enrollments.length === 0 ? (
-                        <div className="stu-empty">
-                            <div className="stu-empty-icon"><i className="fas fa-book-open"></i></div>
-                            <div className="stu-empty-title">No courses yet</div>
-                            <p className="stu-empty-text mt-2 mb-0">
-                                You are not enrolled in any course. Please contact the admin to get started.
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="row g-3">
-                            {enrollments.map((e) => (
-                                <div className="col-md-6 col-lg-4" key={e.id}>
-                                    <div className="stu-card">
-                                        <img
-                                            src={courseImg(e.course_image)}
-                                            onError={(ev) => { ev.currentTarget.onerror = null; ev.currentTarget.src = "/image/no-image.jpg"; }}
-                                            alt={e.course_name}
-                                            className="stu-card-img"
-                                        />
-                                        <div className="stu-card-body">
-                                            {e.course_type && (
-                                                <span className="badge text-bg-warning mb-2">{e.course_type}</span>
-                                            )}
-                                            <h3 className="stu-card-title">{e.course_name || "Unknown course"}</h3>
-                                            <div className="stu-card-meta">
-                                                <div>
-                                                    <i className="fas fa-layer-group"></i>
-                                                    <span>Section: {e.section_name || "—"}</span>
-                                                </div>
-                                                <div>
-                                                    <i className="fas fa-calendar"></i>
-                                                    <span>Enrolled: {formatDate(e.enroll_date) || "—"}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {e.course_id && (
-                                            <div className="stu-card-foot">
-                                                <Link href={`/course/${e.course_id}`} className="stu-btn">
-                                                    View Course <i className="fas fa-arrow-right"></i>
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </div>
+            {/* ---------- attendance overview (moved from My Attendance) ---------- */}
+            {summary && (
+                <>
+                    <div className="sa-stat-row sa-stat-row-4 mb-3">
+                        {cards.map((c) => (
+                            <div className={`sa-stat ${c.color}`} key={c.key}>
+                                <div className="sa-stat-label">{c.label}</div>
+                                <div className="sa-stat-value">{c.value}</div>
+                                <div className="sa-stat-pct">
+                                    {c.pct || `${pct(c.value, summary.total)}%`}
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="sa-card">
+                        <div className="sa-card-head">Attendance Calendar</div>
+
+                        <div className="sa-toolbar">
+                            <div className="sa-filters">
+                                <div className="sa-month-nav">
+                                    <button type="button" className="sa-month-btn"
+                                        onClick={() => gotoMonth(attendance.prev_month)} aria-label="Previous month">
+                                        <i className="fas fa-chevron-left"></i>
+                                    </button>
+                                    <span className="sa-month-label">{calendar.label}</span>
+                                    <button type="button" className="sa-month-btn"
+                                        onClick={() => gotoMonth(attendance.next_month)} aria-label="Next month">
+                                        <i className="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="sa-legend">
+                                <span><i className={`sa-dot ${DOT[1]}`}></i>Attended</span>
+                                <span><i className={`sa-dot ${DOT[2]}`}></i>Absent</span>
+                                <span><i className="sa-dot sa-dot-leave"></i>Leave</span>
+                            </div>
+                        </div>
+
+                        <div className="sa-cal">
+                            {WEEKDAYS.map((d) => (
+                                <div key={d} className="sa-cal-head">{d}</div>
                             ))}
-                        </div>
-                    )
-                )}
-
-                {tab === "profile" && (
-                    <div className="row g-3">
-                        <div className="col-12 col-lg-6">
-                            <div className="stu-panel h-100">
-                                <div className="stu-panel-head"><i className="fas fa-user"></i> Account</div>
-                                <div className="stu-panel-body">
-                                    {account.map(([label, value, linkable]) => (
-                                        <div className="stu-row" key={label}>
-                                            <div className="stu-row-label">{label}</div>
-                                            <div className="stu-row-value">
-                                                {value ? (
-                                                    linkable ? (
-                                                        value === student.email
-                                                            ? <a href={`mailto:${value}`}>{value}</a>
-                                                            : <a href={`tel:${value}`}>{value}</a>
-                                                    ) : value
-                                                ) : (
-                                                    <span className="stu-row-blank">Not set</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <div className="stu-row">
-                                        <div className="stu-row-label">Status</div>
-                                        <div className="stu-row-value">
-                                            {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
-                                        </div>
+                            {cells.map((day, i) => {
+                                if (day === null) return <div key={`pad-${i}`} className="sa-cal-cell sa-cal-pad" />;
+                                const key = `${calendar.year}-${String(calendar.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                                const rec = calendar.days[key];
+                                const isToday = key === new Date().toISOString().slice(0, 10);
+                                return (
+                                    <div
+                                        key={key}
+                                        className={`sa-cal-cell ${isToday ? "sa-cal-today" : ""} ${rec ? "sa-cal-marked" : ""}`}
+                                        title={rec ? rec.label : "No class recorded"}
+                                    >
+                                        <span className="sa-cal-day">{day}</span>
+                                        {rec && <i className={`sa-dot-cl ${DOT[rec.status]}`}></i>}
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-12 col-lg-6">
-                            <div className="stu-panel h-100">
-                                <div className="stu-panel-head"><i className="fas fa-id-card"></i> Personal</div>
-                                <div className="stu-panel-body">
-                                    {personal.map(([label, value]) => (
-                                        <div className="stu-row" key={label}>
-                                            <div className="stu-row-label">{label}</div>
-                                            <div className="stu-row-value">
-                                                {value || <span className="stu-row-blank">—</span>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                                );
+                            })}
                         </div>
                     </div>
-                )}
-            </main>
-        </div>
+                </>
+            )}
+
+        </StudentLayout>
     );
 }

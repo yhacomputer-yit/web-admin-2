@@ -1,0 +1,579 @@
+/* ==========================================================================
+   Student portal - application shell
+   ========================================================================== */
+
+/* The shell scrolls .sl-main instead of the document, which needs the html /
+   body / #app chain to be exactly one viewport tall. student-layout.css is
+   imported once in app.jsx, so it is also loaded on the public pages -- an
+   unscoped `body { overflow: hidden }` here stopped the homepage scrolling.
+   Everything that reaches html/body/#app is therefore gated on .sl-root being
+   on the page, which only the portal renders. */
+html:has(.sl-root),
+body:has(.sl-root),
+#app:has(.sl-root) {
+    height: 100%;
+    margin: 0;
+}
+
+body:has(.sl-root) {
+    overflow: hidden;
+}
+
+.sl-root {
+    --sl-navy: #0f172a;
+    --sl-navy-2: #1e293b;
+    --sl-navy-3: #334155;
+    --sl-accent: #ff6c0f;
+    --sl-accent-soft: rgba(255, 108, 15, .16);
+    --sl-width: 260px;
+    --sl-rail: 76px;
+
+    display: flex;
+    /* viewport units rather than 100%, so the shell is self-sufficient and does
+       not depend on the html/body height rules above (which are :has()-gated and
+       therefore no-ops if :has() is unsupported) */
+    height: 100vh;
+    /* 100vh is the *largest* viewport on mobile, which leaves the shell under
+       the browser chrome; 100dvh tracks the height actually visible */
+    height: 100dvh;
+    background: #f7f8fa;
+    overflow: hidden;
+}
+
+/* old tokens */
+.sl-root,
+.stu-dash {
+    --sd-orange: var(--sl-accent);
+    --sd-ink: #1e1e2d;
+    --sd-muted: #6b7280;
+    --sd-line: #eceef2;
+}
+
+.sl-root {
+    /* Attendance tokens live here rather than on the attendance page wrapper,
+       because the summary cards and the calendar now render on the dashboard
+       too and both need them. */
+    --sa-blue: #2563eb;
+    --sa-blue-soft: #eff6ff;
+    --sa-line: #eceef2;
+    --sa-ink: #1e1e2d;
+    --sa-muted: #6b7280;
+}
+
+/* Fixed-sidebar guard
+   :has()-gated on body / #app for the same reason as the shell rules above: an
+   unscoped `body { filter: none }` would be a global override on the public
+   pages, which never render .sl-root. */
+body:has(.sl-root),
+#app:has(.sl-root),
+.sl-root {
+    transform: none;
+    filter: none;
+    backdrop-filter: none;
+    perspective: none;
+    will-change: auto;
+    contain: none;
+}
+
+/* ---------- Skip link ---------- */
+.sl-skip {
+    position: fixed;
+    top: -100px;
+    left: 0.5rem;
+    z-index: 1200;
+    padding: 0.5rem 0.9rem;
+    background: var(--sl-accent);
+    color: #fff;
+    border-radius: 0 0 0.5rem 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.15s ease;
+}
+
+.sl-skip:focus {
+    top: 0;
+    color: #fff;
+}
+
+/* ---------- Sidebar ---------- */
+.sl-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    /* matches .sl-root exactly. A fixed element resolves height:100% against
+       the viewport, which on mobile is the *layout* viewport and so can be
+       taller than the 100dvh shell the drawer slides inside. */
+    height: 100vh;
+    height: 100dvh;
+    z-index: 1040;
+    width: var(--sl-width);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--sl-navy) 0%, #14213d 100%);
+    color: #cbd5e1;
+    transition: width 0.2s ease, transform 0.25s ease;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.sl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 1.1rem 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    min-height: 74px;
+}
+
+.sl-brand-logo {
+    object-fit: contain;
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, .92);
+    border-radius: 0.5rem;
+    padding: 3px;
+}
+
+.sl-brand-text {
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.sl-brand-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+}
+
+.sl-brand-sub {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+/* ---------- Links ---------- */
+.sl-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.9rem 0.7rem;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+.sl-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.8rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sl-link i {
+    width: 1.15rem;
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 1rem;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+}
+
+.sl-link:hover {
+    background: rgba(255, 255, 255, .07);
+    color: #fff;
+}
+
+.sl-link:hover i {
+    color: #e2e8f0;
+}
+
+.sl-link.active {
+    background: var(--sl-accent-soft);
+    color: #fff;
+}
+
+.sl-link.active i {
+    color: var(--sl-accent);
+}
+
+.sl-link.active::before {
+    content: '';
+    position: absolute;
+    left: -0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 22px;
+    border-radius: 0 3px 3px 0;
+    background: var(--sl-accent);
+}
+
+.sl-logout:hover {
+    background: rgba(239, 68, 68, .16);
+    color: #fecaca;
+}
+
+.sl-logout:hover i {
+    color: #fca5a5;
+}
+
+/* ---------- Sidebar footer ---------- */
+.sl-foot {
+    padding: 0.7rem;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.sl-status {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.8rem 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.sl-status i {
+    width: 1.15rem;
+    text-align: center;
+    font-size: 0.5rem;
+    color: #64748b;
+}
+
+.sl-status.is-active i {
+    color: #4ade80;
+}
+
+.sl-collapse {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.3rem;
+    padding: 0.55rem 0.8rem;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 0.55rem;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.sl-collapse i {
+    width: 1.15rem;
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.sl-collapse:hover {
+    background: rgba(255, 255, 255, .07);
+    color: #fff;
+}
+
+/* ---------- Main column = scroll container ---------- */
+.sl-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: var(--sl-width);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;               /* ← scroll ဒီမှာပဲ */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    transition: margin-left 0.2s ease;
+}
+
+.sl-content {
+    flex: 0 0 auto;                 /* content ရှိသလောက်ပဲ အမြင့်ယူ */
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    overflow-x: clip;
+}
+
+/* ---------- Fill mode (opt in per page) ----------
+   A page that owns its own scroll regions passes fill. The shell then stops
+   scrolling and hands the content box exactly one viewport, so the page cannot
+   scroll behind its own columns. */
+.sl-root.sl-fill .sl-main {
+    overflow: hidden;
+}
+
+.sl-root.sl-fill .sl-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Mobile top bar ---------- */
+.sl-topbar {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    background: var(--sl-navy);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    flex-shrink: 0;
+}
+
+.sl-burger {
+    border: 0;
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.sl-burger:hover {
+    background: rgba(255, 255, 255, .18);
+}
+
+.sl-topbar-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Backdrop ---------- */
+.sl-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1035;
+    border: 0;
+    padding: 0;
+    background: rgba(15, 23, 42, .5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* ---------- Collapsed rail ---------- */
+.sl-root.sl-collapsed .sl-sidebar {
+    width: var(--sl-rail);
+}
+
+.sl-root.sl-collapsed .sl-main {
+    margin-left: var(--sl-rail);
+}
+
+.sl-root.sl-collapsed .sl-brand-text,
+.sl-root.sl-collapsed .sl-link-label {
+    display: none;
+}
+
+.sl-root.sl-collapsed .sl-brand,
+.sl-root.sl-collapsed .sl-link,
+.sl-root.sl-collapsed .sl-status,
+.sl-root.sl-collapsed .sl-collapse {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.sl-root.sl-collapsed .sl-link.active::before {
+    left: -0.7rem;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 991.98px) {
+    .sl-topbar {
+        display: flex;
+    }
+
+    .sl-sidebar {
+        width: var(--sl-width);
+        transform: translateX(-100%);
+        box-shadow: 0 0 40px rgba(15, 23, 42, .3);
+    }
+
+    .sl-root.sl-open .sl-sidebar {
+        transform: translateX(0);
+    }
+
+    .sl-collapse {
+        display: none;
+    }
+
+    .sl-backdrop {
+        display: block;
+    }
+
+    .sl-root.sl-open .sl-backdrop {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .sl-root.sl-open {
+        overflow: hidden;
+    }
+
+    .sl-main {
+        margin-left: 0;
+        height: 100%;
+    }
+
+    .sl-root.sl-collapsed .sl-sidebar {
+        width: var(--sl-width);
+    }
+
+    .sl-root.sl-collapsed .sl-main {
+        margin-left: 0;
+    }
+
+    .sl-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sl-content {
+        padding: 0.85rem;
+    }
+
+    .sl-brand {
+        padding: 0.9rem 1rem;
+        min-height: 66px;
+    }
+}
+
+/* ---------- Dashboard tiles ---------- */
+.sl-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 0;
+    padding: 0.7rem 0.85rem;
+    background: #fff;
+    border: 1px solid var(--sd-line);
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.sl-tile:hover,
+.sl-tile:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.09);
+    border-color: #ffcdb0;
+    color: inherit;
+}
+
+.sl-tile:focus-visible {
+    outline: 2px solid var(--sl-accent);
+    outline-offset: 2px;
+}
+
+.sl-tile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.55rem;
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+
+.sl-tile-green  { background: #dcfce7; color: #16a34a; }
+.sl-tile-blue   { background: #dbeafe; color: #2563eb; }
+.sl-tile-orange { background: #fff3e9; color: #ff6c0f; }
+
+.sl-tile-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.sl-tile-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--sd-ink);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sl-tile-text {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--sd-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sl-tile-arrow {
+    color: #c9ced8;
+    font-size: 0.75rem;
+    flex: 0 0 auto;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sl-tile:hover .sl-tile-arrow {
+    color: var(--sl-accent);
+    transform: translateX(2px);
+}
+
+/* ---------- Latest course thumbnail ---------- */
+.sl-latest-img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 0.55rem;
+    background: #f0f1f4;
+    flex: 0 0 auto;
+}
+
+.sl-truncate {
+    min-width: 0;
+}
+
+.sl-root .card {
+    border-radius: 0.75rem;
+}
+
+/* ---------- Mobile drawer open ---------- */
+body.sl-no-scroll {
+    overflow: hidden;
+}

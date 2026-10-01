@@ -1,0 +1,798 @@
+/* ==========================================================================
+   Attendance UI — shared by Mark Attendance, History and Reports.
+
+   Loaded from @push('styles'), which sits BEFORE the Bootstrap 4.3.1 CDN
+   stylesheet in the admin layout. Every rule here is therefore scoped to a
+   class of its own so it wins on specificity rather than on source order.
+   ========================================================================== */
+
+.att-page {
+    --att-orange: #ff6c0f;
+    --att-orange-soft: #fff3e9;
+    --att-orange-line: #ffcdb0;
+    --att-present: #16a34a;
+    --att-present-soft: #f0fdf4;
+    --att-present-line: #bbf7d0;
+    --att-absent: #dc2626;
+    --att-absent-soft: #fef2f2;
+    --att-absent-line: #fecaca;
+    --att-late: #f59e0b;
+    --att-late-soft: #fffbeb;
+    --att-late-line: #fde68a;
+    /* Leave shares the amber tone, so it reads as "not attended but excused"
+       instead of the grey that used to make it look inactive */
+    --att-leave: #f59e0b;
+    --att-leave-soft: #fffbeb;
+    --att-leave-line: #fde68a;
+    --att-ink: #1e1e2d;
+    --att-muted: #6b7280;
+    --att-line: #eceef2;
+    --att-radius: .625rem;
+    --att-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+/* ---------- section headers ---------- */
+.att-page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.att-page-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 .15rem;
+    color: var(--att-ink);
+}
+
+.att-page-sub {
+    font-size: .8125rem;
+    color: var(--att-muted);
+    margin: 0;
+}
+
+/* section title used inside the report cards */
+.att-section-title {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--att-ink);
+    margin: 0;
+}
+
+.att-section-title i {
+    color: var(--att-orange);
+    font-size: 1.05rem;
+}
+
+.att-section-count {
+    margin-left: auto;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--att-muted);
+}
+
+/* ---------- primary action button ---------- */
+.att-btn-primary,
+.att-btn-primary:focus,
+.att-btn-primary:active {
+    background: var(--att-orange);
+    border-color: var(--att-orange);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(255, 108, 15, .28);
+}
+
+.att-btn-primary:hover,
+.att-btn-primary:focus {
+    background: #e8600a;
+    border-color: #e8600a;
+    color: #fff;
+}
+
+.att-btn-primary:disabled,
+.att-btn-primary.disabled {
+    background: #ffb380;
+    border-color: #ffb380;
+    color: #fff;
+}
+
+/* ==========================================================================
+   Summary cards
+   ========================================================================== */
+.att-sum {
+    border: 1px solid var(--att-line);
+    border-radius: .5rem;
+    padding: .65rem .8rem;
+    background: #fbfbfc;
+    height: 100%;
+}
+
+.att-sum-label {
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--att-muted);
+}
+
+.att-sum-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--att-ink);
+}
+
+.att-sum-pct {
+    font-size: .6875rem;
+    color: var(--att-muted);
+}
+
+.att-sum-1 { border-color: var(--att-present-line); background: var(--att-present-soft); }
+.att-sum-1 .att-sum-value { color: var(--att-present); }
+.att-sum-2 { border-color: var(--att-absent-line); background: var(--att-absent-soft); }
+.att-sum-2 .att-sum-value { color: var(--att-absent); }
+.att-sum-3 { border-color: var(--att-late-line); background: var(--att-late-soft); }
+.att-sum-3 .att-sum-value { color: #d97706; }
+.att-sum-4 { border-color: var(--att-leave-line); background: var(--att-leave-soft); }
+.att-sum-4 .att-sum-value { color: #d97706; }
+.att-sum-ok { border-color: var(--att-orange-line); background: var(--att-orange-soft); }
+.att-sum-ok .att-sum-value { color: var(--att-orange); }
+
+/* ==========================================================================
+   Status badges
+   ========================================================================== */
+.att-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .2rem .5rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: .75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.att-badge::before {
+    content: '';
+    width: .4rem;
+    height: .4rem;
+    border-radius: 50%;
+    background: currentColor;
+    flex: 0 0 auto;
+}
+
+.att-badge-1 { background: var(--att-present-soft); border-color: var(--att-present-line); color: var(--att-present); }
+.att-badge-2 { background: var(--att-absent-soft); border-color: var(--att-absent-line); color: var(--att-absent); }
+.att-badge-3 { background: var(--att-late-soft); border-color: var(--att-late-line); color: #b45309; }
+.att-badge-4 { background: var(--att-leave-soft); border-color: var(--att-leave-line); color: #b45309; }
+
+/* ==========================================================================
+   Progress / percentage cell
+   Green >= 90% · Amber 70-89% · Red < 70%
+   ========================================================================== */
+.att-pct-wrap { min-width: 7rem; }
+
+.att-pct {
+    display: flex;
+    justify-content: space-between;
+    font-size: .75rem;
+    font-weight: 700;
+    margin-bottom: .2rem;
+}
+
+.att-pct-bar {
+    height: .4rem;
+    border-radius: 999px;
+    background: var(--att-line);
+    overflow: hidden;
+}
+
+.att-pct-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width .3s ease;
+}
+
+.att-pct-ok    { color: var(--att-present); }
+.att-pct-warn  { color: #d97706; }
+.att-pct-bad   { color: var(--att-absent); }
+.att-pct-fill.att-pct-ok   { background: var(--att-present); }
+.att-pct-fill.att-pct-warn { background: var(--att-late); }
+.att-pct-fill.att-pct-bad  { background: var(--att-absent); }
+
+/* inline variant for the most-absent list */
+.att-rate {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-width: 7.5rem;
+}
+
+.att-rate-bar {
+    flex: 1 1 auto;
+    height: .4rem;
+    border-radius: 999px;
+    background: var(--att-line);
+    overflow: hidden;
+}
+
+.att-rate-val {
+    font-size: .75rem;
+    font-weight: 700;
+    min-width: 3.1rem;
+    text-align: right;
+}
+
+/* ==========================================================================
+   Empty states
+   ========================================================================== */
+.att-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--att-muted);
+}
+
+.att-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--att-orange-soft);
+    color: var(--att-orange);
+    font-size: 1.5rem;
+    margin-bottom: .75rem;
+}
+
+.att-empty-title {
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--att-ink);
+    margin: 0 0 .25rem;
+}
+
+.att-empty-text {
+    font-size: .8125rem;
+    margin: 0 auto;
+    max-width: 26rem;
+}
+
+.att-empty-sm {
+    text-align: center;
+    padding: 1.25rem .75rem;
+    color: var(--att-muted);
+    font-size: .8125rem;
+}
+
+.att-empty-sm .att-empty-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.1rem;
+    margin-bottom: .4rem;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+.att-table {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.att-table > thead > tr > th {
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--att-muted);
+    background: #fbfbfc;
+    border-bottom: 1px solid var(--att-line);
+    white-space: nowrap;
+    padding: .6rem .75rem;
+}
+
+.att-table > tbody > tr > td {
+    font-size: .8125rem;
+    padding: .6rem .75rem;
+    border-top: 1px solid var(--att-line);
+}
+
+.att-table > tbody > tr:hover > td {
+    background: #fcfcfd;
+}
+
+.att-cell-name {
+    font-weight: 600;
+    color: var(--att-ink);
+}
+
+.att-cell-user {
+    display: block;
+    font-size: .68rem;
+    color: var(--att-muted);
+}
+
+.att-remark-text {
+    display: block;
+    max-width: 16rem;
+    overflow-wrap: anywhere;
+}
+
+/* clickable student name that drills into the filtered history */
+.att-student-link,
+.att-student-link:hover,
+.att-student-link:focus {
+    color: var(--att-orange);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--att-orange-line);
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.att-student-link:hover {
+    color: #e8600a;
+    border-bottom-style: solid;
+}
+
+.att-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    border-radius: .35rem;
+    background: var(--att-orange-soft);
+    color: var(--att-orange);
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.att-rank-top {
+    background: var(--att-absent-soft);
+    color: var(--att-absent);
+}
+
+/* ==========================================================================
+   Mark Attendance — classroom grid
+   ========================================================================== */
+.att-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+@media (max-width: 1399.98px) { .att-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1199.98px) { .att-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767.98px)  { .att-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.att-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--att-line);
+    border-radius: var(--att-radius);
+    padding: .75rem;
+    background: #fff;
+    box-shadow: var(--att-shadow);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.att-card:hover,
+.att-card:focus-within {
+    border-color: var(--att-orange-line);
+    box-shadow: 0 2px 10px rgba(16, 24, 40, .08);
+}
+
+/* a card whose student has no status yet is flagged before saving */
+.att-card-unmarked {
+    border-color: var(--att-absent-line);
+    background: var(--att-absent-soft);
+}
+
+.att-card-marked-1 { border-left: 3px solid var(--att-present); }
+.att-card-marked-2 { border-left: 3px solid var(--att-absent); }
+.att-card-marked-4 { border-left: 3px solid var(--att-leave); }
+
+.att-card-head {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin-bottom: .6rem;
+}
+
+.att-avatar {
+    object-fit: cover;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.att-avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--att-orange-soft);
+    color: var(--att-orange);
+    font-weight: 700;
+    font-size: .8125rem;
+}
+
+.att-card-name {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--att-ink);
+    overflow-wrap: anywhere;
+}
+
+.att-card-user {
+    display: block;
+    font-size: .7rem;
+    color: var(--att-muted);
+}
+
+/* ---- status picker: Present/Absent large, Late/Leave small ---- */
+.att-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .3rem;
+    margin-top: auto;
+}
+
+.att-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+    padding: .5rem .3rem;
+    border: 1.5px solid var(--att-line);
+    border-radius: .45rem;
+    background: #fff;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--att-muted);
+    cursor: pointer;
+    user-select: none;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.att-toggle-btn input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.att-toggle-btn:hover {
+    background: #f7f8fa;
+    border-color: #d7dae0;
+}
+
+.att-toggle-btn:has(input:focus-visible) {
+    outline: 2px solid var(--att-orange);
+    outline-offset: 1px;
+}
+
+/* selected state: strong solid fill */
+.att-1:has(input:checked) { background: var(--att-present); border-color: var(--att-present); color: #fff; }
+.att-2:has(input:checked) { background: var(--att-absent); border-color: var(--att-absent); color: #fff; }
+.att-4:has(input:checked) { background: var(--att-leave); border-color: var(--att-leave); color: #fff; }
+
+.att-1:has(input:checked) .att-toggle-ico,
+.att-2:has(input:checked) .att-toggle-ico,
+.att-4:has(input:checked) .att-toggle-ico { font-size: 1.05rem; }
+
+.att-remark {
+    font-size: .75rem;
+    margin-top: .5rem;
+}
+
+/* ==========================================================================
+   Mark Attendance — roster toolbar, live counter, sticky save bar
+   ========================================================================== */
+.att-roster-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+.att-bulk-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    align-items: center;
+}
+
+.att-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    flex-wrap: wrap;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--att-muted);
+}
+
+.att-counter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .1rem .45rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    background: #f4f5f7;
+    color: var(--att-muted);
+}
+
+.att-counter-pill-1 { background: var(--att-present-soft); color: var(--att-present); }
+.att-counter-pill-2 { background: var(--att-absent-soft); color: var(--att-absent); }
+.att-counter-pill-4 { background: var(--att-leave-soft); color: var(--att-leave); }
+.att-counter-pill-0 { background: var(--att-absent-soft); color: var(--att-absent); }
+
+/* sticky bar sits at the bottom of the roster card and stays reachable while
+   scrolling a long class list */
+.att-savebar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin: .75rem -.75rem -.75rem;
+    padding: .75rem;
+    border-top: 1px solid var(--att-line);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(6px);
+    border-radius: 0 0 var(--att-radius) var(--att-radius);
+}
+
+.att-savebar-hint {
+    font-size: .8125rem;
+    color: var(--att-muted);
+    margin: 0;
+}
+
+.att-savebar-hint strong { color: var(--att-ink); }
+
+.att-savebar-actions {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+/* inline validation banner above the save bar */
+.att-warn {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    margin: 0 .75rem .75rem;
+    padding: .6rem .75rem;
+    border: 1px solid var(--att-absent-line);
+    border-radius: .45rem;
+    background: var(--att-absent-soft);
+    color: var(--att-absent);
+    font-size: .8125rem;
+    font-weight: 500;
+}
+
+.att-warn[hidden] { display: none; }
+
+.att-warn i { font-size: 1.05rem; flex: 0 0 auto; }
+
+@media (max-width: 575.98px) {
+    .att-savebar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .att-savebar-actions .btn { flex: 1 1 auto; }
+}
+
+/* ==========================================================================
+   History — collapsible "more filters"
+   ========================================================================== */
+.att-more {
+    margin-top: .85rem;
+    padding-top: .85rem;
+    border-top: 1px dashed var(--att-line);
+}
+
+.att-more[hidden] { display: none; }
+
+.att-more-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--att-orange);
+    cursor: pointer;
+}
+
+.att-more-toggle i { transition: transform .2s ease; }
+.att-more-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+
+.att-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    align-items: center;
+}
+
+/* ==========================================================================
+   History — row edit modal
+   ========================================================================== */
+.att-row-edit {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.att-edit-btn {
+    border: 1px solid var(--att-line);
+    background: #fff;
+    color: var(--att-muted);
+    border-radius: .4rem;
+    padding: .25rem .55rem;
+    font-size: .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .12s ease;
+}
+
+.att-edit-btn:hover {
+    border-color: var(--att-orange);
+    color: var(--att-orange);
+    background: var(--att-orange-soft);
+}
+
+.att-modal-status {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
+}
+
+/* ==========================================================================
+   Toasts (self-contained so they do not depend on which Bootstrap wins)
+   ========================================================================== */
+.yha-toast-host {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    max-width: min(24rem, calc(100vw - 2rem));
+    pointer-events: none;
+}
+
+.yha-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .7rem .85rem;
+    border-radius: .5rem;
+    border: 1px solid var(--att-line);
+    border-left-width: 3px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .12);
+    font-size: .8125rem;
+    color: var(--att-ink);
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(1rem);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.yha-toast.is-in { opacity: 1; transform: translateX(0); }
+
+.yha-toast-ico {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    flex: 0 0 auto;
+}
+
+.yha-toast-body { flex: 1 1 auto; }
+
+.yha-toast-close {
+    border: 0;
+    background: none;
+    color: var(--att-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 .1rem;
+    flex: 0 0 auto;
+}
+
+.yha-toast-success { border-left-color: var(--att-present); }
+.yha-toast-success .yha-toast-ico { color: var(--att-present); }
+.yha-toast-error { border-left-color: var(--att-absent); }
+.yha-toast-error .yha-toast-ico { color: var(--att-absent); }
+.yha-toast-info { border-left-color: var(--att-orange); }
+.yha-toast-info .yha-toast-ico { color: var(--att-orange); }
+
+@media (max-width: 575.98px) {
+    .yha-toast-host {
+        top: auto;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+}
+
+/* ==========================================================================
+   Loading states
+   ========================================================================== */
+.is-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.is-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin: -.5rem 0 0 -.5rem;
+    border: 2px solid rgba(255, 255, 255, .45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: att-spin .6s linear infinite;
+}
+
+.is-loading.btn-outline-secondary::after,
+.is-loading.btn-outline-danger::after,
+.is-loading.btn-outline-primary::after,
+.is-loading.btn-outline-warning::after {
+    border-color: rgba(108, 117, 125, .3);
+    border-top-color: #6c757d;
+}
+
+@keyframes att-spin { to { transform: rotate(360deg); } }
+
+/* skeleton shown while a dependent dropdown fetches its options */
+.att-skeleton {
+    display: inline-block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    border-radius: .25rem;
+    background: linear-gradient(90deg, #f1f2f4 25%, #e9ebee 37%, #f1f2f4 63%);
+    background-size: 400% 100%;
+    animation: att-shimmer 1.3s ease infinite;
+}
+
+@keyframes att-shimmer {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .att-skeleton { animation: none; }
+    .is-loading::after { animation-duration: 1.4s; }
+}

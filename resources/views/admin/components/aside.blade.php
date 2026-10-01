@@ -53,11 +53,17 @@
                 <div data-i18n="Dashboards">TimeTable</div>
             </a>
         </li>
-        <!-- Attendance -->
-        <li class="menu-item">
-            <a href="{{ route('admin.timetable') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+        {{-- Attendance --}}
+        <li class="menu-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+            <a href="{{ route('attendance.createPage') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-check"></i>
                 <div data-i18n="Dashboards">Attendance</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('attendance.report*') ? 'active' : '' }}">
+            <a href="{{ route('attendance.report') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+                <div data-i18n="Dashboards">Attendance Reports</div>
             </a>
         </li>
         <!-- Course -->
@@ -72,6 +78,13 @@
             <a href="{{ route('admin.section') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bx-hourglass"></i>
                 <div data-i18n="Dashboards">Section</div>
+            </a>
+        </li>
+                {{-- Course -> Section linking --}}
+        <li class="menu-item {{ request()->routeIs('course.section.*') ? 'active' : '' }}">
+            <a href="{{ route('course.section.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-link-alt"></i>
+                <div data-i18n="Dashboards">Course Sections</div>
             </a>
         </li>
         <!-- Teacher -->

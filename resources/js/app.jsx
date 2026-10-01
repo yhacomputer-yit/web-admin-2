@@ -4,6 +4,10 @@ import '../css/f_footer.css'
 import '../css/pages/student-dashboard.css'
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
+import '../css/layouts/student-layout.css'
+import '../css/pages/student-attendance.css'
+import '../css/pages/student-portal.css'
+import '../css/pages/student-courses.css'
 
 // Create the Inertia app
 createInertiaApp({

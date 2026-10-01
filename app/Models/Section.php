@@ -16,12 +16,18 @@ class Section extends Model
         'end',
     ];
 
-    public function courses(){
-        return $this->belongsToMany(Course::class, 'section_id', 'course_id');
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_sections', 'section_id', 'course_id');
     }
 
     public function monthlies()
     {
         return $this->hasMany(Monthly::class);
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'section_id');
     }
 }

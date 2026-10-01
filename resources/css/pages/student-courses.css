@@ -1,0 +1,1371 @@
+﻿/* ==========================================================================
+   Student portal - My Courses
+   One page, three columns: courses -> subjects -> reference + viewer.
+
+   The drill-down is four levels deep (course, subject, material, viewer) but
+   only three columns, because opening a material replaces the third column
+   instead of adding a fourth. The third column is called Reference throughout;
+   the data is still keyed `materials`, which is the name of the table it will
+   come from.
+
+   Two rules shape the whole layout:
+
+   1. Nothing stacks. `grid-template-areas` is a single line from the first
+      desktop breakpoint up, so the reference column is never pushed under the
+      subjects.
+   2. The page never scrolls and each column does. The page opts into the
+      shell's fill mode, every column is a flex column exactly one viewport
+      tall, and only .mc-body inside a column ever scrolls. A wheel gesture over
+      a PDF or a video therefore moves that column and nothing else.
+
+   A CSS grid rather than Bootstrap rows, so the first column keeps a fixed
+   width and the last column takes minmax(0, 1fr) and absorbs the leftover
+   width instead of forcing the page to scroll sideways.
+   ========================================================================== */
+
+.mc-root {
+    /* fill mode: the page box is one viewport tall, so this and the grid below
+       have to be allowed to shrink for the columns to own their scrolling */
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    /* brand */
+    --mc-orange: #ff6c0f;
+    --mc-orange-deep: #e8610c;
+    --mc-orange-tint: #fff8f2;
+    --mc-orange-line: #ffe3cf;
+    --mc-navy: #0f172a;
+    --mc-navy-2: #1e293b;
+
+    /* text */
+    --mc-ink: #1e1e2d;
+    --mc-muted: #6b7280;
+    --mc-faint: #9aa0ab;
+    --mc-placeholder: #c9ced8;
+
+    /* surfaces */
+    --mc-line: #eceef2;
+    --mc-line-soft: #f4f5f7;
+    --mc-page: #f7f8fa;
+
+    /* shape */
+    --mc-r-card: 0.75rem;
+    --mc-r: 0.6rem;
+    --mc-r-sm: 0.45rem;
+    --mc-r-pill: 999px;
+
+    /* elevation: two levels only, so depth never turns into noise */
+    --mc-sh-1: 0 1px 2px rgba(16, 24, 40, .04);
+    --mc-sh-2: 0 6px 20px rgba(16, 24, 40, .08);
+
+    color: var(--mc-ink);
+}
+
+/* ---------- Buttons ---------- */
+.mc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--mc-r-sm);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* the one accent colour in the page: the thing you are meant to press */
+.mc-btn-primary {
+    background: var(--mc-orange);
+    border-color: var(--mc-orange);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(255, 108, 15, .28);
+}
+
+.mc-btn-primary:hover,
+.mc-btn-primary:focus-visible {
+    background: var(--mc-orange-deep);
+    border-color: var(--mc-orange-deep);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 108, 15, .3);
+}
+
+/* secondary action: solid navy, never a washed-out grey outline */
+.mc-btn-solid {
+    background: var(--mc-navy);
+    border-color: var(--mc-navy);
+    color: #fff;
+}
+
+.mc-btn-solid:hover,
+.mc-btn-solid:focus-visible {
+    background: var(--mc-navy-2);
+    border-color: var(--mc-navy-2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.mc-ghost-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r-sm);
+    background: #fff;
+    color: var(--mc-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.mc-ghost-btn:hover,
+.mc-ghost-btn:focus-visible {
+    border-color: var(--mc-orange-line);
+    background: var(--mc-orange-tint);
+    color: var(--mc-orange-deep);
+}
+
+.mc-btn:focus-visible,
+.mc-ghost-btn:focus-visible {
+    outline: 2px solid var(--mc-orange);
+    outline-offset: 2px;
+}
+
+/* ---------- Empty state ---------- */
+.mc-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2.75rem 1.25rem;
+}
+
+.mc-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--mc-orange-tint);
+    color: var(--mc-orange);
+    font-size: 1.4rem;
+    margin-bottom: 0.85rem;
+}
+
+.mc-empty-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mc-empty-text {
+    font-size: 0.8125rem;
+    color: var(--mc-muted);
+    max-width: 24rem;
+    margin: 0.35rem 0 0;
+    line-height: 1.5;
+}
+
+/* the in-column variants are shorter: the pane is already narrow */
+.mc-card > .mc-empty {
+    padding: 2rem 1rem;
+}
+
+/* an empty state that owns a whole column, so it sits in the middle of it */
+.mc-empty-fill {
+    flex: 1 1 auto;
+    justify-content: center;
+    height: 100%;
+}
+
+/* ---------- Mobile path bar ---------- */
+.mc-path {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 0 0 auto;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    background: #fff;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r);
+    box-shadow: var(--mc-sh-1);
+}
+
+.mc-path-back {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r-sm);
+    background: #fff;
+    color: var(--mc-ink);
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.mc-path-back:disabled {
+    color: var(--mc-placeholder);
+    cursor: default;
+}
+
+.mc-path-back:not(:disabled):active {
+    background: var(--mc-orange-tint);
+    border-color: var(--mc-orange-line);
+    color: var(--mc-orange-deep);
+}
+
+.mc-path-list {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.mc-path-list::-webkit-scrollbar {
+    display: none;
+}
+
+.mc-path-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mc-faint);
+    white-space: nowrap;
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mc-path-sep {
+    font-size: 0.5rem;
+    color: var(--mc-placeholder);
+}
+
+.mc-path-item.is-current {
+    color: var(--mc-ink);
+    font-weight: 700;
+    flex: 0 0 auto;
+}
+
+/* ---------- Grid ---------- */
+.mc-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* an explicit row track, not `auto`: the grid has a definite height from fill
+       mode and the row has to stretch to it */
+    grid-template-rows: minmax(0, 1fr);
+    gap: 1rem;
+    /* stretch, not start. A content-height column cannot scroll on its own. */
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.mc-col {
+    position: relative;
+    min-width: 0;
+    /* every column is a flex column, so its own .mc-body can take the leftover
+       height and scroll on its own */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* the wrapper each column renders into; fills the column */
+.mc-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* a card that owns a scroll region, and a card that keeps its own height */
+.mc-card-col {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mc-card-fixed {
+    flex: 0 0 auto;
+}
+
+/* the only element on the page that scrolls, per column */
+.mc-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* hierarchy signal: the column the user is currently working in gets an accent
+   along its top edge and a firmer border. The others stay quiet, which is what
+   makes the active column readable at a glance. */
+.mc-col.is-focused::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    height: 3px;
+    border-radius: var(--mc-r-card) var(--mc-r-card) 0 0;
+    background: var(--mc-orange);
+    z-index: 2;
+}
+
+.mc-col.is-focused .mc-card:first-child {
+    border-color: var(--mc-orange-line);
+    box-shadow: var(--mc-sh-2);
+}
+
+/* ---------- Card + card head ---------- */
+.mc-card {
+    background: #fff;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r-card);
+    box-shadow: var(--mc-sh-1);
+    overflow: hidden;
+}
+
+.mc-card + .mc-card {
+    margin-top: 1rem;
+}
+
+.mc-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--mc-line);
+}
+
+.mc-head-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-orange-tint);
+    color: var(--mc-orange);
+    font-size: 0.9rem;
+}
+
+.mc-head-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mc-head-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.mc-head-sub {
+    font-size: 0.75rem;
+    color: var(--mc-muted);
+}
+
+/* the detail head: identity first, then the facts, then nothing */
+.mc-head-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 1.1rem;
+}
+
+.mc-head-tight {
+    padding: 0.85rem 1.1rem;
+}
+
+.mc-head-h1 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.mc-head-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.9rem;
+    font-size: 0.75rem;
+    color: var(--mc-muted);
+}
+
+.mc-head-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.mc-head-meta i {
+    color: var(--mc-placeholder);
+}
+
+.mc-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--mc-r-pill);
+    background: var(--mc-orange-tint);
+    color: var(--mc-orange-deep);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.mc-chip-quiet {
+    background: var(--mc-line-soft);
+    color: var(--mc-muted);
+}
+
+.mc-subhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--mc-page);
+    border-bottom: 1px solid var(--mc-line);
+}
+
+.mc-subhead-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin: 0;
+    min-width: 0;
+}
+
+.mc-subhead-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mc-muted);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.mc-subhead-link:hover {
+    color: var(--mc-orange-deep);
+}
+
+.mc-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--mc-muted);
+    background: #fff;
+    border: 1px solid var(--mc-line);
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--mc-r-pill);
+    flex: 0 0 auto;
+}
+
+/* ---------- Column 1: search + course list ---------- */
+.mc-search {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.75rem 0.75rem 0;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-page);
+    min-width: 0;
+}
+
+.mc-search:focus-within {
+    border-color: var(--mc-orange-line);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 108, 15, .1);
+}
+
+.mc-search > i {
+    color: var(--mc-faint);
+    font-size: 0.75rem;
+    flex: 0 0 auto;
+}
+
+.mc-search-input {
+    border: 0;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    min-width: 0;
+    font-size: 0.875rem;
+    color: var(--mc-ink);
+}
+
+.mc-search-input::placeholder {
+    color: var(--mc-placeholder);
+}
+
+.mc-search-input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.mc-search-clear {
+    border: 0;
+    background: transparent;
+    color: var(--mc-faint);
+    padding: 0;
+    font-size: 0.75rem;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.mc-search-clear:hover {
+    color: var(--mc-orange);
+}
+
+/* the course list's scroll region: padding only, the height and the scrolling
+   itself come from .mc-body */
+.mc-body-inset {
+    padding: 0.5rem 0.6rem 0.6rem;
+}
+
+.mc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.mc-list-flush {
+    gap: 0;
+    padding: 0.35rem 0.6rem 0.5rem;
+}
+
+.mc-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: var(--mc-r);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.mc-row:hover {
+    background: var(--mc-page);
+}
+
+.mc-row.is-active {
+    background: var(--mc-orange-tint);
+    border-color: var(--mc-orange-line);
+    border-left-color: var(--mc-orange);
+}
+
+.mc-row-img {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    object-fit: cover;
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-line-soft);
+    border: 1px solid var(--mc-line);
+}
+
+.mc-row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.mc-row-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.mc-row.is-active .mc-row-title {
+    color: var(--mc-orange-deep);
+}
+
+.mc-row-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--mc-muted);
+}
+
+.mc-row-tag i {
+    font-size: 0.625rem;
+    color: var(--mc-orange);
+}
+
+.mc-row-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--mc-muted);
+}
+
+.mc-row-meta > span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.mc-row-meta i {
+    width: 0.85rem;
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 0.6875rem;
+    color: var(--mc-placeholder);
+}
+
+.mc-row.is-active .mc-row-meta i {
+    color: var(--mc-orange);
+}
+
+/* the counts are what makes a course look browsable before it is opened */
+.mc-row-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.45rem;
+}
+
+.mc-row-foot em {
+    font-style: normal;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--mc-faint);
+    background: var(--mc-line-soft);
+    border-radius: var(--mc-r-pill);
+    padding: 0.1rem 0.45rem;
+}
+
+.mc-row.is-active .mc-row-foot em {
+    background: #fff;
+    color: var(--mc-orange-deep);
+}
+
+/* ---------- Column 2: stats + subjects ---------- */
+.mc-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.9rem 1.1rem;
+    border-top: 1px solid var(--mc-line);
+}
+
+.mc-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-page);
+    min-width: 0;
+}
+
+.mc-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex: 0 0 auto;
+    border-radius: var(--mc-r-sm);
+    background: #fff;
+    color: var(--mc-orange);
+    font-size: 0.75rem;
+    box-shadow: var(--mc-sh-1);
+}
+
+.mc-stat-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mc-stat-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mc-muted);
+}
+
+.mc-stat-value {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.mc-subject {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: var(--mc-r);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.mc-subject:hover {
+    background: var(--mc-page);
+}
+
+.mc-subject.is-active {
+    background: var(--mc-orange-tint);
+    border-color: var(--mc-orange-line);
+    border-left-color: var(--mc-orange);
+}
+
+.mc-subject-num {
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-line-soft);
+    color: var(--mc-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.mc-subject.is-active .mc-subject-num {
+    background: var(--mc-orange);
+    color: #fff;
+}
+
+.mc-subject-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.mc-subject-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.mc-subject.is-active .mc-subject-name {
+    color: var(--mc-orange-deep);
+}
+
+.mc-subject-teacher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--mc-muted);
+}
+
+.mc-subject-teacher i {
+    font-size: 0.6875rem;
+    color: var(--mc-placeholder);
+}
+
+.mc-subject-foot {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+}
+
+.mc-subject-foot em {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-style: normal;
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--mc-r-pill);
+}
+
+.mc-tag-book {
+    background: #fff3e9;
+    color: #c2410c;
+}
+
+.mc-tag-video {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.mc-subject-arrow {
+    flex: 0 0 auto;
+    font-size: 0.625rem;
+    color: var(--mc-placeholder);
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.mc-subject:hover .mc-subject-arrow,
+.mc-subject.is-active .mc-subject-arrow {
+    color: var(--mc-orange);
+    transform: translateX(2px);
+}
+
+/* ---------- Column 3: material rows ---------- */
+.mc-ref-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mc-ref {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem 0.6rem 0.6rem;
+    border-bottom: 1px solid var(--mc-line);
+    transition: background-color 0.15s ease;
+}
+
+.mc-ref:last-child {
+    border-bottom: 0;
+}
+
+.mc-ref:hover {
+    background: var(--mc-page);
+}
+
+.mc-ref.is-active {
+    background: var(--mc-orange-tint);
+    box-shadow: inset 3px 0 0 var(--mc-orange);
+}
+
+.mc-ref-main {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.15rem 0.5rem 0.15rem 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.mc-ref-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.mc-ref-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.mc-ref.is-active .mc-ref-title {
+    color: var(--mc-orange-deep);
+}
+
+.mc-ref-desc {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--mc-muted);
+    overflow-wrap: anywhere;
+}
+
+.mc-ref-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.7rem;
+    margin-top: 0.15rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--mc-faint);
+}
+
+.mc-ref-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.mc-ref-meta i {
+    font-size: 0.625rem;
+    color: var(--mc-placeholder);
+}
+
+/* ---------- Column 3: viewer ---------- */
+.mc-viewer-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--mc-line);
+    background: var(--mc-page);
+}
+
+.mc-viewer-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.mc-viewer-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mc-viewer-meta {
+    font-size: 0.75rem;
+    color: var(--mc-muted);
+}
+
+.mc-viewer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+}
+
+/* the viewer body is the scroll region: the action bar above it stays put and
+   a long document or a tall video scrolls inside this column only */
+.mc-viewer-body {
+    padding: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+/* an iframe or a video fills the region and scrolls its own content, so a wheel
+   gesture over a PDF never reaches the two columns to its left */
+.mc-frame {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 320px;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r);
+    background: var(--mc-line-soft);
+}
+
+/* fullscreen: the card is the fullscreen element, so it has to paint its own
+   background or the page shows through behind the document */
+.mc-pane:fullscreen {
+    background: var(--mc-page);
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+/* PDF placeholder */
+.mc-pdf {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.mc-pdf-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.mc-pdf-chip {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--mc-r-sm);
+    background: var(--mc-orange-tint);
+    color: var(--mc-orange-deep);
+}
+
+.mc-pdf-chip-ghost {
+    background: var(--mc-line-soft);
+    color: var(--mc-muted);
+}
+
+.mc-pdf-page {
+    width: 100%;
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 2rem 2.25rem;
+    background: #fff;
+    border: 1px solid var(--mc-line);
+    border-radius: var(--mc-r);
+    box-shadow: var(--mc-sh-2);
+}
+
+.mc-pdf-page h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+}
+
+.mc-pdf-page h4 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.6rem;
+}
+
+.mc-pdf-lead {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--mc-muted);
+    margin: 0 0 1.1rem;
+}
+
+.mc-pdf-line {
+    display: block;
+    height: 0.5rem;
+    border-radius: var(--mc-r-pill);
+    background: #eef0f4;
+    margin-bottom: 0.55rem;
+}
+
+.mc-pdf-note {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.5rem 0 0;
+    padding-top: 0.85rem;
+    border-top: 1px dashed var(--mc-line);
+    font-size: 0.75rem;
+    color: var(--mc-faint);
+}
+
+/* Video placeholder */
+.mc-video {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mc-video-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--mc-r);
+    background: radial-gradient(120% 120% at 50% 0%, #24304a 0%, #10162a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.mc-video-play {
+    width: 3.75rem;
+    height: 3.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--mc-orange);
+    color: #fff;
+    font-size: 1.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.25rem;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.mc-video-play:hover {
+    transform: scale(1.06);
+    background: var(--mc-orange-deep);
+}
+
+.mc-video-time {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(15, 23, 42, .72);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--mc-r-sm);
+}
+
+.mc-video-label {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, .6);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--mc-r-sm);
+}
+
+.mc-video-meta h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+}
+
+.mc-video-meta p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--mc-muted);
+    margin: 0;
+}
+
+/* ---------- Motion ---------- */
+/* The swap between the reference list and the viewer is the one transition worth
+   animating: it tells the user the pane changed level rather than navigated. */
+@keyframes mc-swap-forward {
+    from { opacity: 0; transform: translate3d(16px, 0, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes mc-swap-back {
+    from { opacity: 0; transform: translate3d(-16px, 0, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* The list/viewer swap sits between the pane and the card, and has to pass the
+   column's height down the chain. The key on this element in the page remounts
+   it, which is what replays the transition in the right direction. */
+.mc-swap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    animation: mc-swap-forward 0.22s cubic-bezier(.22, .61, .36, 1) both;
+}
+
+.mc-swap.is-back {
+    animation-name: mc-swap-back;
+}
+
+@keyframes mc-enter {
+    from { opacity: 0; transform: translate3d(0, 8px, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Desktop ----------
+   Three columns at every width that can hold them. The left column is a fixed
+   rail, the middle one flexes inside a range, and the right column takes
+   minmax(0, 1fr) so it absorbs the leftover width. Nothing here ever moves the
+   materials column onto a second row: grid-areas stays a single line from the
+   first desktop breakpoint up. */
+@media (min-width: 768px) {
+    .mc-grid {
+        grid-template-columns: 240px 220px minmax(0, 1fr);
+        grid-template-areas: "courses subjects reference";
+    }
+
+    .mc-col-courses { grid-area: courses; }
+    .mc-col-subjects { grid-area: subjects; }
+    .mc-col-reference { grid-area: reference; }
+}
+
+/* below 1200px the columns are narrow enough that the stat icons and the
+   per-row action button cost more room than they are worth */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+    .mc-stat-icon {
+        display: none;
+    }
+
+    .mc-ref {
+        flex-wrap: wrap;
+    }
+
+    .mc-ref .mc-btn {
+        width: calc(100% - 1.1rem);
+        margin: 0 1.1rem 0.75rem;
+    }
+
+    .mc-head-h1 {
+        font-size: 1rem;
+    }
+
+    .mc-viewer-actions .mc-btn {
+        padding: 0.45rem 0.7rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mc-grid {
+        grid-template-columns: 300px minmax(260px, 340px) minmax(0, 1fr);
+    }
+}
+
+@media (min-width: 1600px) {
+    .mc-grid {
+        grid-template-columns: 320px 360px minmax(0, 1fr);
+    }
+}
+
+/* ---------- Mobile: one column at a time ----------
+   The columns keep their own scrolling on a phone, it just becomes the whole
+   column rather than one region inside it, so the page still never scrolls. */
+@media (max-width: 767.98px) {
+    .mc-path {
+        display: flex;
+    }
+
+    .mc-grid {
+        display: block;
+        height: 100%;
+    }
+
+    .mc-grid > .mc-col {
+        display: none;
+        height: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        animation: mc-enter 0.2s ease-out both;
+    }
+
+    .mc-grid[data-step="1"] > .mc-col-courses,
+    .mc-grid[data-step="2"] > .mc-col-subjects,
+    .mc-grid[data-step="3"] > .mc-col-reference,
+    .mc-grid[data-step="4"] > .mc-col-reference {
+        display: flex;
+    }
+
+    /* a phone column scrolls as a whole, so the inner regions stop being
+       scroll containers and just take their natural height */
+    .mc-pane,
+    .mc-card-col,
+    .mc-body {
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .mc-card-col {
+        display: block;
+    }
+
+    .mc-col.is-focused::before {
+        display: none;
+    }
+
+    .mc-viewer-body,
+    .mc-frame {
+        min-height: 60vh;
+    }
+
+    /* the action drops to its own line so the title keeps the full width */
+    .mc-ref {
+        flex-wrap: wrap;
+    }
+
+    .mc-ref .mc-btn {
+        width: calc(100% - 1.1rem);
+        margin: 0 1.1rem 0.75rem;
+    }
+
+    .mc-viewer-bar {
+        flex-wrap: wrap;
+    }
+
+    .mc-viewer-actions {
+        width: 100%;
+    }
+
+    .mc-viewer-actions .mc-btn {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .mc-stats {
+        padding: 0.75rem 0.85rem;
+    }
+
+    .mc-head,
+    .mc-head-detail,
+    .mc-subhead {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    .mc-empty {
+        padding: 2.25rem 1rem;
+    }
+}
+
+/* ---------- Motion off ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .mc-swap,
+    .mc-grid > .mc-col {
+        animation: none;
+    }
+
+    .mc-btn:hover,
+    .mc-subject-arrow {
+        transform: none;
+    }
+}

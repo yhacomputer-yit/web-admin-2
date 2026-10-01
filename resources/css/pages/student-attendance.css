@@ -1,0 +1,615 @@
+/* ==========================================================================
+   Student portal - attendance dashboard
+   Portal uses a blue primary so it reads as a separate surface from the
+   orange admin theme.
+   ========================================================================== */
+
+/* The --sa-* tokens are declared on .sl-root in student-layout.css so the
+   summary cards and calendar also work on the dashboard, which renders them
+   outside this page. This file only holds the attendance components. */
+
+/* ---------- summary cards ---------- */
+.sa-stat {
+    background: #fff;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    padding: 0.9rem 1rem;
+    /* equal-height cards in the grid row */
+    height: 100%;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.sa-stat-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sa-muted);
+}
+
+.sa-stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--sa-ink);
+}
+
+.sa-stat-pct {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--sa-muted);
+}
+
+.sa-green { border-color: #bbf7d0; background: #f0fdf4; }
+.sa-green .sa-stat-value { color: #16a34a; }
+.sa-green .sa-stat-pct { color: #16a34a; }
+.sa-red { border-color: #fecaca; background: #fef2f2; }
+.sa-red .sa-stat-value { color: #dc2626; }
+.sa-red .sa-stat-pct { color: #dc2626; }
+.sa-orange { border-color: #fde68a; background: #fffbeb; }
+.sa-orange .sa-stat-value { color: #d97706; }
+.sa-orange .sa-stat-pct { color: #d97706; }
+.sa-blue { border-color: #bfdbfe; background: var(--sa-blue-soft); }
+.sa-blue .sa-stat-value { color: var(--sa-blue); }
+.sa-blue .sa-stat-pct { color: var(--sa-blue); }
+
+/* ---------- toolbar ---------- */
+.sa-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+/* When the toolbar sits inside a card it lines up with the card head and the
+   calendar grid instead of bleeding to the card edges. */
+.sa-card > .sa-toolbar {
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--sa-line);
+}
+
+.sa-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    /* the chips must never widen the column */
+    min-width: 0;
+}
+
+/* The native arrow is suppressed and replaced by one caret of our own, so the
+   control reads as a dropdown identically on Windows, macOS and mobile, and the
+   indicator can be styled with the rest of the portal. */
+.sa-select-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 15rem;
+}
+
+.sa-select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.5rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sa-ink);
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sa-select:hover {
+    border-color: #c9ced8;
+}
+
+.sa-select:focus,
+.sa-select:focus-visible {
+    outline: none;
+    border-color: var(--sa-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.sa-select-caret {
+    position: absolute;
+    right: 0.7rem;
+    font-size: 0.6875rem;
+    color: var(--sa-muted);
+    pointer-events: none;
+}
+
+.sa-select-wrap:focus-within .sa-select-caret {
+    color: var(--sa-blue);
+}
+
+.sa-month-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.15rem;
+}
+
+.sa-month-btn {
+    border: 0;
+    background: transparent;
+    color: var(--sa-muted);
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sa-month-btn:hover {
+    background: var(--sa-blue-soft);
+    color: var(--sa-blue);
+}
+
+.sa-month-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    min-width: 7.5rem;
+    text-align: center;
+}
+
+.sa-legend {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: var(--sa-muted);
+}
+
+.sa-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sa-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+.sa-dot-cl {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+
+.sa-dot-attend { background: #16a34a; }
+.sa-dot-absent { background: #dc2626; }
+.sa-dot-leave { background: #f59e0b; }
+
+/* ---------- cards ---------- */
+.sa-card {
+    background: #fff;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    height: auto;
+    overflow: hidden;
+}
+
+.sa-card-head {
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--sa-line);
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+/* opt-in two-part head: the dashboard calendar uses the plain .sa-card-head, so
+   the flex row is not forced on every card */
+.sa-card-head-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.sa-card-head-sub {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--sa-muted);
+}
+
+.sa-toolbar-count {
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+/* trailing action row, e.g. the link through to the full history */
+.sa-card-foot {
+    padding: 0.7rem 1.1rem;
+    border-top: 1px solid var(--sa-line);
+    background: #fbfbfc;
+    text-align: right;
+}
+
+.sa-card-foot a {
+    color: #2563eb;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.sa-card-foot a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- calendar ---------- */
+.sa-cal {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    padding: 0.75rem;
+}
+
+.sa-cal-head {
+    text-align: center;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sa-muted);
+    padding-bottom: 0.4rem;
+}
+
+.sa-cal-cell {
+    min-height: 50px;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+/* the day number sits above the status dot inside a flex column */
+.sa-cal-day {
+    font-size: 0.8125rem;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--sa-ink);
+}
+
+.sa-cal-cell.sa-cal-marked {
+    background: #f7f8fa;
+}
+
+.sa-cal-cell.sa-cal-today {
+    outline: 2px solid var(--sa-blue);
+    outline-offset: -2px;
+}
+
+.sa-cal-pad {
+    background: transparent;
+}
+
+/* ---------- attendance table ---------- */
+.sa-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.sa-table-wrap {
+    /* a very long course name scrolls inside the card instead of widening the page */
+    overflow-x: auto;
+}
+
+.sa-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.sa-table thead th {
+    padding: 0.6rem 1.1rem;
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--sa-muted);
+    background: #fbfbfc;
+    border-bottom: 1px solid var(--sa-line);
+    white-space: nowrap;
+}
+
+.sa-table tbody td {
+    padding: 0.75rem 1.1rem;
+    border-bottom: 1px solid var(--sa-line);
+    color: var(--sa-ink);
+    vertical-align: top;
+}
+
+.sa-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.sa-table tbody tr {
+    transition: background-color 0.12s ease;
+}
+
+.sa-table tbody tr:hover {
+    background: #fbfbfc;
+}
+
+/* widths live on the header row, where table-layout reads them from */
+.sa-table th.sa-col-date { width: 7.5rem; }
+.sa-table th.sa-col-section { width: 7.5rem; }
+.sa-table th.sa-col-status { width: 7.5rem; }
+.sa-table th.sa-col-remark { width: 15rem; }
+
+.sa-table .sa-col-status,
+.sa-table td.sa-col-status {
+    text-align: right;
+}
+
+.sa-cell-date {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sa-cell-strong {
+    font-weight: 600;
+}
+
+/* the admin's note on a record, in its own column: plain muted text, em dash
+   when the record has none, matching the admin table */
+.sa-cell-remark {
+    color: var(--sa-muted);
+    font-size: 0.8125rem;
+    min-width: 10rem;
+}
+
+.sa-badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* The dot takes its colour from the badge, so one rule covers all four states.
+   Scoped to the table: the assignment rows reuse .sa-badge and bring their own
+   icon, which would double up next to a dot. */
+.sa-table .sa-badge::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+    flex: 0 0 auto;
+}
+
+.sa-badge-attended { background: #dcfce7; color: #15803d; }
+.sa-badge-absent { background: #fee2e2; color: #b91c1c; }
+.sa-badge-late { background: #fef3c7; color: #b45309; }
+.sa-badge-leave { background: #eef1f5; color: #4b5563; }
+
+/* ---------- empty state ---------- */
+.sa-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.sa-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--sa-blue-soft);
+    color: var(--sa-blue);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.sa-empty-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.sa-empty-text {
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    max-width: 22rem;
+    margin: 0 auto;
+}
+
+/* ---------- pager ----------
+   Always rendered, even with a single page, so the record count has one home.
+   The count sits left, the page buttons right. */
+.sa-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+    padding: 0.75rem 1.1rem;
+    border-top: 1px solid var(--sa-line);
+    background: #fbfbfc;
+}
+
+.sa-pager-info {
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+.sa-pager-info strong {
+    color: var(--sa-ink);
+    font-weight: 700;
+}
+
+.sa-pager-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+/* Buttons are .sa-pbtn, not .sa-page: the page-level wrapper also uses
+   .sa-page, and sharing the name made the wrapper inherit button sizing. */
+.sa-pbtn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.4rem;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sa-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.sa-pbtn:hover:not(.active):not(.disabled) {
+    border-color: #bfdbfe;
+    background: var(--sa-blue-soft);
+    color: var(--sa-blue);
+}
+
+.sa-pbtn.active {
+    background: var(--sa-blue);
+    border-color: var(--sa-blue);
+    color: #fff;
+    cursor: default;
+}
+
+.sa-pbtn.disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* ---------- mobile ----------
+   A five column table cannot fit a phone, so the same markup becomes one card
+   per record. No duplicate DOM: each cell prints its own header from
+   data-label, which is why the cells carry those attributes. */
+@media (max-width: 767.98px) {
+    .sa-table-wrap {
+        overflow-x: visible;
+        padding: 0.6rem;
+        background: #f7f8fa;
+    }
+
+    .sa-table,
+    .sa-table tbody,
+    .sa-table tr,
+    .sa-table td {
+        display: block;
+        width: auto;
+    }
+
+    .sa-table thead {
+        display: none;
+    }
+
+    .sa-table tr {
+        background: #fff;
+        border: 1px solid var(--sa-line);
+        border-radius: 0.6rem;
+        margin-bottom: 0.6rem;
+        padding: 0.35rem 0.85rem;
+    }
+
+    .sa-table tbody td {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        padding: 0.35rem 0;
+        border-bottom: 0;
+        text-align: left;
+    }
+
+    .sa-table tbody td + td {
+        border-top: 1px solid #f4f5f7;
+        padding-top: 0.4rem;
+    }
+
+    .sa-table tbody td::before {
+        content: attr(data-label);
+        flex: 0 0 4.25rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--sa-muted);
+    }
+
+    /* the desktop rule right-aligns the status column; in card mode the label
+       sits on the left, so the value follows it */
+    .sa-table td.sa-col-status {
+        text-align: left;
+    }
+
+    .sa-cell-date {
+        white-space: normal;
+    }
+
+    .sa-cell-remark {
+        min-width: 0;
+    }
+
+    .sa-pager {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sa-toolbar {
+        align-items: stretch;
+    }
+
+    .sa-filters {
+        width: 100%;
+    }
+
+    .sa-select-wrap {
+        max-width: none;
+        flex: 1 1 auto;
+    }
+
+    .sa-toolbar-count {
+        display: none;
+    }
+
+    .sa-legend {
+        gap: 0.5rem;
+    }
+
+    .sa-pager {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sa-pager-links {
+        justify-content: space-between;
+    }
+}

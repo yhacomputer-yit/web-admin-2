@@ -46,6 +46,26 @@ class Course extends Model
         return $this->hasMany(Project::class); // Define the relationship (optional)
     }
 
+    public function enrollments()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'course_id');
+    }
+
+    public function activeEnrollments()
+    {
+        return $this->enrollments()->active();
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'course_id');
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class, 'course_id');
+    }
+
     public function monthlies()
     {
         return $this->hasMany(Monthly::class);

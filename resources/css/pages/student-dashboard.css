@@ -1,7 +1,7 @@
 /* ==========================================================================
    Student portal dashboard
-   The JSX uses .stu-dash* class names; these were never defined, so the page
-   previously rendered on Bootstrap defaults alone.
+   The .stu-dash class was the old top-nav shell and is now only kept as a
+   token carrier; the app shell lives in ../layouts/student-layout.css.
    ========================================================================== */
 
 .stu-dash {
@@ -15,7 +15,8 @@
     color: var(--sd-ink);
 }
 
-/* ---------- Header ---------- */
+/* ---------- Header (kept for the admin-style shell; the portal uses the
+   sidebar layout, so nothing renders this block any more) ---------- */
 .stu-dash-header {
     position: sticky;
     top: 0;

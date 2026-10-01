@@ -56,6 +56,29 @@ class Student extends Authenticatable
         return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
 
+    public function activeEnrollments()
+    {
+        return $this->enrollments()->active();
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'student_id');
+    }
+
+    /**
+     * Does this student hold an active enrollment for the given class?
+     * This is the rule that gates attendance marking.
+     */
+    public function hasActiveEnrollmentFor(int $courseId, int $sectionId): bool
+    {
+        return $this->enrollments()
+            ->active()
+            ->where('course_id', $courseId)
+            ->where('section_id', $sectionId)
+            ->exists();
+    }
+
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(

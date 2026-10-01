@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Attendance — table mockup</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- the real stylesheets, straight from source: this file cannot drift from the app -->
+<link rel="stylesheet" href="../../resources/css/layouts/student-layout.css">
+<link rel="stylesheet" href="../../resources/css/pages/student-attendance.css">
+<style>
+    /* Mockup page chrome only, and always prefixed so it cannot collide with the
+       two stylesheets above. */
+    html:has(.sl-root),
+    body:has(.sl-root) {
+        /* student-layout.css locks the document so the shell owns the scroll. This
+           page has sections below the shell, so unlock just the document; the
+           shell still scrolls internally. */
+        height: auto;
+        overflow: visible;
+    }
+
+    body {
+        background: #e7e9ee;
+    }
+
+    .mock-note {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: .25rem .75rem;
+        max-width: 1320px;
+        margin: 0 auto 1rem;
+        padding: 1.75rem 1.5rem 0;
+    }
+
+    .mock-note h2 {
+        font-size: .8125rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        margin: 0;
+        color: #0f172a;
+    }
+
+    .mock-note p {
+        margin: 0;
+        font-size: .8125rem;
+        color: #64748b;
+    }
+
+    .mock-cap {
+        font-size: .6875rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        padding: 1.25rem 1.5rem .5rem;
+    }
+
+    /* inside the shell the page container already pads, so the labels sit flush */
+    .sl-content .mock-note,
+    .sl-content .mock-cap {
+        max-width: none;
+        margin: 0;
+        padding: 1.25rem 0 0;
+    }
+
+    .mock-frames {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1.5rem 3rem;
+    }
+
+    .mock-frame {
+        margin: 0;
+    }
+
+    .mock-frame figcaption {
+        font-size: .6875rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: #64748b;
+        padding: 0 0 .5rem;
+    }
+
+    .mock-frame iframe {
+        display: block;
+        width: 100%;
+        height: 760px;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        background: #f7f8fa;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 900px) {
+        .mock-frames { grid-template-columns: minmax(0, 1fr); }
+    }
+</style>
+</head>
+<body>
+
+<div class="sl-root" id="shell">
+    <aside class="sl-sidebar" aria-label="Student portal navigation">
+        <div class="sl-brand">
+            <div class="sl-brand-text">
+                <div class="sl-brand-title">Student Portal</div>
+                <div class="sl-brand-sub">YHA Academy of Technology</div>
+            </div>
+        </div>
+        <nav class="sl-nav">
+            <span class="sl-link"><i class="fas fa-gauge-high"></i><span class="sl-link-label">Dashboard</span></span>
+            <span class="sl-link active"><i class="fas fa-calendar-check"></i><span class="sl-link-label">My Attendance</span></span>
+            <span class="sl-link"><i class="fas fa-book-open"></i><span class="sl-link-label">My Courses</span></span>
+            <span class="sl-link"><i class="fas fa-file-lines"></i><span class="sl-link-label">Assignment</span></span>
+            <span class="sl-link"><i class="fas fa-file-lines"></i><span class="sl-link-label">Exam</span></span>
+        </nav>
+    </aside>
+
+    <div class="sl-main">
+        <header class="sl-topbar">
+            <span class="sl-burger"><i class="fas fa-bars"></i></span>
+            <div class="sl-topbar-title">My Attendance</div>
+        </header>
+        <main class="sl-content" id="content"></main>
+    </div>
+</div>
+
+<div class="mock-cap">Phone width — the five column table becomes one card per record</div>
+<div class="mock-frames">
+    <figure class="mock-frame" id="frame-a">
+        <figcaption>Records</figcaption>
+        <iframe src="student-attendance-table.html?view=mobile" title="Attendance table on a phone" loading="lazy"></iframe>
+    </figure>
+    <figure class="mock-frame" id="frame-b">
+        <figcaption>Empty state</figcaption>
+        <iframe src="student-attendance-table.html?view=empty" title="Attendance empty state on a phone" loading="lazy"></iframe>
+    </figure>
+</div>
+
+<script>
+/*
+ * The markup is generated rather than hand written, and it uses exactly the
+ * class names StudentAttendance.jsx renders, with the app's own stylesheets
+ * loaded above. What you see here is what the page renders.
+ */
+(function () {
+    'use strict';
+
+    var BADGE = { 1: 'sa-badge-attended', 2: 'sa-badge-absent', 3: 'sa-badge-late', 4: 'sa-badge-leave' };
+
+    var LABEL = { 1: 'Attended', 2: 'Absent', 3: 'Late', 4: 'Leave' };
+
+    var RECORDS = [
+        { date: '28 Sep 2026', course: 'Mobile Application Development', subject: 'Android Fundamentals', section: 'Section A', status: 1, remark: null },
+        { date: '28 Sep 2026', course: 'Mobile Application Development', subject: 'Cross-Platform Basics', section: 'Section A', status: 4, remark: 'Medical leave, approved' },
+        { date: '25 Sep 2026', course: 'Web Frontend Fundamentals', subject: 'JavaScript Essentials', section: 'Section B', status: 1, remark: null },
+        { date: '25 Sep 2026', course: 'Web Frontend Fundamentals', subject: 'HTML and CSS Layout', section: 'Section B', status: 1, remark: null },
+        { date: '24 Sep 2026', course: 'Database Design and SQL', subject: 'Relational Modeling', section: 'Section A', status: 3, remark: 'Joined 15 minutes late' },
+        { date: '23 Sep 2026', course: 'Mobile Application Development', subject: 'Android Fundamentals', section: 'Section A', status: 1, remark: null },
+        { date: '23 Sep 2026', course: 'Database Design and SQL', subject: 'Query Writing', section: 'Section A', status: 2, remark: null },
+        { date: '22 Sep 2026', course: 'Web Frontend Fundamentals', subject: 'JavaScript Essentials', section: 'Section B', status: 1, remark: null }
+    ];
+
+    var TOTAL = 42;
+    var PER_PAGE = 15;
+    var PAGES = 3;
+
+    function badge(status, label) {
+        return '<span class="sa-badge ' + BADGE[status] + '">' + label + '</span>';
+    }
+
+    function toolbar() {
+        return '<div class="sa-toolbar">'
+            + '<div class="sa-filters">'
+            + '<div class="sa-select-wrap">'
+            + '<select class="sa-select" aria-label="Filter by course">'
+            + '<option value="">All courses</option>'
+            + '<option>Mobile Application Development</option>'
+            + '<option>Web Frontend Fundamentals</option>'
+            + '<option>Database Design and SQL</option>'
+            + '</select>'
+            + '<i class="fas fa-chevron-down sa-select-caret" aria-hidden="true"></i>'
+            + '</div></div>'
+            + '<span class="sa-toolbar-count">' + TOTAL + ' records</span>'
+            + '</div>';
+    }
+
+    function table() {
+        var rows = RECORDS.map(function (r) {
+            return '<tr>'
+                + '<td data-label="Date" class="sa-cell-date">' + r.date + '</td>'
+                + '<td data-label="Course">' + r.course + '</td>'
+                + '<td data-label="Subject" class="sa-cell-strong">' + r.subject + '</td>'
+                + '<td data-label="Section">' + r.section + '</td>'
+                + '<td data-label="Status" class="sa-col-status">' + badge(r.status, LABEL[r.status]) + '</td>'
+                + '<td data-label="Remark" class="sa-cell-remark">' + (r.remark || '&mdash;') + '</td>'
+                + '</tr>';
+        }).join('');
+
+        return '<div class="sa-table-wrap"><table class="sa-table">'
+            + '<caption class="sa-caption">Attendance records, most recent first</caption>'
+            + '<thead><tr>'
+            + '<th scope="col" class="sa-col-date">Date</th>'
+            + '<th scope="col">Course</th>'
+            + '<th scope="col">Subject</th>'
+            + '<th scope="col" class="sa-col-section">Section</th>'
+            + '<th scope="col" class="sa-col-status">Status</th>'
+            + '<th scope="col" class="sa-col-remark">Remark</th>'
+            + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+    }
+
+    function pager() {
+        var links = '<span class="sa-pbtn">&laquo;</span>'
+            + '<span class="sa-pbtn active" aria-current="page">1</span>'
+            + '<span class="sa-pbtn">2</span>'
+            + '<span class="sa-pbtn">3</span>'
+            + '<span class="sa-pbtn">&raquo;</span>';
+
+        return '<div class="sa-pager">'
+            + '<span class="sa-pager-info">Showing <strong>1</strong>&ndash;<strong>' + RECORDS.length + '</strong> of <strong>' + TOTAL + '</strong> records</span>'
+            + '<span class="sa-pager-links">' + links + '</span>'
+            + '</div>';
+    }
+
+    function card(records) {
+        var head = '<div class="sa-card-head sa-card-head-row">'
+            + '<span class="sa-card-head-title">Recent Attendance</span>'
+            + '<span class="sa-card-head-sub">Most recent first</span></div>';
+
+        var body = records.length
+            ? table()
+            : '<div class="sa-empty"><div class="sa-empty-icon"><i class="fas fa-calendar-check"></i></div>'
+              + '<div class="sa-empty-title">Nothing recorded yet</div>'
+              + '<p class="sa-empty-text">Your attendance will appear here once a class has been marked.</p></div>';
+
+        return '<div class="sa-card">' + head + body + pager() + '</div>';
+    }
+
+    function legend() {
+        return '<div class="sa-card"><div class="sa-card-head">Status badges</div>'
+            + '<div class="sa-table-wrap"><table class="sa-table"><tbody><tr>'
+            + '<td>' + badge(1, LABEL[1]) + '</td>'
+            + '<td>' + badge(2, LABEL[2]) + '</td>'
+            + '<td>' + badge(3, LABEL[3]) + '</td>'
+            + '<td>' + badge(4, LABEL[4]) + '</td>'
+            + '</tr></tbody></table></div></div>';
+    }
+
+    function note(title, text) {
+        return '<div class="mock-note"><h2>' + title + '</h2><p>' + text + '</p></div>';
+    }
+
+    var view = new URLSearchParams(location.search).get('view');
+    var out = '';
+
+    if (view === 'mobile') {
+        out = '<div class="sa-page">' + toolbar() + card(RECORDS) + '</div>';
+    } else if (view === 'empty') {
+        out = '<div class="sa-page">' + toolbar() + card([]) + '</div>';
+    } else {
+        out = note('Records', 'One real table, six columns, badges and pagination. The caret on &ldquo;All courses&rdquo; is drawn by the wrapper, so it looks the same on every platform. A present class reads &ldquo;Attended&rdquo;, the same word the admin grid and the dashboard use, and the admin&rsquo;s note sits in its own column rather than under the subject.')
+            + '<div class="sa-page">' + toolbar() + card(RECORDS) + '</div>'
+            + note('Pagination', 'Always present, even on a single page, so the record count has one home. Buttons left as links, current page filled.')
+            + note('Empty state', 'Same card and same pager, so the layout does not jump when a filter returns nothing.')
+            + '<div class="sa-page">' + card([]) + '</div>'
+            + note('Status badges', 'The dot takes its colour from the badge, so one rule covers all four states. Late and Absent are in the schema even though the common case is Attended and Leave.')
+            + '<div class="sa-page">' + legend() + '</div>';
+    }
+
+    document.getElementById('content').innerHTML = out;
+
+    if (view) {
+        document.getElementById('shell').hidden = true;
+        document.querySelectorAll('.mock-cap, .mock-frames').forEach(function (el) { el.hidden = true; });
+    }
+})();
+</script>
+
+</body>
+</html>

@@ -28,4 +28,14 @@ class Subject extends Model
     {
         return $this->hasMany(SubjectDetail::class, 'subject_id');
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'subject_id');
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class, 'subject_id');
+    }
 }
