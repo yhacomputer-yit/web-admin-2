@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Portal — My Courses (course → subject → files, preview on the right)</title>
+
+<!-- High-fidelity mockup of resources/js/Pages/StudentCourses.jsx.
+     Static and self-contained: open this file in a browser, no build step.
+
+     The interaction it demonstrates:
+       click a course   -> its subjects drop out DIRECTLY under that course card
+       click a subject  -> its PDF books / videos / ZIP folders drop out under
+                           the subject row, grouped by type
+       click a file     -> the right column previews that one file, and only
+                           that. The right column is a preview surface, nothing else.
+
+     Nothing about the tree ever moves to the right, and the right column never
+     lists files of its own. -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+/* ==========================================================================
+   Tokens — the same values as resources/css/pages/student-courses.css
+   ========================================================================== */
+:root {
+    --orange: #ff6c0f;
+    --orange-deep: #e8610c;
+    --orange-tint: #fff8f2;
+    --orange-line: #ffe3cf;
+
+    --navy: #0f172a;
+    --navy-2: #1e293b;
+
+    --ink: #1e1e2d;
+    --muted: #6b7280;
+    --faint: #9aa0ab;
+    --placeholder: #c9ced8;
+
+    --line: #eceef2;
+    --line-soft: #f4f5f7;
+    --page: #f7f8fa;
+    --nest: #f1f3f6;
+
+    --r-card: .75rem;
+    --r: .6rem;
+    --r-sm: .45rem;
+    --pill: 999px;
+
+    --sh-1: 0 1px 2px rgba(16, 24, 40, .04);
+    --sh-2: 0 6px 20px rgba(16, 24, 40, .08);
+
+    --sidebar: 260px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Shell — dark navy sidebar (unchanged navigation) + content
+   ========================================================================== */
+.shell { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+
+.sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--sidebar);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--navy) 0%, #14213d 100%);
+    color: #cbd5e1;
+    z-index: 20;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: 1.1rem 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    min-height: 74px;
+}
+.brand-logo {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    object-fit: contain;
+    background: rgba(255, 255, 255, .92);
+    border-radius: .5rem;
+    padding: 3px;
+}
+.brand-title { font-size: .9375rem; font-weight: 700; color: #fff; line-height: 1.25; }
+.brand-sub   { font-size: .6875rem; color: #94a3b8; line-height: 1.3; }
+
+.nav { display: flex; flex-direction: column; gap: .2rem; padding: .9rem .7rem; flex: 1 1 auto; }
+
+.link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .8rem;
+    border: 0;
+    border-radius: .55rem;
+    background: transparent;
+    color: #cbd5e1;
+    font: inherit;
+    font-size: .875rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+.link i { width: 1.15rem; flex: 0 0 auto; text-align: center; font-size: 1rem; color: #94a3b8; }
+.link:hover { background: rgba(255, 255, 255, .07); color: #fff; }
+.link.active { background: rgba(255, 108, 15, .16); color: #fff; }
+.link.active i { color: var(--orange); }
+.link.active::before {
+    content: '';
+    position: absolute;
+    left: -.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 22px;
+    border-radius: 0 3px 3px 0;
+    background: var(--orange);
+}
+.link.logout:hover { background: rgba(239, 68, 68, .16); color: #fecaca; }
+
+.side-foot { padding: .7rem; border-top: 1px solid rgba(255, 255, 255, .08); display: flex; flex-direction: column; gap: .2rem; }
+
+.main {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: var(--sidebar);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.content {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Page frame — exactly two columns, 38% / 62%
+   ========================================================================== */
+.page {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+    grid-template-areas: "tree preview";
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.col { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.col-tree    { grid-area: tree; }
+.col-preview { grid-area: preview; }
+
+.pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+
+.card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--sh-1);
+    overflow: hidden;
+}
+.card-col { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+
+.body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.body-inset { padding: .5rem .6rem .6rem; }
+
+/* ---------- Card head ---------- */
+.head {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+}
+.head-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    border-radius: var(--r-sm);
+    background: var(--orange-tint);
+    color: var(--orange);
+    font-size: .9rem;
+}
+.head-title { font-size: 1rem; font-weight: 700; line-height: 1.25; }
+.head-sub   { font-size: .75rem; color: var(--muted); }
+
+/* ---------- Search ---------- */
+.search {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: .75rem .75rem 0;
+    padding: .45rem .7rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--page);
+}
+.search:focus-within {
+    border-color: var(--orange-line);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 108, 15, .1);
+}
+.search > i { color: var(--faint); font-size: .75rem; }
+.search input {
+    border: 0;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font: inherit;
+    font-size: .875rem;
+    color: var(--ink);
+}
+.search input::placeholder { color: var(--placeholder); }
+
+.hint {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    padding: .5rem .9rem;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--orange-tint);
+    color: var(--orange-deep);
+    font-size: .75rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.hint i { flex: 0 0 auto; font-size: .6875rem; }
+
+/* ==========================================================================
+   Level 1 — the course accordion
+   A course row is a name and a chevron, nothing else. The category, the section,
+   the thumbnail and the counts are dropped: the column reads as a menu.
+   ========================================================================== */
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+
+.acc {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.acc:hover { border-color: #dfe3ea; }
+.acc.is-open { border-color: var(--orange-line); box-shadow: 0 4px 14px rgba(255, 108, 15, .1); }
+
+.crow {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    width: 100%;
+    padding: .6rem .75rem;
+    border: 0;
+    border-left: 3px solid transparent;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+.crow:hover { background: var(--page); }
+.crow.is-active { background: var(--orange-tint); border-left-color: var(--orange); }
+
+.crow-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+.crow.is-active .crow-name { color: var(--orange-deep); }
+
+.chev {
+    flex: 0 0 auto;
+    font-size: .6875rem;
+    color: var(--placeholder);
+    transition: transform .24s cubic-bezier(.22, .61, .36, 1), color .15s ease;
+}
+.acc:hover .chev, .acc.is-open .chev { color: var(--orange); }
+.acc.is-open .chev { transform: rotate(180deg); }
+
+/* ---------- The accordion itself: 0fr -> 1fr animates its own height ---------- */
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s cubic-bezier(.22, .61, .36, 1); }
+.acc.is-open .panel { grid-template-rows: 1fr; }
+.panel-in {
+    min-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: visibility 0s linear .26s;
+}
+.acc.is-open .panel-in { visibility: visible; transition-delay: 0s; }
+
+/* nesting is drawn with three greys, not three border weights */
+.panel-in > * { border-top: 1px solid var(--line-soft); background: var(--page); }
+.sub .panel-in > * { background: var(--nest); }
+
+.acc-empty {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    padding: .75rem .9rem;
+    font-size: .75rem;
+    color: var(--muted);
+}
+.acc-empty i { font-size: .6875rem; color: var(--placeholder); }
+
+/* ==========================================================================
+   Level 2 — subject rows
+   ========================================================================== */
+.sub-list { list-style: none; margin: 0; padding: .35rem; display: flex; flex-direction: column; gap: .25rem; }
+
+.sub {
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: #fff;
+    overflow: hidden;
+}
+.sub:hover { border-color: #dfe3ea; }
+.sub.is-open { border-color: var(--orange-line); }
+
+.srow {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    width: 100%;
+    padding: .5rem .55rem;
+    border: 0;
+    border-left: 3px solid transparent;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+.srow:hover { background: var(--page); }
+.srow.is-active { background: var(--orange-tint); border-left-color: var(--orange); }
+
+.srow-num {
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    background: var(--line-soft);
+    color: var(--muted);
+    font-size: .75rem;
+    font-weight: 700;
+}
+.srow.is-active .srow-num { background: var(--orange); color: #fff; }
+
+.srow-body { display: flex; flex-direction: column; gap: .1rem; min-width: 0; flex: 1 1 auto; }
+.srow-name { font-size: .8125rem; font-weight: 700; line-height: 1.3; }
+.srow.is-active .srow-name { color: var(--orange-deep); }
+
+
+.srow-foot { display: flex; flex: 0 0 auto; gap: .25rem; }
+.srow-foot em {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    font-style: normal;
+    font-size: .625rem;
+    font-weight: 700;
+    padding: .1rem .4rem;
+    border-radius: var(--pill);
+}
+.srow-foot i { font-size: .5625rem; }
+
+.chip-book  { background: #fff3e9; color: #c2410c; }
+.chip-video { background: #eff6ff; color: #1d4ed8; }
+.chip-zip   { background: #f5f3ff; color: #6d28d9; }
+.chip-none  { background: var(--line-soft); color: var(--faint); }
+
+/* ==========================================================================
+   Level 3 — the files of a subject, grouped by type
+   ========================================================================== */
+.files { padding: .4rem .4rem .5rem; display: flex; flex-direction: column; gap: .5rem; }
+.files-group + .files-group { padding-top: .5rem; border-top: 1px dashed var(--line); }
+
+.files-head { display: flex; align-items: center; gap: .4rem; padding: 0 .15rem .35rem; }
+.files-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    flex: 0 0 auto;
+    border-radius: .35rem;
+    font-size: .6875rem;
+}
+.files-icon-book  { background: #fff3e9; color: #ff6c0f; }
+.files-icon-video { background: #eff6ff; color: #2563eb; }
+.files-icon-zip   { background: #f5f3ff; color: #7c3aed; }
+
+.files-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: .625rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.files-head em {
+    font-style: normal;
+    font-size: .625rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: .05rem .4rem;
+    border-radius: var(--pill);
+}
+.files-none { margin: 0; padding: .3rem .15rem .35rem; font-size: .6875rem; color: var(--faint); }
+
+.files-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
+
+.file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    padding: .4rem .5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: #fff;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+.file:hover { border-color: var(--orange-line); background: var(--orange-tint); }
+.file.is-active { border-color: var(--orange); background: var(--orange-tint); box-shadow: inset 3px 0 0 var(--orange); }
+
+/* the rail tying each file back to the subject above it */
+.file::before {
+    content: '';
+    position: absolute;
+    left: -.75rem;
+    top: -.25rem;
+    bottom: 50%;
+    width: 2px;
+    background: var(--line);
+    border-radius: var(--pill);
+}
+
+.file-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex: 0 0 auto;
+    border-radius: .4rem;
+    font-size: .8125rem;
+}
+.file-icon-book  { background: #fff3e9; color: #ff6c0f; }
+.file-icon-video { background: #eff6ff; color: #2563eb; }
+.file-icon-zip   { background: #f5f3ff; color: #7c3aed; }
+
+.file-body { display: flex; flex-direction: column; gap: .05rem; min-width: 0; flex: 1 1 auto; }
+.file-name { font-size: .75rem; font-weight: 600; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file.is-active .file-name { color: var(--orange-deep); }
+.file-meta { font-size: .625rem; font-weight: 600; color: var(--faint); }
+.file-go { flex: 0 0 auto; font-size: .6875rem; color: var(--placeholder); transition: color .15s ease; }
+.file:hover .file-go, .file.is-active .file-go { color: var(--orange); }
+
+/* ==========================================================================
+   Right column — the preview, and nothing else
+   ========================================================================== */
+.pvbar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    padding: .9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+}
+.pvbar-top { display: flex; align-items: center; gap: .6rem; min-width: 0; }
+
+.crumb {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-width: 0;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+.crumb i { flex: 0 0 auto; color: var(--orange); }
+.crumb em { font-style: normal; color: var(--faint); }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    flex: 0 0 auto;
+    padding: .45rem .8rem;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    font: inherit;
+    font-size: .8125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+.btn-primary { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 1px 2px rgba(255, 108, 15, .28); }
+.btn-primary:hover { background: var(--orange-deep); border-color: var(--orange-deep); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255, 108, 15, .3); }
+.btn-ghost { background: #fff; border-color: var(--line); color: var(--muted); }
+.btn-ghost:hover { border-color: var(--orange-line); background: var(--orange-tint); color: var(--orange-deep); }
+.btn-block { width: 100%; max-width: 16rem; }
+.btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.pvtitle { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.pvicon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    border-radius: var(--r-sm);
+    font-size: 1.15rem;
+}
+.pvname { font-size: 1.125rem; font-weight: 700; line-height: 1.35; margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+.pvactions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding-top: .7rem; border-top: 1px dashed var(--line); }
+
+.pvbody {
+    position: relative;
+    padding: 1.1rem;
+    background: var(--page);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+.pvbody.is-zip { align-items: center; }
+
+/* the fullscreen control on the frame itself, mirroring the header button */
+.expand {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    z-index: 2;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: rgba(255, 255, 255, .92);
+    color: var(--ink);
+    font: inherit;
+    font-size: .8125rem;
+    cursor: pointer;
+    box-shadow: var(--sh-1);
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+}
+.expand:hover, .expand:focus-visible {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+    transform: scale(1.06);
+}
+
+.frame {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 60vh;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: #0b1020;
+}
+
+/* fullscreen: the preview card is the fullscreen element, so it paints its own
+   background and lays the frame out against the whole screen */
+.pvcard:fullscreen {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--page);
+}
+.pvcard:fullscreen .pvbody { padding: 1.5rem; }
+.pvcard:fullscreen .expand { top: 1.5rem; right: 1.5rem; }
+.pvcard:fullscreen .frame { height: 100%; min-height: 0; }
+.pvcard:fullscreen .pdf-page { max-width: 60rem; }
+
+/* the ZIP note */
+.pvnote {
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: .5rem;
+    padding: 2rem 1.5rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--sh-1);
+}
+.pvnote-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: #f5f3ff;
+    color: #7c3aed;
+    font-size: 1.4rem;
+    margin-bottom: .25rem;
+}
+.pvnote h3 { font-size: 1rem; font-weight: 700; margin: 0; }
+.pvnote > p { font-size: .8125rem; line-height: 1.55; color: var(--muted); margin: 0; max-width: 26rem; }
+.pvnote-text {
+    display: flex;
+    align-items: flex-start;
+    gap: .45rem;
+    text-align: left;
+    margin-top: .5rem;
+    padding: .7rem .8rem;
+    border-radius: var(--r-sm);
+    background: var(--orange-tint);
+    border: 1px solid var(--orange-line);
+    color: var(--orange-deep);
+    font-size: .75rem;
+    font-weight: 600;
+}
+.pvnote-text i { flex: 0 0 auto; margin-top: .15rem; }
+.pvnote-meta { display: inline-flex; align-items: center; gap: .4rem; margin: .25rem 0 .35rem; }
+.pvnote-meta em {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-style: normal;
+    font-size: .6875rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--page);
+    border: 1px solid var(--line);
+    padding: .2rem .55rem;
+    border-radius: var(--pill);
+}
+
+/* ---------- PDF placeholder ---------- */
+.pdf { width: 100%; display: flex; flex-direction: column; gap: .75rem; }
+.pdf-bar { display: flex; align-items: center; gap: .4rem; }
+.pdf-chip {
+    font-size: .6875rem;
+    font-weight: 700;
+    padding: .2rem .55rem;
+    border-radius: var(--r-sm);
+    background: var(--orange-tint);
+    color: var(--orange-deep);
+}
+.pdf-page {
+    width: 100%;
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 2rem 2.25rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    box-shadow: var(--sh-2);
+}
+.pdf-page h3 { font-size: 1.125rem; font-weight: 700; margin: 0 0 .75rem; }
+.pdf-page p { font-size: .875rem; line-height: 1.7; color: var(--muted); margin: 0 0 1.1rem; }
+.pdf-page .line { display: block; height: .5rem; border-radius: var(--pill); background: #eef0f4; margin-bottom: .55rem; }
+.pdf-note {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 1.5rem 0 0;
+    padding-top: .85rem;
+    border-top: 1px dashed var(--line);
+    font-size: .75rem;
+    color: var(--faint);
+}
+
+/* ---------- Video placeholder ---------- */
+.video { width: 100%; display: flex; flex-direction: column; gap: 1rem; }
+.video-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--r);
+    background: radial-gradient(120% 120% at 50% 0%, #24304a 0%, #10162a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.video-play {
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: .25rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+.video-time { position: absolute; right: .75rem; bottom: .75rem; font-size: .75rem; font-weight: 700; color: #fff; background: rgba(15, 23, 42, .72); padding: .2rem .5rem; border-radius: var(--r-sm); }
+.video-label { position: absolute; left: .75rem; top: .75rem; font-size: .625rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #cbd5e1; background: rgba(15, 23, 42, .6); padding: .2rem .55rem; border-radius: var(--r-sm); }
+.video-meta h3 { font-size: 1rem; font-weight: 700; margin: 0 0 .2rem; }
+.video-meta p { font-size: .875rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.video-note {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .5rem;
+    padding-top: .75rem;
+    border-top: 1px dashed var(--line);
+    font-size: .75rem;
+    color: var(--faint);
+}
+
+/* ---------- Empty state ---------- */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 2.75rem 1.25rem;
+}
+.empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--orange-tint);
+    color: var(--orange);
+    font-size: 1.4rem;
+    margin-bottom: .85rem;
+}
+.empty-title { font-size: .9375rem; font-weight: 700; margin: 0; }
+.empty-text { font-size: .8125rem; color: var(--muted); max-width: 26rem; margin: .35rem 0 0; line-height: 1.55; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1199.98px) {
+    .page { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+    .page { display: block; }
+    .col { display: none; height: 100%; overflow-y: auto; }
+    .page[data-step="1"] .col-tree,
+    .page[data-step="2"] .col-preview { display: flex; }
+    .pane, .card-col, .body { flex: 0 0 auto; height: auto; overflow: visible; }
+    .card-col { display: block; }
+    .pvname { font-size: 1rem; }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; }
+    .content { padding: 1rem; }
+}
+</style>
+</head>
+
+<body>
+<div class="shell">
+
+    <!-- ===================== Sidebar (unchanged) ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div>
+                <div class="brand-title">Student Portal</div>
+                <div class="brand-sub">YHA Academy of Technology</div>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a class="link" href="#"><i class="fas fa-gauge-high"></i> Dashboard</a>
+            <a class="link" href="#"><i class="fas fa-calendar-check"></i> My Attendance</a>
+            <a class="link active" href="#"><i class="fas fa-book-open"></i> My Courses</a>
+            <a class="link" href="#"><i class="fas fa-file-lines"></i> Assignment</a>
+            <a class="link" href="#"><i class="fas fa-file-lines"></i> Exam</a>
+        </nav>
+
+        <div class="side-foot">
+            <button type="button" class="link logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+        </div>
+    </aside>
+
+    <!-- ===================== Content ===================== -->
+    <div class="main">
+        <div class="content">
+            <div class="page" id="page" data-step="1">
+
+                <!-- ---------- LEFT: course -> subject -> files, all dropdowns ---------- -->
+                <div class="col col-tree">
+                    <div class="pane">
+                        <section class="card card-col">
+                            <header class="head">
+                                <span class="head-icon"><i class="fas fa-book-open"></i></span>
+                                <div>
+                                    <div class="head-title">My Courses</div>
+                                    <div class="head-sub" id="enrolledCount">3 enrolled</div>
+                                </div>
+                            </header>
+
+                            <div class="search">
+                                <i class="fas fa-magnifying-glass"></i>
+                                <input type="search" id="search" placeholder="Search courses" aria-label="Search courses">
+                            </div>
+
+                            <p class="hint" id="hint">
+                                <i class="fas fa-circle-info"></i>
+                                Open a course, then a subject, to see its PDFs, videos and ZIP folders.
+                            </p>
+
+                            <div class="body body-inset">
+                                <ul class="list" id="courseList"></ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- ---------- RIGHT: preview of the selected file only ---------- -->
+                <div class="col col-preview">
+                    <div class="pane" id="previewPane"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================================================
+   Mock data — the same tree the real page gets from studentPortalMock.js:
+   course -> subjects -> materials (book | video | zip)
+   ========================================================================== */
+const COURSES = [
+    {
+        id: "c1",
+        name: "Flutter and Dart",
+        category: "Mobile Development",
+        section: "Section A",
+        time: "08:00 - 10:00",
+        enrolled: "14 Sep 2026",
+        subjects: [
+            {
+                id: "s1",
+                name: "Android Fundamentals",
+                teacher: "Dolor Sit Amet",
+                materials: [
+                    { id: "m1", type: "book",  title: "Flutter Handbook",            desc: "Widgets, state and layout. Chapters 1-6 are covered this term.", size: "9.6 MB",  pages: 312, duration: null },
+                    { id: "m2", type: "book",  title: "Dart Language Reference",     desc: "Companion text for the language track, with the async chapter.",  size: "4.1 MB",  pages: 148, duration: null },
+                    { id: "m3", type: "video", title: "Activity Lifecycle Explained", desc: "Recorded lecture, 47 minutes, including the worked exercises.",  size: "",       pages: null, duration: "47:12" },
+                    { id: "m4", type: "video", title: "Intents and Navigation",      desc: "Passing data between screens, and the navigation stack.",          size: "",       pages: null, duration: "36:40" },
+                    { id: "m5", type: "zip",   title: "Android Fundamentals Bundle", desc: "Slides, the starter project and the exercise files in one archive.", size: "18.4 MB", pages: null, duration: null }
+                ]
+            },
+            {
+                id: "s2",
+                name: "Cross-Platform Basics",
+                teacher: "Ipsum Dolor",
+                materials: [
+                    { id: "m6",  type: "book",  title: "Flutter & Dart Notes",         desc: "Cross-platform layout, state management and the build pipeline.", size: "7.2 MB",  pages: 226, duration: null },
+                    { id: "m7",  type: "book",  title: "Publishing Builds Guide",      desc: "How a signed build reaches a store, and what the logs mean.",    size: "5.4 MB",  pages: 194, duration: null },
+                    { id: "m8",  type: "video", title: "Component Basics",             desc: "Building the first screen, 42 minutes with questions at the end.", size: "", pages: null, duration: "42:05" },
+                    { id: "m9",  type: "video", title: "Publishing Builds",            desc: "Walking through a release build end to end.",                     size: "", pages: null, duration: "29:58" },
+                    { id: "m10", type: "zip",   title: "Cross-Platform Source Bundle", desc: "Starter repository, config samples and the submission checklist.", size: "15.1 MB", pages: null, duration: null }
+                ]
+            }
+        ]
+    },
+    {
+        id: "c2",
+        name: "Web Frontend Fundamentals",
+        category: "Web Development",
+        section: "Section B",
+        time: "10:15 - 12:15",
+        enrolled: "02 Sep 2026",
+        subjects: [
+            { id: "s3", name: "HTML and CSS Layout", teacher: "Consectetur Adipiscing", materials: [] },
+            { id: "s4", name: "JavaScript Essentials", teacher: "Tempor Incididunt", materials: [] }
+        ]
+    },
+    {
+        id: "c3",
+        name: "Database Design and SQL",
+        category: "Backend Development",
+        section: "Section A",
+        time: "13:30 - 15:30",
+        enrolled: "21 Aug 2026",
+        subjects: [
+            { id: "s5", name: "Relational Modeling", teacher: "Ut Labore", materials: [] },
+            { id: "s6", name: "Query Writing", teacher: "Eiusmod Tempor", materials: [] }
+        ]
+    }
+];
+
+const GROUPS = [
+    { key: "book",  label: "PDF Books",   icon: "fas fa-file-pdf",     empty: "No PDF books shared yet." },
+    { key: "video", label: "Videos",      icon: "fas fa-circle-play",  empty: "No lecture videos shared yet." },
+    { key: "zip",   label: "ZIP Folders", icon: "fas fa-file-zipper",  empty: "No ZIP folders shared yet." }
+];
+
+/* ==========================================================================
+   State — one key per level of the tree
+   ========================================================================== */
+const state = {
+    courseId: null,   // which course accordion is open
+    subjectId: null,  // which subject's files are dropped out
+    fileId: null,     // which file the right column is previewing
+    step: 1,          // mobile only: 1 = tree, 2 = preview
+    query: ""
+};
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const countOf = (materials) => {
+    const n = { book: 0, video: 0, zip: 0 };
+    materials.forEach((m) => { n[m.type] += 1; });
+    return n;
+};
+
+const fileIcon = (t) => (t === "book" ? "fas fa-file-pdf" : t === "video" ? "fas fa-circle-play" : "fas fa-file-zipper");
+
+const currentCourse = () => COURSES.find((c) => c.id === state.courseId) || null;
+const currentSubject = () => currentCourse()?.subjects.find((s) => s.id === state.subjectId) || null;
+const currentFile = () => currentSubject()?.materials.find((m) => m.id === state.fileId) || null;
+
+/* ==========================================================================
+   Left column — three nested dropdowns
+   ========================================================================== */
+function filesHtml(subject) {
+    const counts = countOf(subject.materials);
+
+    if (counts.book + counts.video + counts.zip === 0) {
+        return `<p class="files-none">Nothing has been uploaded for ${esc(subject.name)} yet.</p>`;
+    }
+
+    return `<div class="files">${GROUPS.map((g) => {
+        const items = subject.materials.filter((m) => m.type === g.key);
+
+        return `
+            <div class="files-group">
+                <div class="files-head">
+                    <span class="files-icon files-icon-${g.key}"><i class="${g.icon}"></i></span>
+                    <span class="files-label">${g.label}</span>
+                    <em>${items.length}</em>
+                </div>
+                ${items.length === 0
+                    ? `<p class="files-none">${g.empty}</p>`
+                    : `<ul class="files-list">${items.map((m) => `
+                        <li>
+                            <button type="button" class="file ${m.id === state.fileId ? "is-active" : ""}" data-file="${m.id}" title="Preview ${esc(m.title)}">
+                                <span class="file-icon file-icon-${m.type}"><i class="${fileIcon(m.type)}"></i></span>
+                                <span class="file-body">
+                                    <span class="file-name">${esc(m.title)}</span>
+                                    <span class="file-meta">${esc(m.duration || m.size)}</span>
+                                </span>
+                                <i class="fas ${m.type === "video" ? "fa-play" : "fa-eye"} file-go"></i>
+                            </button>
+                        </li>`).join("")}</ul>`}
+            </div>`;
+    }).join("")}</div>`;
+}
+
+function subjectsHtml(course) {
+    return course.subjects.map((s, i) => {
+        const counts = countOf(s.materials);
+        const total = counts.book + counts.video + counts.zip;
+        const isOpen = course.id === state.courseId && s.id === state.subjectId;
+
+        const chips = total === 0
+            ? `<em class="chip-none">Empty</em>`
+            : [
+                counts.book ? `<em class="chip-book"><i class="fas fa-file-pdf"></i>${counts.book}</em>` : "",
+                counts.video ? `<em class="chip-video"><i class="fas fa-circle-play"></i>${counts.video}</em>` : "",
+                counts.zip ? `<em class="chip-zip"><i class="fas fa-file-zipper"></i>${counts.zip}</em>` : ""
+            ].join("");
+
+        return `
+            <li class="sub ${isOpen ? "is-open" : ""}">
+                <button type="button" class="srow ${isOpen ? "is-active" : ""}" data-subject="${s.id}" aria-expanded="${isOpen}">
+                    <span class="srow-num">${String(i + 1).padStart(2, "0")}</span>
+                    <span class="srow-body">
+                        <span class="srow-name">${esc(s.name)}</span>
+                    </span>
+                    <span class="srow-foot">${chips}</span>
+                    <i class="fas fa-chevron-down chev"></i>
+                </button>
+
+                <!-- level 3: the files, dropped out under the subject -->
+                <div class="panel">
+                    <div class="panel-in">${filesHtml(s)}</div>
+                </div>
+            </li>`;
+    }).join("");
+}
+
+function coursesHtml(list) {
+    return list.map((course) => {
+        const isOpen = course.id === state.courseId;
+
+        return `
+            <li class="acc ${isOpen ? "is-open" : ""}">
+                <button type="button" class="crow ${isOpen ? "is-active" : ""}" data-course="${course.id}" aria-expanded="${isOpen}" title="${esc(course.name)}">
+                    <span class="crow-name">${esc(course.name)}</span>
+                    <i class="fas fa-chevron-down chev"></i>
+                </button>
+
+                <!-- level 2: the subjects, dropped out under the course -->
+                <div class="panel">
+                    <div class="panel-in">
+                        ${course.subjects.length === 0
+                            ? `<p class="acc-empty"><i class="fas fa-circle-info"></i>No subjects have been assigned to this course yet.</p>`
+                            : `<ul class="sub-list">${subjectsHtml(course)}</ul>`}
+                    </div>
+                </div>
+            </li>`;
+    }).join("");
+}
+
+function renderTree() {
+    const q = state.query.trim().toLowerCase();
+    const list = q
+        ? COURSES.filter((c) => [c.name, c.category, c.section].some((v) => String(v || "").toLowerCase().includes(q)))
+        : COURSES;
+
+    $("#courseList").innerHTML = list.length
+        ? coursesHtml(list)
+        : `<li><div class="empty" style="height:auto;padding:2.25rem 1rem">
+               <span class="empty-icon"><i class="fas fa-magnifying-glass"></i></span>
+               <p class="empty-title">No match</p>
+               <p class="empty-text">Nothing matches &ldquo;${esc(state.query)}&rdquo;. Try a different word.</p>
+           </div></li>`;
+
+    $("#enrolledCount").textContent = `${COURSES.length} enrolled`;
+    $("#hint").style.display = state.courseId ? "none" : "flex";
+}
+
+/* ==========================================================================
+   Right column — the preview, and only the preview
+   ========================================================================== */
+function renderPreview() {
+    const pane = $("#previewPane");
+    const course = currentCourse();
+    const subject = currentSubject();
+    const file = currentFile();
+
+    if (!course || !subject || !file) {
+        pane.innerHTML = `
+            <section class="card card-col">
+                <div class="empty">
+                    <span class="empty-icon"><i class="fas fa-eye"></i></span>
+                    <p class="empty-title">Select a file to preview</p>
+                    <p class="empty-text">Open a course, then a subject, and pick a PDF, video or ZIP folder to preview it here.</p>
+                </div>
+            </section>`;
+        return;
+    }
+
+    const isBook = file.type === "book";
+    const isZip = file.type === "zip";
+
+    // the fullscreen control that sits on the frame itself, mirroring the one in
+    // the header: a reader is looking at the document, not at the toolbar above
+    const expand = isZip ? "" : `
+        <button type="button" class="expand" id="fsFrameBtn" title="Fullscreen" aria-label="Fullscreen">
+            <i class="fa-solid fa-expand"></i>
+        </button>`;
+
+    let body;
+    if (isZip) {
+        body = `
+            <div class="pvbody is-zip body">
+                <div class="pvnote">
+                    <span class="pvnote-icon"><i class="fas fa-file-zipper"></i></span>
+                    <h3>${esc(file.title)}</h3>
+                    <p>${esc(file.desc)}</p>
+                    <p class="pvnote-text">
+                        <i class="fas fa-circle-info"></i>
+                        A ZIP folder is a download, not something that opens here. Unzip it on your machine to get the slides, the sources and the exercise files.
+                    </p>
+                    <span class="pvnote-meta">
+                        <em><i class="fas fa-file-zipper"></i>ZIP archive</em>
+                        <em><i class="fas fa-hard-drive"></i>${esc(file.size)}</em>
+                    </span>
+                    <a class="btn btn-primary btn-block" href="#"><i class="fa-solid fa-download"></i> Download</a>
+                </div>
+            </div>`;
+    } else if (isBook) {
+        body = `
+            <div class="pvbody body">${expand}
+                <div class="pdf">
+                    <div class="pdf-bar">
+                        <span class="pdf-chip">PDF</span>
+                    </div>
+                    <div class="pdf-page">
+                        <h3>${esc(file.title)}</h3>
+                        <p>${esc(file.desc)}</p>
+                        ${[96, 88, 92, 74, 90, 84, 95, 88, 91, 70, 86, 60].map((w) => `<span class="line" style="width:${w}%"></span>`).join("")}
+                        <h3 style="font-size:1rem;margin-top:1.5rem">Sed do eiusmod tempor</h3>
+                        ${[93, 87, 78, 90, 85, 96, 82, 68].map((w) => `<span class="line" style="width:${w}%"></span>`).join("")}
+                        <p class="pdf-note"><i class="fas fa-circle-info"></i> Preview placeholder — the real PDF renders here once the file is uploaded.</p>
+                    </div>
+                </div>
+            </div>`;
+    } else {
+        body = `
+            <div class="pvbody body">${expand}
+                <div class="video">
+                    <div class="video-stage">
+                        <span class="video-play"><i class="fas fa-play"></i></span>
+                        <span class="video-label">Video preview</span>
+                        <span class="video-time">${esc(file.duration)}</span>
+                    </div>
+                    <div class="video-meta">
+                        <h3>${esc(file.title)}</h3>
+                        <p>${esc(file.desc)}</p>
+                        <p class="video-note"><i class="fas fa-circle-info"></i> Preview placeholder — the recording plays here once the file is uploaded.</p>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    pane.innerHTML = `
+        <section class="card card-col pvcard" id="pvCard">
+            <header class="pvbar">
+                <div class="pvbar-top">
+                    <span class="crumb"><i class="fas fa-book-open"></i>${esc(course.name)} <em>· ${esc(subject.name)}</em></span>
+                    <button type="button" class="btn btn-ghost" id="clearPreview"><i class="fas fa-xmark"></i> Clear</button>
+                </div>
+
+                <div class="pvtitle">
+                    <span class="pvicon file-icon-${file.type}"><i class="${fileIcon(file.type)}"></i></span>
+                    <h1 class="pvname">${esc(file.title)}</h1>
+                </div>
+
+                <div class="pvactions">
+                    <a class="btn btn-primary" href="#"><i class="fa-solid fa-download"></i> Download</a>
+                    ${isZip ? "" : `<button type="button" class="btn btn-ghost" id="fsBtn"><i class="fa-solid fa-expand"></i> Fullscreen</button>`}
+                </div>
+            </header>
+
+            ${body}
+        </section>`;
+}
+
+function render() {
+    $("#page").dataset.step = String(state.step);
+    renderTree();
+    renderPreview();
+}
+
+/* ==========================================================================
+   Events — three clicks, one per level
+   ========================================================================== */
+document.addEventListener("click", (e) => {
+    // level 1: open a course, or close it again
+    const crow = e.target.closest(".crow");
+    if (crow) {
+        const open = crow.dataset.course === state.courseId;
+        state.courseId = open ? null : crow.dataset.course;
+        state.subjectId = null;   // the levels below always reset
+        state.fileId = null;
+        state.step = 1;
+        render();
+        return;
+    }
+
+    // level 2: open a subject's files, or close them again
+    const srow = e.target.closest(".srow");
+    if (srow) {
+        const open = srow.dataset.subject === state.subjectId;
+        state.subjectId = open ? null : srow.dataset.subject;
+        state.fileId = null;
+        state.step = 1;
+        render();
+        return;
+    }
+
+    // level 3: the right column previews exactly this one file
+    const file = e.target.closest(".file");
+    if (file) {
+        state.fileId = state.fileId === file.dataset.file ? null : file.dataset.file;
+        state.step = state.fileId ? 2 : 1;
+        render();
+        return;
+    }
+
+    if (e.target.closest("#clearPreview")) {
+        state.fileId = null;
+        state.step = 1;
+        render();
+        return;
+    }
+
+    // fullscreen: a real request, and both labels follow the browser's own state
+    if (e.target.closest("#fsBtn") || e.target.closest("#fsFrameBtn")) {
+        const card = $("#pvCard");
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else if (card && card.requestFullscreen) {
+            card.requestFullscreen().catch(() => {});
+        }
+    }
+});
+
+document.addEventListener("fullscreenchange", () => {
+    const on = document.fullscreenElement === $("#pvCard");
+    const icon = `<i class="fa-solid ${on ? "fa-compress" : "fa-expand"}"></i>`;
+    const btn = $("#fsBtn");
+    if (btn) btn.innerHTML = `${icon} ${on ? "Exit fullscreen" : "Fullscreen"}`;
+    const frameBtn = $("#fsFrameBtn");
+    if (frameBtn) frameBtn.innerHTML = icon;
+});
+
+$("#search").addEventListener("input", (e) => {
+    state.query = e.target.value;
+    renderTree();
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !state.fileId) return;
+    state.fileId = null;
+    state.step = 1;
+    render();
+});
+
+/* The state the mockup opens on: course open, subject open, one PDF selected.
+   Set courseId / subjectId / fileId to null to see the empty preview. */
+Object.assign(state, { courseId: "c1", subjectId: "s1", fileId: "m1", step: 2 });
+render();
+</script>
+</body>
+</html>

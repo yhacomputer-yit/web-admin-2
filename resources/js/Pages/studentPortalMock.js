@@ -138,15 +138,16 @@ export const MOCK_MATERIALS = [
 /* --------------------------------------------------------------------------
    Course -> subject -> material
    --------------------------------------------------------------------------
-   The columns drill courses -> subjects -> materials, so the placeholder tree
-   mirrors the real shape: a course owns subjects (subject_detail), and a subject
-   owns one material row with a book_link and a video_link. See App\Models\Material
-   -- the table is keyed by the course + subject pair, which is why a subject
-   carries the files rather than each file being its own row.
+   The columns drill courses -> subjects, and a subject expands in place to list
+   its files. The placeholder tree mirrors the real shape: a course owns subjects
+   (subject_detail), and a subject owns one material row with a book_link, a
+   video_link and a zip_link. See App\Models\Material -- the table is keyed by the
+   course + subject pair, which is why a subject carries the files rather than
+   each file being its own row.
 
-   `file` is null everywhere on purpose. The column three viewer falls back to a
-   placeholder surface while there is nothing to stream, and switches to a real
-   <iframe> / <video> the moment a link arrives from the backend.
+   `file` is null everywhere on purpose. The viewer falls back to a placeholder
+   surface while there is nothing to stream, and switches to a real <iframe> /
+   <video> the moment a link arrives from the backend.
    -------------------------------------------------------------------------- */
 
 const book = (key, title, description, pages, size) => ({
@@ -156,6 +157,7 @@ const book = (key, title, description, pages, size) => ({
     description,
     meta: `PDF · ${size}`,
     pages,
+    size,
     file: null,
 });
 
@@ -169,7 +171,19 @@ const video = (key, title, description, duration) => ({
     file: null,
 });
 
-/** Every placeholder subject gets the same shape: two books, two videos. */
+/* A zip is a bundle of the sources, so it never opens in the viewer: it is
+   download only. `file` is null for the same reason as the other two. */
+const zip = (key, title, description, size) => ({
+    key,
+    type: "zip",
+    title,
+    description,
+    meta: `ZIP · ${size}`,
+    size,
+    file: null,
+});
+
+/** Every placeholder subject gets the same shape: two books, two videos, one zip. */
 const subject = (key, name, teacher, materials) => ({
     key,
     name,
@@ -178,19 +192,21 @@ const subject = (key, name, teacher, materials) => ({
 });
 
 // Materials of one course, reused across its subjects so the tree stays short to
-// read in the source while each subject still lists its own pair of files.
+// read in the source while each subject still lists its own files.
 const MOBILE = {
     android: [
         book("mob-and-b1", "Lorem Ipsum Android Handbook", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.", 312, "9.6 MB"),
         book("mob-and-b2", "Ipsum Dolor Layout Reference", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 148, "4.1 MB"),
         video("mob-and-v1", "Dolor Sit Amet: Activity Lifecycle", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 12 Sep.", "47:12"),
         video("mob-and-v2", "Consectetur Adipiscing: Intents", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore.", "36:40"),
+        zip("mob-and-z1", "Android Fundamentals Source Bundle", "Lorem ipsum dolor sit amet, the slides, the starter project and the exercise files.", "18.4 MB"),
     ],
     native: [
         book("mob-nat-b1", "Lorem Ipsum React Native Notes", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.", 226, "7.2 MB"),
         book("mob-nat-b2", "Ipsum Dolor Cross-Platform Guide", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 194, "5.4 MB"),
         video("mob-nat-v1", "Tempor Incididunt: Component Basics", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 10 Sep.", "42:05"),
         video("mob-nat-v2", "Ut Labore: Publishing Builds", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.", "29:58"),
+        zip("mob-nat-z1", "Cross-Platform Basics Source Bundle", "Lorem ipsum dolor sit amet, the slides, the starter project and the exercise files.", "15.1 MB"),
     ],
 };
 
@@ -200,12 +216,14 @@ const FRONTEND = {
         book("fr-html-b2", "Ipsum Dolor Typography Handbook", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 168, "3.9 MB"),
         video("fr-html-v1", "Dolor Sit Amet: Semantic Layouts", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 28 Aug.", "51:24"),
         video("fr-html-v2", "Consectetur Adipiscing: Flexbox", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore.", "38:47"),
+        zip("fr-html-z1", "HTML and CSS Layout Source Bundle", "Lorem ipsum dolor sit amet, the starter files and the exercise assets.", "12.7 MB"),
     ],
     scripts: [
         book("fr-js-b1", "Lorem Ipsum JavaScript Handbook", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.", 356, "10.1 MB"),
         book("fr-js-b2", "Ipsum Dolor DOM Reference", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 122, "2.8 MB"),
         video("fr-js-v1", "Tempor Incididunt: Events and Delegation", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 24 Aug.", "44:16"),
         video("fr-js-v2", "Ut Labore: Asynchronous Patterns", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.", "33:52"),
+        zip("fr-js-z1", "JavaScript Essentials Source Bundle", "Lorem ipsum dolor sit amet, the starter files and the exercise assets.", "10.9 MB"),
     ],
 };
 
@@ -215,19 +233,21 @@ const DATABASE = {
         book("db-mod-b2", "Ipsum Dolor Entity Design Notes", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 208, "5.6 MB"),
         video("db-mod-v1", "Dolor Sit Amet: Normalization Steps", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 05 Aug.", "52:18"),
         video("db-mod-v2", "Consectetur Adipiscing: Keys and Indexes", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore.", "41:33"),
+        zip("db-mod-z1", "Relational Modeling Source Bundle", "Lorem ipsum dolor sit amet, the schema files and the exercise scripts.", "9.3 MB"),
     ],
     queries: [
         book("db-qry-b1", "Lorem Ipsum SQL Practice Book", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.", 288, "6.8 MB"),
         book("db-qry-b2", "Ipsum Dolor Query Tuning Guide", "Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore.", 164, "3.2 MB"),
         video("db-qry-v1", "Tempor Incididunt: Joins Workshop", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, recorded on 30 Jul.", "46:07"),
         video("db-qry-v2", "Ut Labore: Stored Procedures", "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.", "31:44"),
+        zip("db-qry-z1", "Query Writing Source Bundle", "Lorem ipsum dolor sit amet, the practice database and the exercise scripts.", "7.6 MB"),
     ],
 };
 
 export const MOCK_COURSE_LIBRARY = [
     {
         id: "mock-mobile",
-        name: "Mobile Application Development",
+        name: "Flutter and Dart",
         category: "Mobile Development",
         section: "Section A",
         section_time: "08:00 - 10:00",

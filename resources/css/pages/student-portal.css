@@ -309,6 +309,7 @@
 /* per-type accent, applied to both the head icon and the row icon */
 .sa-type-book { background: #fff3e9; color: #ff6c0f; }
 .sa-type-video { background: #eff6ff; color: #2563eb; }
+.sa-type-zip { background: #f5f3ff; color: #7c3aed; }
 .sa-type-link { background: #fef2f2; color: #dc2626; }
 .sa-type-resource { background: #f0fdf4; color: #16a34a; }
 

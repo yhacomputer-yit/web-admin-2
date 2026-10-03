@@ -1,15 +1,40 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import StudentLayout from "../Layouts/StudentLayout";
 import { MOCK_COURSE_LIBRARY } from "./studentPortalMock";
 
 
-const formatDate = (value) => {
-    if (!value) return null;
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-};
+/* The three kinds of file a subject owns, in the order they are listed inside a
+   subject's dropdown. `type` on a material is what matches a group, and the
+   icon, the label and the empty copy all hang off the same entry. */
+const GROUPS = [
+    {
+        key: "book",
+        label: "PDF Books",
+        icon: "fas fa-file-pdf",
+        empty: "No PDF books shared yet.",
+    },
+    {
+        key: "video",
+        label: "Videos",
+        icon: "fas fa-circle-play",
+        empty: "No lecture videos shared yet.",
+    },
+    {
+        key: "zip",
+        label: "ZIP Folders",
+        icon: "fas fa-file-zipper",
+        empty: "No ZIP folders shared yet.",
+    },
+];
+
+/* Two drill-down steps. The left column is the whole navigation: course, then
+   subject, then the files of that subject, each one dropping out under the row
+   above it. The right column is a preview surface and nothing else. On mobile
+   the two columns become two screens, so this is the value that says which one
+   is on screen. */
+const STEP_BROWSE = 1;
+const STEP_PREVIEW = 2;
 
 // "08:00" + "10:00" -> "08:00 - 10:00", tolerating a half-populated pair
 const timeRange = (start, end) => {
@@ -18,45 +43,35 @@ const timeRange = (start, end) => {
     return String(start || end).slice(0, 5);
 };
 
-const courseImg = (src) => (src ? `/storage/${src}` : "/image/no-image.jpg");
+/* Per-type counts, used by the subject row, so the numbers a student sees in the
+   list are the same numbers the file groups add up. */
+const countOf = (materials = []) => {
+    const n = { book: 0, video: 0, zip: 0 };
+    materials.forEach((m) => { if (n[m.type] !== undefined) n[m.type] += 1; });
+    return n;
+};
 
-const countTypes = (materials) => ({
-    books: materials.filter((m) => m.type === "book").length,
-    videos: materials.filter((m) => m.type === "video").length,
-});
+const totalOf = (materials = []) => {
+    const n = countOf(materials);
+    return n.book + n.video + n.zip;
+};
 
-/* The two groups column three lists. The keys double as the per-type accent
-   class, which is what the existing .sa-type-* rules already colour. */
-const GROUPS = [
-    {
-        key: "book",
-        label: "Reference Books",
-        hint: "PDF",
-        icon: "fas fa-book",
-        action: "Download",
-        actionIcon: "fa-solid fa-download",
-        empty: "No reference books have been shared for this subject yet.",
-    },
-    {
-        key: "video",
-        label: "Videos",
-        hint: "Recordings",
-        icon: "fas fa-circle-play",
-        action: "Watch",
-        actionIcon: "fa-solid fa-play",
-        empty: "No lecture videos have been shared for this subject yet.",
-    },
-];
+/* `meta` on a placeholder is a display string ("PDF · 12.4 MB"). The rows want
+   the size on its own, so it is read back out when the payload does not carry
+   one. A real row will pass `size` directly and this never runs. */
+const sizeOf = (material) => {
+    if (material.size) return material.size;
+    const part = String(material.meta || "").split("\u00b7").pop().trim();
+    return part || "Unknown";
+};
 
-/* Every level of the drill-down gets its own step, and the mobile layout walks
-   them one at a time. On desktop the step only decides which column carries the
-   focus accent -- all three columns are on screen regardless. */
-const STEP_COURSES = 1;
-const STEP_SUBJECTS = 2;
-const STEP_MATERIALS = 3;
-const STEP_VIEWER = 4;
+// the one line of detail under a file name: a duration for a video, a size for
+// everything else
+const detailOf = (material) => (material.duration ? material.duration : sizeOf(material));
 
 /* -------------------------------------------------------------------------- */
+/* Shared bits
+   -------------------------------------------------------------------------- */
 
 function EmptyState({ icon, title, text, fill = false }) {
     return (
@@ -68,57 +83,184 @@ function EmptyState({ icon, title, text, fill = false }) {
     );
 }
 
-function StatTile({ icon, label, value }) {
+function DownloadButton({ material, label = "Download", className = "mc-btn-primary", block = false }) {
     return (
-        <div className="mc-stat">
-            <span className="mc-stat-icon"><i className={icon}></i></span>
-            <span className="mc-stat-body">
-                <span className="mc-stat-label">{label}</span>
-                <span className="mc-stat-value">{value}</span>
-            </span>
+        <a
+            href={material.file || "#"}
+            className={`mc-btn ${className} ${block ? "mc-btn-block" : ""}`}
+            title={material.file ? `${label} ${material.title}` : `${label} once the file is uploaded`}
+            download=""
+            onClick={(e) => { if (!material.file) e.preventDefault(); }}
+        >
+            <i className="fa-solid fa-download"></i>
+            {label}
+        </a>
+    );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Left column: courses -> subjects -> files, each level an accordion
+   -------------------------------------------------------------------------- */
+
+/* One file inside an open subject. The row is only a pointer: it never opens a
+   viewer of its own, it hands the file to the preview column. */
+function FileRow({ material, isActive, onSelect }) {
+    return (
+        <li>
+            <button
+                type="button"
+                className={`mc-file ${isActive ? "is-active" : ""}`}
+                onClick={onSelect}
+                aria-current={isActive ? "true" : undefined}
+                title={`Preview ${material.title}`}
+            >
+                <span className={`mc-file-icon mc-file-icon-${material.type}`}>
+                    <i className={material.type === "book" ? "fas fa-file-pdf" : material.type === "video" ? "fas fa-circle-play" : "fas fa-file-zipper"}></i>
+                </span>
+                <span className="mc-file-body">
+                    <span className="mc-file-name">{material.title}</span>
+                    <span className="mc-file-meta">{detailOf(material)}</span>
+                </span>
+                <i className={`fas ${material.type === "video" ? "fa-play" : "fa-eye"} mc-file-go`}></i>
+            </button>
+        </li>
+    );
+}
+
+/* One file type inside an open subject: a small head with its count, then rows. */
+function FileGroup({ group, items, materialKey, onSelectMaterial }) {
+    return (
+        <div className="mc-files-group">
+            <div className="mc-files-head">
+                <span className={`mc-files-icon mc-files-icon-${group.key}`}><i className={group.icon}></i></span>
+                <span className="mc-files-label">{group.label}</span>
+                <em>{items.length}</em>
+            </div>
+
+            {items.length === 0 ? (
+                <p className="mc-files-none">{group.empty}</p>
+            ) : (
+                <ul className="mc-files-list">
+                    {items.map((m) => (
+                        <FileRow
+                            key={m.key}
+                            material={m}
+                            isActive={m.key === materialKey}
+                            onSelect={() => onSelectMaterial(m.key)}
+                        />
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
 
-function PathBar({ course, subject, material, canGoBack, onBack }) {
-    const crumbs = [
-        { label: "Courses" },
-        course && { label: course.name },
-        subject && { label: subject.name },
-        material && { label: material.title },
-    ].filter(Boolean);
+function SubjectRow({ subject, index, isOpen, materialKey, onToggle, onSelectMaterial }) {
+    const counts = countOf(subject.materials);
+    const total = totalOf(subject.materials);
+    const panelId = `mc-subject-panel-${subject.key}`;
 
     return (
-        <nav className="mc-path" aria-label="Current selection">
+        <li className={`mc-sub ${isOpen ? "is-open" : ""}`}>
             <button
                 type="button"
-                className="mc-path-back"
-                onClick={onBack}
-                disabled={!canGoBack}
-                aria-label="Go back"
+                className={`mc-srow ${isOpen ? "is-active" : ""}`}
+                onClick={onToggle}
+                aria-expanded={isOpen}
+                aria-controls={panelId}
             >
-                <i className="fas fa-chevron-left"></i>
+                <span className="mc-srow-num">{String(index + 1).padStart(2, "0")}</span>
+                <span className="mc-srow-body">
+                    <span className="mc-srow-name">{subject.name}</span>
+                </span>
+                <span className="mc-srow-foot">
+                    {total === 0 ? (
+                        <em className="mc-chip-none">Empty</em>
+                    ) : (
+                        <>
+                            {counts.book > 0 && <em className="mc-chip-book"><i className="fas fa-file-pdf"></i>{counts.book}</em>}
+                            {counts.video > 0 && <em className="mc-chip-video"><i className="fas fa-circle-play"></i>{counts.video}</em>}
+                            {counts.zip > 0 && <em className="mc-chip-zip"><i className="fas fa-file-zipper"></i>{counts.zip}</em>}
+                        </>
+                    )}
+                </span>
+                <i className="fas fa-chevron-down mc-srow-chevron"></i>
             </button>
-            <ol className="mc-path-list">
-                {crumbs.map((c, i) => (
-                    <li
-                        key={`${c.label}-${i}`}
-                        className={`mc-path-item ${i === crumbs.length - 1 ? "is-current" : ""}`}
-                        title={c.label}
-                    >
-                        {i > 0 && <i className="fas fa-chevron-right mc-path-sep"></i>}
-                        <span>{c.label}</span>
-                    </li>
-                ))}
-            </ol>
-        </nav>
+
+            {/* the panel stays in the DOM so it can animate its own height, and
+                its contents are hidden for real while collapsed so the file
+                buttons leave the tab order (see .mc-sacc-inner in the CSS) */}
+            <div className="mc-sacc" id={panelId} aria-hidden={!isOpen}>
+                <div className="mc-sacc-inner">
+                    {total === 0 ? (
+                        <p className="mc-files-none">
+                            Nothing has been uploaded for {subject.name} yet.
+                        </p>
+                    ) : (
+                        <div className="mc-files">
+                            {GROUPS.map((g) => (
+                                <FileGroup
+                                    key={g.key}
+                                    group={g}
+                                    items={subject.materials.filter((m) => m.type === g.key)}
+                                    materialKey={materialKey}
+                                    onSelectMaterial={onSelectMaterial}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </li>
     );
 }
 
-/* --------------------------------------------------------------------------
-   Column 1 - courses
-   -------------------------------------------------------------------------- */
-function CourseColumn({ courses, total, query, onQuery, activeKey, onSelect }) {
+/* The course row is a name and a chevron, nothing else. The category, the
+   section, the thumbnail and the per-course counts are all dropped: a list of
+   courses has to read as a menu, and every extra line turns it into a table the
+   student has to scan instead of a list they can click. */
+function CourseAccordion({ course, isOpen, subjectKey, materialKey, onToggle, onSelectSubject, onSelectMaterial }) {
+    return (
+        <li className={`mc-acc ${isOpen ? "is-open" : ""}`}>
+            <button
+                type="button"
+                className={`mc-crow ${isOpen ? "is-active" : ""}`}
+                onClick={onToggle}
+                aria-expanded={isOpen}
+            >
+                <span className="mc-crow-name">{course.name}</span>
+                <i className="fas fa-chevron-down mc-crow-chevron"></i>
+            </button>
+
+            <div className="mc-cacc" aria-hidden={!isOpen}>
+                <div className="mc-cacc-inner">
+                    {course.subjects.length === 0 ? (
+                        <p className="mc-cacc-empty">
+                            <i className="fas fa-circle-info"></i>
+                            No subjects have been assigned to this course yet.
+                        </p>
+                    ) : (
+                        <ul className="mc-sub-list">
+                            {course.subjects.map((s, i) => (
+                                <SubjectRow
+                                    key={s.key}
+                                    subject={s}
+                                    index={i}
+                                    isOpen={isOpen && s.key === subjectKey}
+                                    materialKey={materialKey}
+                                    onToggle={() => onSelectSubject(s.key)}
+                                    onSelectMaterial={onSelectMaterial}
+                                />
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </li>
+    );
+}
+
+function CourseColumn({ courses, total, query, onQuery, courseKey, subjectKey, materialKey, onSelectCourse, onSelectSubject, onSelectMaterial }) {
     return (
         <div className="mc-pane">
             <section className="mc-card mc-card-col">
@@ -147,58 +289,35 @@ function CourseColumn({ courses, total, query, onQuery, activeKey, onSelect }) {
                     )}
                 </div>
 
+                {!courseKey && courses.length > 0 && (
+                    <p className="mc-hint">
+                        <i className="fas fa-circle-info"></i>
+                        Open a course, then a subject, to see its PDFs, videos and ZIP folders.
+                    </p>
+                )}
+
                 {/* this region, and only this region, scrolls in column one */}
                 <div className="mc-body mc-body-inset">
                     {courses.length === 0 ? (
                         <EmptyState
                             icon="fas fa-magnifying-glass"
                             title="No match"
-                            text={`Nothing matches â€œ${query}â€. Try a different word.`}
+                            text={`Nothing matches \u201c${query}\u201d. Try a different word.`}
                         />
                     ) : (
                         <ul className="mc-list">
-                            {courses.map((c) => {
-                                const counts = countTypes(c.subjects.flatMap((s) => s.materials));
-                                return (
-                                    <li key={c.key}>
-                                        <button
-                                            type="button"
-                                            className={`mc-row ${c.key === activeKey ? "is-active" : ""}`}
-                                            onClick={() => onSelect(c.key)}
-                                            aria-current={c.key === activeKey ? "true" : undefined}
-                                        >
-                                            <img
-                                                src={courseImg(c.image)}
-                                                onError={(ev) => { ev.currentTarget.onerror = null; ev.currentTarget.src = "/image/no-image.jpg"; }}
-                                                alt=""
-                                                className="mc-row-img"
-                                            />
-                                            <span className="mc-row-body">
-                                                <span className="mc-row-title">{c.name}</span>
-                                                <span className="mc-row-tag">
-                                                    <i className="fas fa-tag"></i>
-                                                    {c.category || "Uncategorised"}
-                                                </span>
-                                                <span className="mc-row-meta">
-                                                    <span>
-                                                        <i className="fas fa-clock"></i>
-                                                        {c.section_time || c.section || "â€”"}
-                                                    </span>
-                                                    <span>
-                                                        <i className="fas fa-calendar"></i>
-                                                        {formatDate(c.enroll_date) || "â€”"}
-                                                    </span>
-                                                </span>
-                                                <span className="mc-row-foot">
-                                                    <em>{c.subjects.length} subjects</em>
-                                                    <em>{counts.books} books</em>
-                                                    <em>{counts.videos} videos</em>
-                                                </span>
-                                            </span>
-                                        </button>
-                                    </li>
-                                );
-                            })}
+                            {courses.map((c) => (
+                                <CourseAccordion
+                                    key={c.key}
+                                    course={c}
+                                    isOpen={c.key === courseKey}
+                                    subjectKey={subjectKey}
+                                    materialKey={materialKey}
+                                    onToggle={() => onSelectCourse(c.key)}
+                                    onSelectSubject={onSelectSubject}
+                                    onSelectMaterial={onSelectMaterial}
+                                />
+                            ))}
                         </ul>
                     )}
                 </div>
@@ -207,212 +326,10 @@ function CourseColumn({ courses, total, query, onQuery, activeKey, onSelect }) {
     );
 }
 
-/* --------------------------------------------------------------------------
-   Column 2 - subjects of the selected course
-   -------------------------------------------------------------------------- */
-function SubjectColumn({ course, activeKey, onSelect }) {
-    if (!course) {
-        return (
-            <div className="mc-pane">
-                <section className="mc-card mc-card-col">
-                    <EmptyState
-                        icon="fas fa-hand-pointer"
-                        title="Pick a course"
-                        text="The subjects of the course you pick in the first column appear here."
-                        fill
-                    />
-                </section>
-            </div>
-        );
-    }
-
-    const reference = course.subjects.flatMap((s) => s.materials);
-    const counts = countTypes(reference);
-
-    return (
-        <div className="mc-pane">
-
-
-            <section className="mc-card mc-card-col">
-                <header className="mc-subhead">
-                    <h3 className="mc-subhead-title">Subjects</h3>
-                    {course.course_id && (
-                        <Link href={`/student-portal/courses/${course.course_id}`} className="mc-subhead-link">
-                            <i className="fas fa-arrow-up-right-from-square"></i>
-                            Course page
-                        </Link>
-                    )}
-                </header>
-
-                {/* only this region scrolls in column two; the course summary above
-                    it stays put */}
-                <div className="mc-body mc-body-inset">
-                    {course.subjects.length === 0 ? (
-                        <EmptyState
-                            icon="fas fa-layer-group"
-                            title="No subjects yet"
-                            text="This course has no subjects assigned, so there is nothing to open."
-                        />
-                    ) : (
-                        <ul className="mc-list mc-list-flush">
-                            {course.subjects.map((s, i) => {
-                                const c = countTypes(s.materials);
-                                return (
-                                    <li key={s.key}>
-                                        <button
-                                            type="button"
-                                            className={`mc-subject ${s.key === activeKey ? "is-active" : ""}`}
-                                            onClick={() => onSelect(s.key)}
-                                            aria-current={s.key === activeKey ? "true" : undefined}
-                                        >
-                                            <span className="mc-subject-num">{String(i + 1).padStart(2, "0")}</span>
-                                            <span className="mc-subject-body">
-                                                <span className="mc-subject-name">{s.name}</span>
-                                                {s.teacher && (
-                                                    <span className="mc-subject-teacher">
-                                                        <i className="fas fa-user-tie"></i>
-                                                        {s.teacher}
-                                                    </span>
-                                                )}
-                                                <span className="mc-subject-foot">
-                                                    <em className="mc-tag-book"><i className="fas fa-book"></i>{c.books}</em>
-                                                    <em className="mc-tag-video"><i className="fas fa-circle-play"></i>{c.videos}</em>
-                                                </span>
-                                            </span>
-                                            <i className="fas fa-chevron-right mc-subject-arrow"></i>
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    )}
-                </div>
-            </section>
-        </div>
-    );
-}
-
-/* --------------------------------------------------------------------------
-   Column 3a - the reference of the selected subject
-   -------------------------------------------------------------------------- */
-function ReferencePane({ subject, activeKey, onOpen }) {
-    // No subject picked yet: column three stays deliberately empty rather than
-    // guessing which subject the student wanted.
-    if (!subject) {
-        return (
-            <>
-                <section className="mc-card mc-card-col">
-                    <EmptyState
-                        icon="fas fa-hand-pointer"
-                        title="Select a subject to view reference"
-                        text="Choose a subject in the middle column and its reference books and videos appear here."
-                        fill
-                    />
-                </section>
-            </>
-        );
-    }
-
-    const counts = countTypes(subject.materials);
-    const groups = GROUPS.map((g) => ({
-        ...g,
-        items: subject.materials.filter((m) => m.type === g.key),
-    }));
-    const total = groups.reduce((n, g) => n + g.items.length, 0);
-
-    if (total === 0) {
-        return (
-            <>
-                <section className="mc-card mc-card-col">
-                    <EmptyState
-                        icon="fas fa-folder-open"
-                        title="No reference yet"
-                        text={`Nothing has been uploaded for ${subject.name} yet. Check back after the next class.`}
-                        fill
-                    />
-                </section>
-            </>
-        );
-    }
-
-    return (
-        <>
-            <section className="mc-card mc-card-fixed">
-                <header className="mc-head mc-head-detail mc-head-tight">
-                    <span className="mc-chip mc-chip-quiet">Reference</span>
-                    <h2 className="mc-head-h1">{subject.name}</h2>
-                    <span className="mc-head-meta">
-                        {subject.teacher && <span><i className="fas fa-user-tie"></i>{subject.teacher}</span>}
-                        <span><i className="fas fa-book"></i>{counts.books} books</span>
-                        <span><i className="fas fa-circle-play"></i>{counts.videos} videos</span>
-                    </span>
-                </header>
-            </section>
-
-            {/* the books and videos scroll together, inside column three only */}
-            <div className="mc-body mc-body-inset">
-                {groups.map((g) => (
-                    <section className="mc-card" key={g.key}>
-                        <header className="mc-subhead">
-                            <h3 className="mc-subhead-title">
-                                <span className={`sa-head-icon sa-type-${g.key}`}><i className={g.icon}></i></span>
-                                {g.label}
-                            </h3>
-                            <span className="mc-badge">{g.items.length}</span>
-                        </header>
-
-                        {g.items.length === 0 ? (
-                            <EmptyState icon="fas fa-inbox" title="Empty" text={g.empty} />
-                        ) : (
-                            <ul className="mc-ref-list">
-                                {g.items.map((m) => (
-                                    <li className={`mc-ref ${m.key === activeKey ? "is-active" : ""}`} key={m.key}>
-                                        <button
-                                            type="button"
-                                            className="mc-ref-main"
-                                            onClick={() => onOpen(m)}
-                                            title={`Open ${m.title}`}
-                                        >
-                                            <span className={`sa-type-icon sa-type-${g.key}`}>
-                                                <i className={g.icon}></i>
-                                            </span>
-                                            <span className="mc-ref-body">
-                                                <span className="mc-ref-title">{m.title}</span>
-                                                <span className="mc-ref-desc">{m.description}</span>
-                                                <span className="mc-ref-meta">
-                                                    <span><i className={`fas ${g.key === "book" ? "fa-file-pdf" : "fa-clock"}`}></i>{m.meta}</span>
-                                                    {g.key === "book" && m.pages && <span>{m.pages} pages</span>}
-                                                </span>
-                                            </span>
-                                        </button>
-
-                                        <a
-                                            href={m.file || "#"}
-                                            className="mc-btn mc-btn-primary"
-                                            title={m.file ? `${g.action} ${m.title}` : `${g.action} once the file is uploaded`}
-                                            download={g.key === "book" ? "" : undefined}
-                                            onClick={(e) => { if (!m.file) { e.preventDefault(); onOpen(m); } }}
-                                        >
-                                            <i className={g.actionIcon}></i>
-                                            {g.action}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </section>
-                ))}
-            </div>
-        </>
-    );
-}
-
-/* --------------------------------------------------------------------------
-   Column 3b - the viewer
+/* -------------------------------------------------------------------------- */
+/* Right column: the preview surface, and nothing else
    -------------------------------------------------------------------------- */
 
-// Stands in for a real PDF while `file` is null, so the pane still shows the
-// shape of a document instead of collapsing into an empty box.
 function PdfPlaceholder({ material }) {
     const lines = [96, 88, 92, 74, 90, 84, 95, 88, 91, 70, 86, 60];
     const lines2 = [93, 87, 78, 90, 85, 96, 82, 68];
@@ -421,20 +338,16 @@ function PdfPlaceholder({ material }) {
         <div className="mc-pdf">
             <div className="mc-pdf-bar">
                 <span className="mc-pdf-chip">PDF</span>
-                <span className="mc-pdf-chip mc-pdf-chip-ghost">Fit width</span>
-                <span className="mc-pdf-chip mc-pdf-chip-ghost">1 / {material.pages || 1}</span>
             </div>
             <div className="mc-pdf-page">
                 <h3>{material.title}</h3>
-                <p className="mc-pdf-lead">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
+                <p className="mc-pdf-lead">{material.description}</p>
                 {lines.map((w, i) => <span className="mc-pdf-line" key={i} style={{ width: `${w}%` }}></span>)}
                 <h4>Sed do eiusmod tempor</h4>
                 {lines2.map((w, i) => <span className="mc-pdf-line" key={i} style={{ width: `${w}%` }}></span>)}
                 <p className="mc-pdf-note">
                     <i className="fas fa-circle-info"></i>
-                    Preview placeholder â€” the real PDF renders here once the file is uploaded.
+                    Preview placeholder - the real PDF renders here once the file is uploaded.
                 </p>
             </div>
         </div>
@@ -445,90 +358,142 @@ function VideoPlaceholder({ material }) {
     return (
         <div className="mc-video">
             <div className="mc-video-stage">
-                <button type="button" className="mc-video-play" title="Preview placeholder">
-                    <i className="fas fa-play"></i>
-                </button>
+                <span className="mc-video-play"><i className="fas fa-play"></i></span>
                 {material.duration && <span className="mc-video-time">{material.duration}</span>}
                 <span className="mc-video-label">Video preview</span>
             </div>
             <div className="mc-video-meta">
                 <h3>{material.title}</h3>
                 <p>{material.description}</p>
+                <p className="mc-video-note">
+                    <i className="fas fa-circle-info"></i>
+                    Preview placeholder - the recording plays here once the file is uploaded.
+                </p>
             </div>
         </div>
     );
 }
 
-function Viewer({ material, onBack, isFullscreen, onFullscreen }) {
+/* A zip has nothing to stream, so there is no viewer surface for it: the panel
+   says what it is and offers the download. Books and videos both get a frame.
+   The head is deliberately thin - the crumb, the name and the download. The
+   type, the size and the duration are already on the file row the student
+   clicked, and repeating them here only makes the header taller. */
+function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, paneRef, isFullscreen, onFullscreen }) {
     const isBook = material.type === "book";
+    const isZip = material.type === "zip";
 
     return (
-        <>
-            <section className="mc-card mc-card-col">
-                <header className="mc-viewer-bar">
-                    <button type="button" className="mc-ghost-btn" onClick={onBack}>
-                        <i className="fas fa-arrow-left"></i>
-                        Reference
-                    </button>
-                    <span className={`sa-type-icon sa-type-${material.type}`}>
-                        <i className={isBook ? "fas fa-file-pdf" : "fas fa-circle-play"}></i>
-                    </span>
-                    <span className="mc-viewer-text">
-                        <span className="mc-viewer-name">{material.title}</span>
-                        <span className="mc-viewer-meta">{material.meta}</span>
-                    </span>
-                    <span className="mc-viewer-actions">
-                        <a
-                            href={material.file || "#"}
-                            className="mc-btn mc-btn-primary"
-                            title={material.file ? "Download this file" : "Download once the file is uploaded"}
-                            download={isBook ? "" : undefined}
-                            onClick={(e) => { if (!material.file) e.preventDefault(); }}
-                        >
-                            <i className="fa-solid fa-download"></i>
-                            Download
-                        </a>
-                        <button type="button" className="mc-btn mc-btn-solid" onClick={onFullscreen}>
-                            <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
-                            {isFullscreen ? "Exit" : "Fullscreen"}
+        <div className="mc-pane">
+            {/* the whole card is the fullscreen element, so a document can take
+                the entire screen without leaving the page layout behind */}
+            <section className="mc-card mc-card-col mc-pvcard" ref={paneRef}>
+                <header className="mc-pvbar">
+                    <div className="mc-pvbar-top">
+                        {canGoBack && (
+                            <button type="button" className="mc-back" onClick={onBack} aria-label="Back to courses">
+                                <i className="fas fa-chevron-left"></i>
+                            </button>
+                        )}
+                        <span className="mc-crumb">
+                            <i className="fas fa-book-open"></i>
+                            {course.name}
+                            <em>· {subject.name}</em>
+                        </span>
+                        <button type="button" className="mc-ghost-btn" onClick={onClose} aria-label="Close preview">
+                            <i className="fas fa-xmark"></i>
+                            Clear
                         </button>
-                    </span>
+                    </div>
+
+                    <div className="mc-pvtitle">
+                        <span className={`mc-pvicon mc-file-icon-${material.type}`}>
+                            <i className={isBook ? "fas fa-file-pdf" : isZip ? "fas fa-file-zipper" : "fas fa-circle-play"}></i>
+                        </span>
+                        <h1 className="mc-pvname">{material.title}</h1>
+                    </div>
+
+                    <div className="mc-pvactions">
+                        <DownloadButton material={material} />
+                        {/* a zip is a download and has nothing to frame, so it has
+                            nothing to go fullscreen with */}
+                        {!isZip && (
+                            <button type="button" className="mc-ghost-btn" onClick={onFullscreen}>
+                                <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
+                                {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                            </button>
+                        )}
+                    </div>
                 </header>
 
-                {/* the only scroll region in this column while a document is
-                    open, so a wheel gesture over the PDF stays here */}
-                <div className="mc-body mc-viewer-body">
-                    {isBook ? (
+{/* the frame is its own scroll region, so a wheel gesture over a
+                    document never reaches the tree on its left */}
+                <div className={`mc-body mc-pvbody ${isZip ? "is-zip" : ""}`}>
+                    {/* the same fullscreen control as the button in the header,
+                        sitting on the frame itself where a reader's eye already is */}
+                    {!isZip && (
+                        <button
+                            type="button"
+                            className="mc-expand"
+                            onClick={onFullscreen}
+                            title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                            aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                        >
+                            <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
+                        </button>
+                    )}
+                    {isZip ? (
+                        <div className="mc-pvnote">
+                            <span className="mc-pvnote-icon"><i className="fas fa-file-zipper"></i></span>
+                            <h3>{material.title}</h3>
+                            <p>{material.description}</p>
+                            <p className="mc-pvnote-text">
+                                <i className="fas fa-circle-info"></i>
+                                A ZIP folder is a download, not something that opens here. Unzip it on your
+                                machine to get the slides, the sources and the exercise files.
+                            </p>
+                            <span className="mc-pvnote-meta">
+                                <em><i className="fas fa-file-zipper"></i>ZIP archive</em>
+                                <em><i className="fas fa-hard-drive"></i>{sizeOf(material)}</em>
+                            </span>
+                            <DownloadButton material={material} block />
+                        </div>
+                    ) : isBook ? (
                         material.file ? (
                             <iframe className="mc-frame" src={`${material.file}#view=FitH`} title={material.title} />
                         ) : (
                             <PdfPlaceholder material={material} />
                         )
                     ) : material.file ? (
-                        <video className="mc-frame" src={material.file} controls preload="metadata" />
+                        <video className="mc-frame mc-video-el" src={material.file} controls preload="metadata" />
                     ) : (
                         <VideoPlaceholder material={material} />
                     )}
                 </div>
             </section>
-        </>
+        </div>
     );
 }
 
-/* --------------------------------------------------------------------------
-   Page
+/* -------------------------------------------------------------------------- */
+/* Page
    -------------------------------------------------------------------------- */
 export default function StudentCourses({ enrollments }) {
     const { url } = usePage();
 
+    /* Three keys, one per level of the tree. courseKey decides which accordion
+       is open, subjectKey which subject's files are dropped out, materialKey
+       which file the preview column is showing. Resetting one always resets the
+       levels below it, so the panel can never show a file from a subject that is
+       no longer open. */
     const [query, setQuery] = useState("");
     const [courseKey, setCourseKey] = useState(null);
     const [subjectKey, setSubjectKey] = useState(null);
     const [materialKey, setMaterialKey] = useState(null);
-    const [step, setStep] = useState(STEP_COURSES);
-    const [back, setBack] = useState(false);
+    const [step, setStep] = useState(STEP_BROWSE);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
+    // the preview card is the fullscreen element, so the button has to hold a ref
     const paneRef = useRef(null);
 
     // Real enrollments when they exist; the placeholder library otherwise, so the
@@ -560,60 +525,54 @@ export default function StudentCourses({ enrollments }) {
         );
     }, [courses, query]);
 
-    // The first course of the full list, not of the filtered one, so searching
-    // never empties the other two columns.
-    const course = courses.find((c) => c.key === courseKey) || courses[0] || null;
-    const subjects = course?.subjects || [];
-    // Deliberately no fallback to subjects[0]: column three stays empty until the
-    // student actually picks a subject.
-    const subject = subjects.find((s) => s.key === subjectKey) || null;
-    const materials = subject?.materials || [];
-    const material = materials.find((m) => m.key === materialKey) || null;
+    /* Every key is resolved against the full list, never the filtered one, so
+       searching never closes an open accordion or empties the preview. All three
+       start null: nothing is open until it is clicked, which is exactly what the
+       preview column's empty state is telling the student. */
+    const course = courses.find((c) => c.key === courseKey) || null;
+    const subject = course?.subjects.find((s) => s.key === subjectKey) || null;
+    const material = subject?.materials.find((m) => m.key === materialKey) || null;
 
-    // One gesture always moves one level: forward selects the next column, back
-    // returns to the previous one and drops whatever was open inside it.
     const selectCourse = (key) => {
-        setCourseKey(key);
+        // clicking the open course closes it, so there is always a way back
+        const open = key === courseKey;
+        setCourseKey(open ? null : key);
         setSubjectKey(null);
         setMaterialKey(null);
-        setBack(false);
-        setStep(STEP_SUBJECTS);
+        setStep(STEP_BROWSE);
     };
 
     const selectSubject = (key) => {
-        setSubjectKey(key);
+        // the subject is a dropdown too, so a second click closes it again
+        const open = key === subjectKey;
+        setSubjectKey(open ? null : key);
         setMaterialKey(null);
-        setBack(false);
-        setStep(STEP_MATERIALS);
+        setStep(STEP_BROWSE);
     };
 
-    const openMaterial = (m) => {
-        setMaterialKey(m.key);
-        setBack(false);
-        setStep(STEP_VIEWER);
-    };
-
-    const closeMaterial = () => {
-        setMaterialKey(null);
-        setBack(true);
-        setStep(STEP_MATERIALS);
-    };
-
-    const goBack = () => {
-        if (step === STEP_VIEWER) return closeMaterial();
-        if (step === STEP_MATERIALS) {
-            setBack(true);
-            setStep(STEP_SUBJECTS);
+    const selectMaterial = (key) => {
+        if (key === materialKey) {
+            // clicking the same file again clears the preview
+            setMaterialKey(null);
+            setStep(STEP_BROWSE);
             return;
         }
-        if (step === STEP_SUBJECTS) {
-            setBack(true);
-            setStep(STEP_COURSES);
-        }
+        setMaterialKey(key);
+        setStep(STEP_PREVIEW);
     };
 
-    // Fullscreen is a real request, not a mock: track the browser's own state so
-    // the button label stays right when the user leaves with Esc.
+    // Escape clears the preview, the same as the Clear button
+    useEffect(() => {
+        if (!material) return;
+
+        const onKey = (e) => { if (e.key === "Escape") { setMaterialKey(null); setStep(STEP_BROWSE); } };
+        document.addEventListener("keydown", onKey);
+
+        return () => document.removeEventListener("keydown", onKey);
+    }, [material]);
+
+    // Fullscreen is a real request, not a mock: the browser's own state is
+    // tracked, so the label stays right when the student leaves with Esc.
     useEffect(() => {
         const onChange = () => setIsFullscreen(document.fullscreenElement === paneRef.current);
         document.addEventListener("fullscreenchange", onChange);
@@ -630,13 +589,11 @@ export default function StudentCourses({ enrollments }) {
                 await el.requestFullscreen();
             }
         } catch (e) {
-            /* fullscreen denied or unsupported: the pane stays as it is */
+            /* fullscreen denied or unsupported: the card stays as it is */
         }
     };
 
-    const focusColumn = step === STEP_COURSES ? 1 : step === STEP_SUBJECTS ? 2 : 3;
-
-    if (!course) {
+    if (courses.length === 0) {
         return (
             <StudentLayout active="courses" title="My Courses" fill key={url}>
                 <div className="mc-root">
@@ -658,48 +615,49 @@ export default function StudentCourses({ enrollments }) {
         // scrolls and each column scrolls on its own
         <StudentLayout active="courses" title="My Courses" fill key={url}>
             <div className="mc-root">
-                <PathBar
-                    course={course}
-                    subject={subject}
-                    material={material}
-                    canGoBack={step > STEP_COURSES}
-                    onBack={goBack}
-                />
-
+                {/* two columns and no third: the whole course tree on the left,
+                    the preview of one file on the right */}
                 <div className="mc-grid" data-step={step}>
-                    <div className={`mc-col mc-col-courses ${focusColumn === 1 ? "is-focused" : ""}`} key={`courses-${step}`}>
+                    <div className="mc-col mc-col-tree">
                         <CourseColumn
                             courses={visible}
                             total={courses.length}
                             query={query}
                             onQuery={setQuery}
-                            activeKey={course.key}
-                            onSelect={selectCourse}
+                            courseKey={courseKey}
+                            subjectKey={subjectKey}
+                            materialKey={materialKey}
+                            onSelectCourse={selectCourse}
+                            onSelectSubject={selectSubject}
+                            onSelectMaterial={selectMaterial}
                         />
                     </div>
 
-                    <div className={`mc-col mc-col-subjects ${focusColumn === 2 ? "is-focused" : ""}`} key={`subjects-${step}`}>
-                        <SubjectColumn course={course} activeKey={subject?.key} onSelect={selectSubject} />
-                    </div>
-
-                    <div className={`mc-col mc-col-reference ${focusColumn === 3 ? "is-focused" : ""}`} key={`reference-${step}`}>
-                        <div className="mc-pane" ref={paneRef}>
-                            <div
-                                className={`mc-swap ${back ? "is-back" : ""}`}
-                                key={material ? `viewer-${material.key}` : "reference-list"}
-                            >
-                                {material ? (
-                                    <Viewer
-                                        material={material}
-                                        onBack={closeMaterial}
-                                        isFullscreen={isFullscreen}
-                                        onFullscreen={toggleFullscreen}
+                    <div className="mc-col mc-col-preview">
+                        {course && subject && material ? (
+                            <PreviewPanel
+                                course={course}
+                                subject={subject}
+                                material={material}
+                                onClose={() => { setMaterialKey(null); setStep(STEP_BROWSE); }}
+                                onBack={() => setStep(STEP_BROWSE)}
+                                canGoBack={step === STEP_PREVIEW}
+                                paneRef={paneRef}
+                                isFullscreen={isFullscreen}
+                                onFullscreen={toggleFullscreen}
+                            />
+                        ) : (
+                            <div className="mc-pane">
+                                <section className="mc-card mc-card-col">
+                                    <EmptyState
+                                        icon="fas fa-eye"
+                                        title="Select a file to preview"
+                                        text="Open a course, then a subject, and pick a PDF, video or ZIP folder to preview it here."
+                                        fill
                                     />
-                                ) : (
-                                    <ReferencePane subject={subject} activeKey={materialKey} onOpen={openMaterial} />
-                                )}
+                                </section>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
