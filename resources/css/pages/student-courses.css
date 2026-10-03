@@ -68,46 +68,9 @@
     color: var(--mc-ink);
 }
 
-/* ---------- Buttons ---------- */
-.mc-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    flex: 0 0 auto;
-    padding: 0.5rem 0.9rem;
-    border: 1px solid transparent;
-    border-radius: var(--mc-r-sm);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.mc-btn-block {
-    width: 100%;
-}
-
-/* the one accent colour on screen: the thing you are meant to press */
-.mc-btn-primary {
-    background: var(--mc-orange);
-    border-color: var(--mc-orange);
-    color: #fff;
-    box-shadow: 0 1px 2px rgba(255, 108, 15, .28);
-}
-
-.mc-btn-primary:hover,
-.mc-btn-primary:focus-visible {
-    background: var(--mc-orange-deep);
-    border-color: var(--mc-orange-deep);
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(255, 108, 15, .3);
-}
-
+/* ---------- Buttons ----------
+   Only the ghost button remains: the page has no download button, so the solid
+   accent button and its block variant went with it. */
 .mc-ghost-btn {
     display: inline-flex;
     align-items: center;
@@ -133,7 +96,6 @@
     color: var(--mc-orange-deep);
 }
 
-.mc-btn:focus-visible,
 .mc-ghost-btn:focus-visible {
     outline: 2px solid var(--mc-orange);
     outline-offset: 2px;
@@ -281,62 +243,7 @@
     color: var(--mc-muted);
 }
 
-/* ---------- Column 1: search + course accordions ---------- */
-.mc-search {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    margin: 0.75rem 0.75rem 0;
-    padding: 0.45rem 0.7rem;
-    border: 1px solid var(--mc-line);
-    border-radius: var(--mc-r-sm);
-    background: var(--mc-page);
-    min-width: 0;
-}
-
-.mc-search:focus-within {
-    border-color: var(--mc-orange-line);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(255, 108, 15, .1);
-}
-
-.mc-search > i {
-    color: var(--mc-faint);
-    font-size: 0.75rem;
-    flex: 0 0 auto;
-}
-
-.mc-search-input {
-    border: 0;
-    outline: none;
-    background: transparent;
-    width: 100%;
-    min-width: 0;
-    font-size: 0.875rem;
-    color: var(--mc-ink);
-}
-
-.mc-search-input::placeholder {
-    color: var(--mc-placeholder);
-}
-
-.mc-search-input::-webkit-search-cancel-button {
-    display: none;
-}
-
-.mc-search-clear {
-    border: 0;
-    background: transparent;
-    color: var(--mc-faint);
-    padding: 0;
-    font-size: 0.75rem;
-    cursor: pointer;
-    flex: 0 0 auto;
-}
-
-.mc-search-clear:hover {
-    color: var(--mc-orange);
-}
+/* ---------- Column 1: course accordions ---------- */
 
 /* the one-line instruction, shown only while nothing is open */
 .mc-hint {
@@ -598,46 +505,17 @@
     color: var(--mc-orange-deep);
 }
 
-.mc-srow-foot {
-    display: flex;
+/* the only chip a subject row still carries: it says the subject has nothing in
+   it yet. No per-type counts -- the file list under the row is the answer */
+.mc-chip-none {
     flex: 0 0 auto;
-    gap: 0.25rem;
-}
-
-.mc-srow-foot em {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
     font-style: normal;
     font-size: 0.625rem;
     font-weight: 700;
     padding: 0.1rem 0.4rem;
     border-radius: var(--mc-r-pill);
-}
-
-.mc-srow-foot i {
-    font-size: 0.5625rem;
-}
-
-/* one chip class per file type, reused by the subject row and the preview head */
-.mc-chip-none {
     background: var(--mc-line-soft);
     color: var(--mc-faint);
-}
-
-.mc-chip-book {
-    background: #fff3e9;
-    color: #c2410c;
-}
-
-.mc-chip-video {
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-
-.mc-chip-zip {
-    background: #f5f3ff;
-    color: #6d28d9;
 }
 
 .mc-srow-chevron {
@@ -699,17 +577,6 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--mc-muted);
-}
-
-.mc-files-head em {
-    font-style: normal;
-    font-size: 0.625rem;
-    font-weight: 700;
-    color: var(--mc-muted);
-    background: #fff;
-    border: 1px solid var(--mc-line);
-    padding: 0.05rem 0.4rem;
-    border-radius: var(--mc-r-pill);
 }
 
 .mc-files-none {

@@ -27,6 +27,7 @@ use App\Http\Controllers\CourseSectionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\FrontendSectionController;
+use App\Http\Controllers\MaterialController;
 
 // Homepage route
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('user.home');
@@ -151,6 +152,16 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [SubjectController::class, 'edit'])->name('subject.edit');
             Route::post('/update', [SubjectController::class, 'update'])->name('subject.update');
             Route::get('/delete/{id}', [SubjectController::class, 'delete'])->name('subject.delete');
+        });
+
+        // per subject materials (book / video / zip)
+        Route::prefix('material')->group(function () {
+            Route::get('/', [MaterialController::class, 'index'])->name('material.index');
+            Route::get('/createPage', [MaterialController::class, 'createPage'])->name('material.createPage');
+            Route::post('/create', [MaterialController::class, 'create'])->name('material.create');
+            Route::get('/edit/{id}', [MaterialController::class, 'edit'])->name('material.edit');
+            Route::post('/update/{id}', [MaterialController::class, 'update'])->name('material.update');
+            Route::get('/delete/{id}', [MaterialController::class, 'delete'])->name('material.delete');
         });
 
         // for course type section

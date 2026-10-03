@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Material;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class StudentPortalController extends Controller
@@ -52,6 +54,166 @@ class StudentPortalController extends Controller
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /**
+     * The reference files a student can reach, grouped course -> subject -> file.
+     *
+     * Scoped to the courses the student is enrolled in, because a `reference`
+     * row is one course's teaching material and the portal has no other gate on
+     * it. A course the student is not enrolled in is never loaded, so it cannot
+     * leak through this shape either.
+     *
+     * A subject holds as many rows as it has files, so the same subject shows up
+     * once with every one of its files under it. A row whose file has gone from
+     * storage is dropped rather than shown as an empty subject: a student should
+     * not see a subject with nothing to open.
+     *
+     * @return array<int, array{course_id:int, course_name:?string, file_count:int, subjects:array}>
+     */
+    private function portalReferences(Student $student): array
+    {
+        $courseIds = $student->enrollments()
+            ->distinct()
+            ->pluck('course_id')
+            ->all();
+
+        if ($courseIds === []) {
+            return [];
+        }
+
+        return Material::with(['course:id,name', 'subject:id,name'])
+            ->whereIn('course_id', $courseIds)
+            ->orderBy('course_id')
+            ->orderBy('subject_id')
+            ->orderBy('id')
+            ->get()
+            ->map(function (Material $material) {
+                $file = $this->referenceFile($material);
+
+                return $file === null ? null : [
+                    'course_id' => $material->course_id,
+                    'course_name' => $material->course?->name,
+                    'subject_id' => $material->subject_id,
+                    'subject_name' => $material->subject?->name ?? ('Subject #' . $material->subject_id),
+                    'file' => $file,
+                ];
+            })
+            ->filter()
+            ->groupBy('course_id')
+            ->map(function ($files, $courseId) {
+                return [
+                    'key' => 'c' . $courseId,
+                    'course_id' => (int) $courseId,
+                    'course_name' => $files->first()['course_name'] ?? ('Course #' . $courseId),
+                    'file_count' => $files->count(),
+                    'subjects' => $files->groupBy('subject_id')
+                        ->map(fn ($subjectFiles) => [
+                            'key' => 's' . $subjectFiles->first()['subject_id'],
+                            'id' => $subjectFiles->first()['subject_id'],
+                            'name' => $subjectFiles->first()['subject_name'],
+                            'materials' => $subjectFiles->pluck('file')->values()->all(),
+                        ])->values()->all(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * One reference row as the file a student can open, or null when it has none.
+     *
+     * The row is the file, so there is nothing to loop over: `type` is the word
+     * the portal pages already group by, and `file` is a ready URL so no page
+     * has to rebuild a storage path.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function referenceFile(Material $material): ?array
+    {
+        if (blank($material->file_link)) {
+            return null;
+        }
+
+        return [
+            'key' => 'm' . $material->id,
+            'type' => $material->type,
+            'title' => $material->displayTitle(),
+            'file' => $material->url(),
+            // null when the stored path has no file behind it, which the page
+            // shows as "size unknown" rather than a wrong number
+            'size' => $this->fileSize($material->file_link),
+            'description' => $material->remark,
+            'updated' => $material->updated_at?->format('Y-m-d'),
+        ];
+    }
+
+    /**
+     * Every reference file of one course, flat, for the course detail page.
+     *
+     * Scoped by the caller's own enrollment check, so only a course the student
+     * is enrolled in ever reaches this.
+     */
+    private function courseReferenceFiles(int $courseId): array
+    {
+        return Material::with('subject:id,name')
+            ->where('course_id', $courseId)
+            ->orderBy('subject_id')
+            ->orderBy('id')
+            ->get()
+            ->map(function (Material $material) {
+                $file = $this->referenceFile($material);
+
+                if ($file === null) {
+                    return null;
+                }
+
+                $subject = $material->subject?->name ?? ('Subject #' . $material->subject_id);
+
+                // the detail page groups by file type and has no subject column,
+                // so the subject travels with the file as its description, with
+                // the admin's remark behind it when there is one
+                $file['description'] = $material->remark
+                    ? $subject . ' — ' . $material->remark
+                    : $subject;
+
+                return $file;
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * A human file size, or null when the stored file is gone.
+     *
+     * A row can outlive its upload (a file deleted off disk, a restore that did
+     * not include storage), and the dashboard must not fail to render because one
+     * size lookup threw, so the lookup is contained here.
+     */
+    private function fileSize(string $path): ?string
+    {
+        try {
+            $disk = Storage::disk('public');
+
+            if (! $disk->exists($path)) {
+                return null;
+            }
+
+            $bytes = $disk->size($path);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        foreach (['B', 'KB', 'MB', 'GB'] as $unit) {
+            if ($bytes < 1024) {
+                return round($bytes, $unit === 'B' ? 0 : 1) . ' ' . $unit;
+            }
+
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 1) . ' TB';
     }
 
     // student dashboard: profile + enrolled courses + attendance overview
@@ -156,13 +318,14 @@ class StudentPortalController extends Controller
         ];
     }
 
-    // enrolled courses, each linking through to its materials
+    // enrolled courses, each linking through to its reference files
     public function courses()
     {
         $student = Auth::guard('student')->user();
 
         return Inertia::render('StudentCourses', [
             'enrollments' => $this->portalEnrollments($student),
+            'references' => $this->portalReferences($student),
         ]);
     }
 
@@ -175,7 +338,7 @@ class StudentPortalController extends Controller
         ]);
     }
 
-    // course detail with learning materials (UI only, see assignments())
+    // course detail with its learning reference files
     public function courseDetail(Request $request, $courseId)
     {
         $student = Auth::guard('student')->user();
@@ -199,7 +362,7 @@ class StudentPortalController extends Controller
                 'description' => $enrollment->course?->description,
             ],
             'section' => $enrollment->section?->name,
-            'materials' => [],
+            'materials' => $this->courseReferenceFiles($courseId),
         ]);
     }
 

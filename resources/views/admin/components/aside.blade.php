@@ -87,6 +87,13 @@
                 <div data-i18n="Dashboards">Course Sections</div>
             </a>
         </li>
+        {{-- per subject materials --}}
+        <li class="menu-item {{ request()->routeIs('material.*') ? 'active' : '' }}">
+            <a href="{{ route('material.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-folder-open"></i>
+                <div data-i18n="Dashboards">Materials</div>
+            </a>
+        </li>
         <!-- Teacher -->
         <li class="menu-item {{ request()->routeIs('admin.teacher') ? 'active' : '' }}">
             <a href="{{ route('admin.teacher') }}" class="menu-link ">

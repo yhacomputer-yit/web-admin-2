@@ -4,34 +4,102 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * The files attached to one subject of one course.
+ * One file a course teaches under one subject.
  *
- * Deliberately thin: the three link columns are the whole record. Anything
- * richer (a title, a description, a sort order) belongs in a separate table,
- * because a row here is keyed by the course + subject pair rather than by the
- * file.
+ * A subject can hold any number of these: several books, several recordings of
+ * the same lecture, several exercise archives. That is why the row is keyed by
+ * the file and not by the course + subject pair - the pair used to be unique and
+ * capped a subject at one file per kind.
+ *
+ * `file_link` is a path on the `public` disk rather than a URL, so a file is
+ * served straight from storage and replacing it never needs a third party to
+ * keep working. `title` is the name students and admins see; when it is empty
+ * the stored filename is used instead, so no row ever renders as untitled.
  *
  * @property int         $id
  * @property int         $course_id
  * @property int         $subject_id
- * @property string|null $book_link  path on the `public` disk
- * @property string|null $video_link path on the `public` disk
- * @property string|null $zip_link   path on the `public` disk
+ * @property string      $type      book | video | zip
+ * @property string|null $title     display name, falls back to the filename
+ * @property string|null $file_link path on the `public` disk
+ * @property string|null $remark    free-text admin note about this file
  */
 class Material extends Model
 {
     use HasFactory;
 
-    // No $table override: Material pluralises to `materials`, which is the name
-    // the table actually has.
+    /**
+     * The file kinds a row can hold, and everything that varies between them:
+     * what the kind is called, how the admin list draws it, what the browser
+     * accepts for it and what the validator allows.
+     *
+     * One map rather than four so a new kind is a single entry and the form, the
+     * list and the validation can never disagree about what a book is.
+     *
+     * The per-file ceilings match what a browser and PHP will realistically
+     * accept; a lecture recording is the only kind big enough to need a raised
+     * upload_max_filesize, and the form says so next to the field.
+     */
+    public const KINDS = [
+        'book' => [
+            'label' => 'Book',
+            'form_label' => 'Book (PDF)',
+            'icon' => 'bx bx-book',
+            'class' => 'text-danger',
+            'accept' => '.pdf,application/pdf',
+            'hint' => 'PDF, up to 20 MB',
+            'mimes' => 'mimes:pdf',
+            'max' => 20480,
+            'mimes_message' => 'The book must be a PDF.',
+            'max_message' => 'The book may not be larger than 20 MB.',
+        ],
+        'video' => [
+            'label' => 'Video',
+            'form_label' => 'Lecture recording',
+            'icon' => 'bx bx-play-circle',
+            'class' => 'text-primary',
+            'accept' => 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v,.ogg',
+            'hint' => 'MP4, WebM, MOV, M4V or OGG, up to 500 MB. Large uploads need a raised upload_max_filesize on the server.',
+            'mimes' => 'mimes:mp4,webm,mov,m4v,ogg',
+            'max' => 512000,
+            'mimes_message' => 'The lecture recording must be an MP4, WebM, MOV, M4V or OGG file.',
+            'max_message' => 'The lecture recording may not be larger than 500 MB.',
+        ],
+        'zip' => [
+            'label' => 'ZIP',
+            'form_label' => 'Archive (ZIP)',
+            'icon' => 'bx bx-archive',
+            'class' => 'text-warning',
+            'accept' => '.zip,application/zip,application/x-zip-compressed',
+            'hint' => 'ZIP, up to 100 MB',
+            'mimes' => 'mimes:zip',
+            'max' => 102400,
+            'mimes_message' => 'The archive must be a ZIP file.',
+            'max_message' => 'The archive may not be larger than 100 MB.',
+        ],
+    ];
+
+    /**
+     * Only these may end up in a stored filename. The mimes rule already keeps
+     * uploads to these kinds, and repeating the allow-list at save time means a
+     * crafted original name can never choose the extension itself.
+     */
+    public const EXTENSIONS = ['pdf', 'mp4', 'webm', 'mov', 'm4v', 'ogg', 'zip'];
+
+    // The table is `reference`, not the model's own plural; see
+    // 2026_10_03_010000_consolidate_materials_into_reference
+    protected $table = 'reference';
+
     protected $fillable = [
         'course_id',
         'subject_id',
-        'book_link',
-        'video_link',
-        'zip_link',
+        'type',
+        'title',
+        'file_link',
+        'remark',
     ];
 
     public function subject()
@@ -45,26 +113,49 @@ class Material extends Model
     }
 
     /**
-     * True when at least one file is present, so the student pages can skip
-     * rows that would render as an empty button.
+     * What this kind is called, falling back to "File" for a row saved with a
+     * kind the map does not know.
      */
-    public function hasAnyFile(): bool
+    public function typeLabel(): string
     {
-        return filled($this->book_link) || filled($this->video_link) || filled($this->zip_link);
+        return static::KINDS[$this->type]['label'] ?? 'File';
     }
 
     /**
-     * Only the links that actually have a file, keyed by kind, which is the
-     * shape the material list renders.
-     *
-     * @return array<string, string>
+     * The name to show: the admin's title when there is one, otherwise the
+     * stored filename, so a row uploaded without a title is still readable.
      */
-    public function availableLinks(): array
+    public function displayTitle(): string
     {
-        return array_filter([
-            'book' => $this->book_link,
-            'video' => $this->video_link,
-            'zip' => $this->zip_link,
-        ]);
+        return filled($this->title)
+            ? $this->title
+            : (static::fileLabel($this->file_link) ?? 'Untitled');
+    }
+
+    /**
+     * A ready URL, so no page has to rebuild a storage path.
+     */
+    public function url(): ?string
+    {
+        return filled($this->file_link) ? Storage::url($this->file_link) : null;
+    }
+
+    /**
+     * The name to show for a stored file.
+     *
+     * Uploads are stored as `{uniqid}_{slug}.{ext}` so two "notes.pdf" uploads
+     * cannot overwrite each other. The prefix is an implementation detail that
+     * only gets in the way in a list, so it is dropped for display while the
+     * path on disk keeps it.
+     */
+    public static function fileLabel(?string $path): ?string
+    {
+        if (blank($path)) {
+            return null;
+        }
+
+        $name = basename($path);
+
+        return preg_replace('/^[0-9a-f]{13}_/', '', $name) ?: $name;
     }
 }

@@ -1,8 +1,10 @@
 import { Link, usePage } from "@inertiajs/react";
 import StudentLayout from "../Layouts/StudentLayout";
-import { MOCK_MATERIALS } from "./studentPortalMock";
 
 
+/* The reference table has three link columns, so the page has three groups. The
+   old fourth group was for hand-entered YouTube links, which no column holds, and
+   it only ever rendered the placeholder library. */
 const GROUPS = [
     {
         key: "book",
@@ -19,13 +21,6 @@ const GROUPS = [
         empty: "No lecture videos have been shared yet.",
     },
     {
-        key: "link",
-        label: "YouTube Links",
-        hint: "External",
-        icon: "fab fa-youtube",
-        empty: "No external links have been shared yet.",
-    },
-    {
         key: "resource",
         label: "Zip / Resources",
         hint: "Downloads",
@@ -34,14 +29,30 @@ const GROUPS = [
     },
 ];
 
+/* which group each reference column belongs to, and what its button says */
+const GROUP_OF = { book: "book", video: "video", zip: "resource" };
+const ACTION_OF = { book: "Open", video: "Watch", zip: "Download" };
+const HINT_OF = { book: "PDF", video: "Video", zip: "ZIP" };
+
 export default function StudentCourseDetail({ course, section, materials }) {
     const { url } = usePage();
 
-    const list = materials?.length ? materials : MOCK_MATERIALS;
+    /* Real rows only. The payload is the reference table, so a course with no
+       files has to read as empty rather than fall back to a placeholder list a
+       student would mistake for real course material. */
+    const list = (materials ?? [])
+        .filter((m) => GROUP_OF[m.type])
+        .map((m) => ({
+            ...m,
+            group: GROUP_OF[m.type],
+            meta: [HINT_OF[m.type], m.size].filter(Boolean).join(" · "),
+            action: m.file,
+            action_label: ACTION_OF[m.type],
+        }));
 
     const grouped = GROUPS.map((g) => ({
         ...g,
-        items: list.filter((m) => m.type === g.key),
+        items: list.filter((m) => m.group === g.key),
     }));
 
     const totalItems = grouped.reduce((sum, g) => sum + g.items.length, 0);
@@ -137,7 +148,7 @@ export default function StudentCourseDetail({ course, section, materials }) {
                                     ) : (
                                         <ul className="sa-mat-list">
                                             {g.items.map((m) => (
-                                                <li className="sa-mat" key={m.title}>
+                                                <li className="sa-mat" key={m.key}>
                                                     <span className={`sa-type-icon sa-type-${g.key}`}>
                                                         <i className={g.icon}></i>
                                                     </span>
@@ -148,15 +159,14 @@ export default function StudentCourseDetail({ course, section, materials }) {
                                                         )}
                                                         <div className="sa-mat-meta">
                                                             {m.meta && <span>{m.meta}</span>}
-                                                            {m.file_size && <span>{m.file_size}</span>}
                                                         </div>
                                                     </div>
                                                     <a
                                                         href={m.action || "#"}
                                                         className={`stu-btn stu-btn-auto sa-mat-action sa-type-${g.key}`}
-                                                        onClick={(e) => m.action === "#" && e.preventDefault()}
+                                                        onClick={(e) => !m.action && e.preventDefault()}
                                                     >
-                                                        <i className={`fa-solid ${g.key === "link" ? "fa-arrow-up-right-from-square" : g.key === "video" ? "fa-play" : "fa-download"} me-1`}></i>
+                                                        <i className={`fa-solid ${g.key === "video" ? "fa-play" : "fa-download"} me-1`}></i>
                                                         {m.action_label || "Open"}
                                                     </a>
                                                 </li>

@@ -1,7 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import StudentLayout from "../Layouts/StudentLayout";
-import { MOCK_COURSE_LIBRARY } from "./studentPortalMock";
 
 
 /* The three kinds of file a subject owns, in the order they are listed inside a
@@ -43,18 +42,11 @@ const timeRange = (start, end) => {
     return String(start || end).slice(0, 5);
 };
 
-/* Per-type counts, used by the subject row, so the numbers a student sees in the
-   list are the same numbers the file groups add up. */
-const countOf = (materials = []) => {
-    const n = { book: 0, video: 0, zip: 0 };
-    materials.forEach((m) => { if (n[m.type] !== undefined) n[m.type] += 1; });
-    return n;
-};
-
-const totalOf = (materials = []) => {
-    const n = countOf(materials);
-    return n.book + n.video + n.zip;
-};
+/* Whether a subject has anything to open at all. The counts themselves are not
+   shown: a number beside each kind tells a student more about the row they are
+   about to click than about the material itself, and the file list right below
+   it is the answer. */
+const hasAny = (materials = []) => materials.length > 0;
 
 /* `meta` on a placeholder is a display string ("PDF · 12.4 MB"). The rows want
    the size on its own, so it is read back out when the payload does not carry
@@ -80,21 +72,6 @@ function EmptyState({ icon, title, text, fill = false }) {
             <p className="mc-empty-title">{title}</p>
             {text && <p className="mc-empty-text">{text}</p>}
         </div>
-    );
-}
-
-function DownloadButton({ material, label = "Download", className = "mc-btn-primary", block = false }) {
-    return (
-        <a
-            href={material.file || "#"}
-            className={`mc-btn ${className} ${block ? "mc-btn-block" : ""}`}
-            title={material.file ? `${label} ${material.title}` : `${label} once the file is uploaded`}
-            download=""
-            onClick={(e) => { if (!material.file) e.preventDefault(); }}
-        >
-            <i className="fa-solid fa-download"></i>
-            {label}
-        </a>
     );
 }
 
@@ -127,14 +104,14 @@ function FileRow({ material, isActive, onSelect }) {
     );
 }
 
-/* One file type inside an open subject: a small head with its count, then rows. */
+/* One file type inside an open subject: a small head, then rows. No count on the
+   head either -- the rows below it are the list. */
 function FileGroup({ group, items, materialKey, onSelectMaterial }) {
     return (
         <div className="mc-files-group">
             <div className="mc-files-head">
                 <span className={`mc-files-icon mc-files-icon-${group.key}`}><i className={group.icon}></i></span>
                 <span className="mc-files-label">{group.label}</span>
-                <em>{items.length}</em>
             </div>
 
             {items.length === 0 ? (
@@ -156,8 +133,7 @@ function FileGroup({ group, items, materialKey, onSelectMaterial }) {
 }
 
 function SubjectRow({ subject, index, isOpen, materialKey, onToggle, onSelectMaterial }) {
-    const counts = countOf(subject.materials);
-    const total = totalOf(subject.materials);
+    const empty = !hasAny(subject.materials);
     const panelId = `mc-subject-panel-${subject.key}`;
 
     return (
@@ -173,17 +149,7 @@ function SubjectRow({ subject, index, isOpen, materialKey, onToggle, onSelectMat
                 <span className="mc-srow-body">
                     <span className="mc-srow-name">{subject.name}</span>
                 </span>
-                <span className="mc-srow-foot">
-                    {total === 0 ? (
-                        <em className="mc-chip-none">Empty</em>
-                    ) : (
-                        <>
-                            {counts.book > 0 && <em className="mc-chip-book"><i className="fas fa-file-pdf"></i>{counts.book}</em>}
-                            {counts.video > 0 && <em className="mc-chip-video"><i className="fas fa-circle-play"></i>{counts.video}</em>}
-                            {counts.zip > 0 && <em className="mc-chip-zip"><i className="fas fa-file-zipper"></i>{counts.zip}</em>}
-                        </>
-                    )}
-                </span>
+                {empty && <em className="mc-chip-none">Empty</em>}
                 <i className="fas fa-chevron-down mc-srow-chevron"></i>
             </button>
 
@@ -192,7 +158,7 @@ function SubjectRow({ subject, index, isOpen, materialKey, onToggle, onSelectMat
                 buttons leave the tab order (see .mc-sacc-inner in the CSS) */}
             <div className="mc-sacc" id={panelId} aria-hidden={!isOpen}>
                 <div className="mc-sacc-inner">
-                    {total === 0 ? (
+                    {empty ? (
                         <p className="mc-files-none">
                             Nothing has been uploaded for {subject.name} yet.
                         </p>
@@ -218,7 +184,8 @@ function SubjectRow({ subject, index, isOpen, materialKey, onToggle, onSelectMat
 /* The course row is a name and a chevron, nothing else. The category, the
    section, the thumbnail and the per-course counts are all dropped: a list of
    courses has to read as a menu, and every extra line turns it into a table the
-   student has to scan instead of a list they can click. */
+   student has to scan instead of a list they can click. A subject row works the
+   same way for the same reason. */
 function CourseAccordion({ course, isOpen, subjectKey, materialKey, onToggle, onSelectSubject, onSelectMaterial }) {
     return (
         <li className={`mc-acc ${isOpen ? "is-open" : ""}`}>
@@ -260,7 +227,7 @@ function CourseAccordion({ course, isOpen, subjectKey, materialKey, onToggle, on
     );
 }
 
-function CourseColumn({ courses, total, query, onQuery, courseKey, subjectKey, materialKey, onSelectCourse, onSelectSubject, onSelectMaterial }) {
+function CourseColumn({ courses, total, courseKey, subjectKey, materialKey, onSelectCourse, onSelectSubject, onSelectMaterial }) {
     return (
         <div className="mc-pane">
             <section className="mc-card mc-card-col">
@@ -272,23 +239,6 @@ function CourseColumn({ courses, total, query, onQuery, courseKey, subjectKey, m
                     </span>
                 </header>
 
-                <div className="mc-search">
-                    <i className="fas fa-magnifying-glass"></i>
-                    <input
-                        type="search"
-                        className="mc-search-input"
-                        placeholder="Search courses"
-                        value={query}
-                        onChange={(e) => onQuery(e.target.value)}
-                        aria-label="Search courses"
-                    />
-                    {query && (
-                        <button type="button" className="mc-search-clear" onClick={() => onQuery("")} aria-label="Clear search">
-                            <i className="fas fa-xmark"></i>
-                        </button>
-                    )}
-                </div>
-
                 {!courseKey && courses.length > 0 && (
                     <p className="mc-hint">
                         <i className="fas fa-circle-info"></i>
@@ -298,16 +248,9 @@ function CourseColumn({ courses, total, query, onQuery, courseKey, subjectKey, m
 
                 {/* this region, and only this region, scrolls in column one */}
                 <div className="mc-body mc-body-inset">
-                    {courses.length === 0 ? (
-                        <EmptyState
-                            icon="fas fa-magnifying-glass"
-                            title="No match"
-                            text={`Nothing matches \u201c${query}\u201d. Try a different word.`}
-                        />
-                    ) : (
-                        <ul className="mc-list">
-                            {courses.map((c) => (
-                                <CourseAccordion
+                    <ul className="mc-list">
+                        {courses.map((c) => (
+                            <CourseAccordion
                                     key={c.key}
                                     course={c}
                                     isOpen={c.key === courseKey}
@@ -317,9 +260,8 @@ function CourseColumn({ courses, total, query, onQuery, courseKey, subjectKey, m
                                     onSelectSubject={onSelectSubject}
                                     onSelectMaterial={onSelectMaterial}
                                 />
-                            ))}
-                        </ul>
-                    )}
+                        ))}
+                    </ul>
                 </div>
             </section>
         </div>
@@ -374,11 +316,12 @@ function VideoPlaceholder({ material }) {
     );
 }
 
-/* A zip has nothing to stream, so there is no viewer surface for it: the panel
-   says what it is and offers the download. Books and videos both get a frame.
-   The head is deliberately thin - the crumb, the name and the download. The
-   type, the size and the duration are already on the file row the student
-   clicked, and repeating them here only makes the header taller. */
+/* Students may read a file on the portal but never take a copy of it, so there
+   is no download button anywhere on this page: no header button and no link in
+   the zip note. The viewer is the whole feature. A zip has nothing to stream, so
+   its panel just says what it is. The head stays thin - the crumb, the name and
+   fullscreen - because the type and size are already on the row the student
+   clicked. */
 function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, paneRef, isFullscreen, onFullscreen }) {
     const isBook = material.type === "book";
     const isZip = material.type === "zip";
@@ -413,17 +356,14 @@ function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, p
                         <h1 className="mc-pvname">{material.title}</h1>
                     </div>
 
-                    <div className="mc-pvactions">
-                        <DownloadButton material={material} />
-                        {/* a zip is a download and has nothing to frame, so it has
-                            nothing to go fullscreen with */}
-                        {!isZip && (
-                            <button type="button" className="mc-ghost-btn" onClick={onFullscreen}>
-                                <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
-                                {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-                            </button>
-                        )}
-                    </div>
+                    {/* a zip has nothing to frame, so it has nothing to go
+                        fullscreen with */}
+                    {!isZip && (
+                        <button type="button" className="mc-ghost-btn" onClick={onFullscreen}>
+                            <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
+                            {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                        </button>
+                    )}
                 </header>
 
 {/* the frame is its own scroll region, so a wheel gesture over a
@@ -449,14 +389,13 @@ function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, p
                             <p>{material.description}</p>
                             <p className="mc-pvnote-text">
                                 <i className="fas fa-circle-info"></i>
-                                A ZIP folder is a download, not something that opens here. Unzip it on your
-                                machine to get the slides, the sources and the exercise files.
+                                A ZIP archive cannot be opened on the portal. Ask your teacher for the
+                                files inside it if you need them.
                             </p>
                             <span className="mc-pvnote-meta">
                                 <em><i className="fas fa-file-zipper"></i>ZIP archive</em>
                                 <em><i className="fas fa-hard-drive"></i>{sizeOf(material)}</em>
                             </span>
-                            <DownloadButton material={material} block />
                         </div>
                     ) : isBook ? (
                         material.file ? (
@@ -478,7 +417,7 @@ function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, p
 /* -------------------------------------------------------------------------- */
 /* Page
    -------------------------------------------------------------------------- */
-export default function StudentCourses({ enrollments }) {
+export default function StudentCourses({ enrollments, references }) {
     const { url } = usePage();
 
     /* Three keys, one per level of the tree. courseKey decides which accordion
@@ -486,7 +425,6 @@ export default function StudentCourses({ enrollments }) {
        which file the preview column is showing. Resetting one always resets the
        levels below it, so the panel can never show a file from a subject that is
        no longer open. */
-    const [query, setQuery] = useState("");
     const [courseKey, setCourseKey] = useState(null);
     const [subjectKey, setSubjectKey] = useState(null);
     const [materialKey, setMaterialKey] = useState(null);
@@ -496,15 +434,23 @@ export default function StudentCourses({ enrollments }) {
     // the preview card is the fullscreen element, so the button has to hold a ref
     const paneRef = useRef(null);
 
-    // Real enrollments when they exist; the placeholder library otherwise, so the
-    // workspace is never just an empty shell. The subject tree cycles through the
-    // library because the subject/material placeholders have no rows yet.
+    /* The subject tree is the real `reference` data: one course -> subject ->
+       file, scoped by the controller to the courses this student is enrolled
+       in. A course with no rows keeps an empty subject list, and the course row
+       says so, which is honest -- a placeholder tree here would show a student
+       files that do not exist. */
+    const byCourse = useMemo(() => {
+        const map = new Map();
+        (references || []).forEach((course) => map.set(course.course_id, course));
+        return map;
+    }, [references]);
+
     const courses = useMemo(() => {
         if (!enrollments?.length) {
-            return MOCK_COURSE_LIBRARY.map((c) => ({ ...c, key: c.id, course_id: null }));
+            return [];
         }
 
-        return enrollments.map((e, i) => ({
+        return enrollments.map((e) => ({
             key: `e-${e.id}`,
             course_id: e.course_id,
             name: e.course_name || "Unknown course",
@@ -513,22 +459,12 @@ export default function StudentCourses({ enrollments }) {
             section: e.section_name,
             section_time: timeRange(e.section_start, e.section_end),
             enroll_date: e.enroll_date,
-            subjects: MOCK_COURSE_LIBRARY[i % MOCK_COURSE_LIBRARY.length].subjects,
+            subjects: byCourse.get(e.course_id)?.subjects || [],
         }));
-    }, [enrollments]);
+    }, [enrollments, byCourse]);
 
-    const visible = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        if (!q) return courses;
-        return courses.filter((c) =>
-            [c.name, c.category, c.section].some((v) => String(v || "").toLowerCase().includes(q)),
-        );
-    }, [courses, query]);
-
-    /* Every key is resolved against the full list, never the filtered one, so
-       searching never closes an open accordion or empties the preview. All three
-       start null: nothing is open until it is clicked, which is exactly what the
-       preview column's empty state is telling the student. */
+    /* All three keys start null: nothing is open until it is clicked, which is
+       exactly what the preview column's empty state is telling the student. */
     const course = courses.find((c) => c.key === courseKey) || null;
     const subject = course?.subjects.find((s) => s.key === subjectKey) || null;
     const material = subject?.materials.find((m) => m.key === materialKey) || null;
@@ -620,10 +556,8 @@ export default function StudentCourses({ enrollments }) {
                 <div className="mc-grid" data-step={step}>
                     <div className="mc-col mc-col-tree">
                         <CourseColumn
-                            courses={visible}
+                            courses={courses}
                             total={courses.length}
-                            query={query}
-                            onQuery={setQuery}
                             courseKey={courseKey}
                             subjectKey={subjectKey}
                             materialKey={materialKey}

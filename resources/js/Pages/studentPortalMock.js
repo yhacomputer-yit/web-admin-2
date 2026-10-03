@@ -140,10 +140,9 @@ export const MOCK_MATERIALS = [
    --------------------------------------------------------------------------
    The columns drill courses -> subjects, and a subject expands in place to list
    its files. The placeholder tree mirrors the real shape: a course owns subjects
-   (subject_detail), and a subject owns one material row with a book_link, a
-   video_link and a zip_link. See App\Models\Material -- the table is keyed by the
-   course + subject pair, which is why a subject carries the files rather than
-   each file being its own row.
+   (subject_detail), and each file of a subject is a material row of its own. See
+   App\Models\Material -- the table is keyed by the file, which is why a subject
+   can hold as many books, recordings and archives as it needs.
 
    `file` is null everywhere on purpose. The viewer falls back to a placeholder
    surface while there is nothing to stream, and switches to a real <iframe> /
