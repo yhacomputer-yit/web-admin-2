@@ -25,6 +25,10 @@
    A CSS grid rather than Bootstrap rows, so the first column keeps a percentage
    width and the second takes minmax(0, 1fr) and absorbs the leftover width
    instead of forcing the page to scroll sideways.
+
+   The split moves with `data-step` on the grid: on a phone it says which of the
+   two columns is on screen, and on a desktop it says whether a file is open -
+   step 2 gives the preview column the width the tree was holding.
    ========================================================================== */
 
 .mc-root {
@@ -66,39 +70,6 @@
     --mc-sh-2: 0 6px 20px rgba(16, 24, 40, .08);
 
     color: var(--mc-ink);
-}
-
-/* ---------- Buttons ----------
-   Only the ghost button remains: the page has no download button, so the solid
-   accent button and its block variant went with it. */
-.mc-ghost-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex: 0 0 auto;
-    padding: 0.4rem 0.7rem;
-    border: 1px solid var(--mc-line);
-    border-radius: var(--mc-r-sm);
-    background: #fff;
-    color: var(--mc-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
-}
-
-.mc-ghost-btn:hover,
-.mc-ghost-btn:focus-visible {
-    border-color: var(--mc-orange-line);
-    background: var(--mc-orange-tint);
-    color: var(--mc-orange-deep);
-}
-
-.mc-ghost-btn:focus-visible {
-    outline: 2px solid var(--mc-orange);
-    outline-offset: 2px;
 }
 
 /* ---------- Empty state ---------- */
@@ -270,6 +241,21 @@
    come from .mc-body */
 .mc-body-inset {
     padding: 0.5rem 0.6rem 0.6rem;
+}
+
+/* the tree scrolls without drawing a scrollbar. The bar was taking a slice of a
+   column that is already narrow, and it sat beside content the student is
+   reading rather than at the end of it. The wheel, the trackpad and the keyboard
+   all still scroll: only the bar itself is gone. */
+.mc-body-inset {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.mc-body-inset::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
 }
 
 .mc-list {
@@ -689,43 +675,17 @@
 }
 
 /* ---------- Column 2: the preview ---------- */
+/* one row: back arrow (mobile only), the file name, Clear. The name takes the
+   leftover width between the two, so a long one wraps instead of pushing Clear
+   off the edge. */
 .mc-pvbar {
     flex: 0 0 auto;
     display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
+    align-items: center;
+    gap: 0.75rem;
     padding: 0.9rem 1.1rem;
     border-bottom: 1px solid var(--mc-line);
     background: #fff;
-}
-
-.mc-pvbar-top {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-width: 0;
-}
-
-.mc-crumb {
-    flex: 1 1 auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-width: 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--mc-muted);
-    overflow-wrap: anywhere;
-}
-
-.mc-crumb i {
-    flex: 0 0 auto;
-    color: var(--mc-orange);
-}
-
-.mc-crumb em {
-    font-style: normal;
-    color: var(--mc-faint);
 }
 
 /* only rendered on mobile, where the two columns are two screens */
@@ -749,6 +709,7 @@
 }
 
 .mc-pvtitle {
+    flex: 1 1 auto;
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
@@ -801,9 +762,9 @@
     align-items: center;
 }
 
-/* the fullscreen control that sits on the frame itself, top right. It mirrors
-   the button in the header, because a reader is looking at the document and not
-   at the toolbar above it. */
+/* the fullscreen control that sits on the frame itself, top right. A reader is
+   looking at the document, not at the head above it, so this is the only place
+   the control appears. */
 .mc-expand {
     position: absolute;
     top: 1.1rem;
@@ -1144,11 +1105,23 @@
    Two columns at every width that can hold them. The tree column is a percentage
    of the page and the preview column takes minmax(0, 1fr) so it absorbs the
    leftover width. Nothing here ever moves the preview column onto a second row:
-   grid-areas stays a single line from the first desktop breakpoint up. */
+   grid-areas stays a single line from the first desktop breakpoint up.
+
+   Step 2 is a file open in the preview column. The tree is only a way to reach
+   that file, so it gives up width the moment there is something to look at and
+   takes it back when the preview is cleared. data-step carries that state, so
+   nothing has to measure the viewport or remember the width. */
 @media (min-width: 768px) {
     .mc-grid {
         grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
         grid-template-areas: "tree preview";
+        /* the column change is animated rather than snapped, because a jump
+           under the pointer moves the row the student is reading */
+        transition: grid-template-columns 0.28s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .mc-grid[data-step="2"] {
+        grid-template-columns: minmax(0, 27%) minmax(0, 1fr);
     }
 
     .mc-col-tree { grid-area: tree; }
@@ -1158,6 +1131,10 @@
 @media (min-width: 1600px) {
     .mc-grid {
         grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
+    }
+
+    .mc-grid[data-step="2"] {
+        grid-template-columns: minmax(0, 24%) minmax(0, 1fr);
     }
 }
 
@@ -1169,8 +1146,21 @@
         grid-template-columns: minmax(300px, 44%) minmax(0, 1fr);
     }
 
+    /* the floor comes down with the preview, but not to nothing: a course name
+       still has to wrap rather than clip */
+    .mc-grid[data-step="2"] {
+        grid-template-columns: minmax(230px, 30%) minmax(0, 1fr);
+    }
+
     .mc-pvname {
         font-size: 1rem;
+    }
+}
+
+/* a reader who has asked for less motion gets the columns swapped outright */
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+    .mc-grid {
+        transition: none;
     }
 }
 
@@ -1194,6 +1184,19 @@
     .mc-grid[data-step="1"] > .mc-col-tree,
     .mc-grid[data-step="2"] > .mc-col-preview {
         display: flex;
+    }
+
+    /* on a phone the whole column is the scroll region instead of one region
+       inside it, so the tree needs the same hidden bar it has on a desktop */
+    .mc-col-tree {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .mc-col-tree::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
     }
 
     /* a phone column scrolls as a whole, so the inner regions stop being

@@ -31,7 +31,8 @@ const GROUPS = [
    subject, then the files of that subject, each one dropping out under the row
    above it. The right column is a preview surface and nothing else. On mobile
    the two columns become two screens, so this is the value that says which one
-   is on screen. */
+   is on screen; on desktop it also says whether a file is open, which is what
+   lets the tree give its width to the preview. */
 const STEP_BROWSE = 1;
 const STEP_PREVIEW = 2;
 
@@ -319,10 +320,16 @@ function VideoPlaceholder({ material }) {
 /* Students may read a file on the portal but never take a copy of it, so there
    is no download button anywhere on this page: no header button and no link in
    the zip note. The viewer is the whole feature. A zip has nothing to stream, so
-   its panel just says what it is. The head stays thin - the crumb, the name and
-   fullscreen - because the type and size are already on the row the student
-   clicked. */
-function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, paneRef, isFullscreen, onFullscreen }) {
+   its panel just says what it is.
+
+   The head is the file name and nothing else. The course and the subject are
+   already the two rows the student clicked in the tree on the left, and the type
+   and the size are already on the row inside it, so repeating any of it here
+   only makes the name harder to read. There is no Clear button either: the way
+   out is the back arrow on a phone, Escape anywhere, and clicking the same file
+   a second time, which is also how it was chosen. Fullscreen sits on the frame,
+   where a reader's eye already is. */
+function PreviewPanel({ material, onBack, canGoBack, paneRef, isFullscreen, onFullscreen }) {
     const isBook = material.type === "book";
     const isZip = material.type === "zip";
 
@@ -332,45 +339,26 @@ function PreviewPanel({ course, subject, material, onClose, onBack, canGoBack, p
                 the entire screen without leaving the page layout behind */}
             <section className="mc-card mc-card-col mc-pvcard" ref={paneRef}>
                 <header className="mc-pvbar">
-                    <div className="mc-pvbar-top">
-                        {canGoBack && (
-                            <button type="button" className="mc-back" onClick={onBack} aria-label="Back to courses">
-                                <i className="fas fa-chevron-left"></i>
-                            </button>
-                        )}
-                        <span className="mc-crumb">
-                            <i className="fas fa-book-open"></i>
-                            {course.name}
-                            <em>· {subject.name}</em>
-                        </span>
-                        <button type="button" className="mc-ghost-btn" onClick={onClose} aria-label="Close preview">
-                            <i className="fas fa-xmark"></i>
-                            Clear
+                    {canGoBack && (
+                        <button type="button" className="mc-back" onClick={onBack} aria-label="Back to courses">
+                            <i className="fas fa-chevron-left"></i>
                         </button>
-                    </div>
+                    )}
 
                     <div className="mc-pvtitle">
                         <span className={`mc-pvicon mc-file-icon-${material.type}`}>
                             <i className={isBook ? "fas fa-file-pdf" : isZip ? "fas fa-file-zipper" : "fas fa-circle-play"}></i>
                         </span>
-                        <h1 className="mc-pvname">{material.title}</h1>
+                        <h1 className="mc-pvname" title={material.title}>{material.title}</h1>
                     </div>
-
-                    {/* a zip has nothing to frame, so it has nothing to go
-                        fullscreen with */}
-                    {!isZip && (
-                        <button type="button" className="mc-ghost-btn" onClick={onFullscreen}>
-                            <i className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}></i>
-                            {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-                        </button>
-                    )}
                 </header>
 
-{/* the frame is its own scroll region, so a wheel gesture over a
+                {/* the frame is its own scroll region, so a wheel gesture over a
                     document never reaches the tree on its left */}
                 <div className={`mc-body mc-pvbody ${isZip ? "is-zip" : ""}`}>
-                    {/* the same fullscreen control as the button in the header,
-                        sitting on the frame itself where a reader's eye already is */}
+                    {/* fullscreen sits on the frame rather than in the head above
+                        it; a zip has nothing to frame, so it has nothing to go
+                        fullscreen with */}
                     {!isZip && (
                         <button
                             type="button"
@@ -570,10 +558,7 @@ export default function StudentCourses({ enrollments, references }) {
                     <div className="mc-col mc-col-preview">
                         {course && subject && material ? (
                             <PreviewPanel
-                                course={course}
-                                subject={subject}
                                 material={material}
-                                onClose={() => { setMaterialKey(null); setStep(STEP_BROWSE); }}
                                 onBack={() => setStep(STEP_BROWSE)}
                                 canGoBack={step === STEP_PREVIEW}
                                 paneRef={paneRef}
