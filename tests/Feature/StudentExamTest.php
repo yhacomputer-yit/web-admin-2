@@ -134,7 +134,10 @@ class StudentExamTest extends TestCase
     private function sitting(string $state): ExamQuestion
     {
         [$day, $start, $end] = match ($state) {
-            'open' => [Carbon::now(), Carbon::now()->subHour(), Carbon::now()->addHours(2)],
+            // opened a few minutes ago, not an hour: the upload window is a
+            // fixed short run from the start, so a fixture opened an hour ago is
+            // a sitting whose upload is already shut
+            'open' => [Carbon::now(), Carbon::now()->subMinutes(5), Carbon::now()->addHours(2)],
             // a window that is still ahead of us, on a day that is too
             default => [Carbon::now()->addDay(), Carbon::now()->addHours(9), Carbon::now()->addHours(12)],
         };
@@ -189,13 +192,13 @@ class StudentExamTest extends TestCase
     }
 
     /**
-     * A running sitting whose window shuts in a given number of minutes.
+     * A running sitting whose window opened a given number of minutes ago.
      *
-     * This is the shape the submission cutoff is about: the paper is still
-     * readable, and whether a script can be handed in depends on how close the
-     * end is.
+     * This is the shape the submission cutoff is about: the paper is readable
+     * until the window shuts, but whether a script can be handed in depends only
+     * on how long ago the sitting opened.
      */
-    private function sittingEndingIn(int $minutes): ExamQuestion
+    private function sittingOpenedFor(int $minutes): ExamQuestion
     {
         $sitting = $this->sitting('open');
 
@@ -203,8 +206,10 @@ class StudentExamTest extends TestCase
 
         $sitting->update([
             'exam_date' => $now->toDateString(),
-            'start_time' => $now->copy()->subHour()->format('H:i:s'),
-            'end_time' => $now->copy()->addMinutes($minutes)->format('H:i:s'),
+            'start_time' => $now->copy()->subMinutes($minutes)->format('H:i:s'),
+            // a window long enough that the paper outlives the upload window
+            // every one of these cases needs
+            'end_time' => $now->copy()->addHour()->format('H:i:s'),
         ]);
 
         return $sitting->fresh();
@@ -368,11 +373,50 @@ class StudentExamTest extends TestCase
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('StudentExamTake')
                 ->where('exam.id', $sitting->id)
-                // the countdown is built from the server's own clock, so these
-                // are what the page subtracts from
-                ->where('exam.ends_at', $sitting->endsAt()->toIso8601String())
+                // the countdown is built from the server's own clock against the
+                // sitting's own deadline, not the end of its window, so this is
+                // what the page counts down to
+                ->where('exam.submit_closes_at', $sitting->submissionClosesAt()->toIso8601String())
+                ->where('exam.submit_open', true)
                 ->where('exam.paper_url', route('student.exam.paper', ['examId' => $sitting->id]))
                 ->has('server_time')
+            );
+    }
+
+    /**
+ * Times are shown in 12-hour form with the meridiem spelled out, because that is
+ * how the school reads them and because "9:00" beside "11:00" on a card grid is
+ * ambiguous where "9:00 AM" is not.
+ *
+ * Pinned here rather than left to the formatter: a change back to 24-hour would
+ * still render, still be readable, and quietly make an evening exam look like a
+ * morning one.
+ */
+public function test_times_are_shown_in_twelve_hour_form(): void
+    {
+        $sitting = $this->sitting('open');
+
+        $this->asStudent()
+            ->get(route('student.exam'))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('groups', function ($groups) use ($sitting) {
+                    $card = $this->cards($groups)->firstWhere('id', $sitting->id);
+
+                    if ($card === null) {
+                        return false;
+                    }
+
+                    $oneTime = '/^\d{1,2}:\d{2} (AM|PM)$/';
+                    $aRange = '/^\d{1,2}:\d{2} (AM|PM) - \d{1,2}:\d{2} (AM|PM)$/';
+
+                    // both the range and the single times the dialog quotes are
+                    // 12-hour, and neither has a leading zero, which is what
+                    // distinguishes them from the "H:i" the column stores
+                    return preg_match($aRange, $card['time_label']) === 1
+                        && preg_match($oneTime, $card['start_time']) === 1
+                        && preg_match($oneTime, $card['end_time']) === 1;
+                })
             );
     }
 
@@ -440,6 +484,27 @@ class StudentExamTest extends TestCase
             $response->baseResponse->getFile()->getPathname()
         );
         $this->assertStringStartsWith('%PDF', file_get_contents($response->baseResponse->getFile()->getPathname()));
+    }
+
+    /**
+     * The paper stops with the sitting's own time, not with its window.
+     *
+     * A student whose minutes are up must be refused by the URL as well as by the
+     * page: the countdown closing the viewer on screen would otherwise be a
+     * courtesy the bookmarked URL did not keep, and a paper still readable after
+     * the upload refused is not a closed exam.
+     */
+    public function test_the_paper_is_refused_once_the_sittings_own_time_is_up(): void
+    {
+        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 1);
+
+        // still inside the window an admin published, so only the sitting's own
+        // deadline can be what refuses this
+        $this->assertTrue($sitting->isOpen());
+
+        $this->asStudent()
+            ->get(route('student.exam.paper', ['examId' => $sitting->id]))
+            ->assertForbidden();
     }
 
     public function test_the_paper_is_refused_before_the_start_time(): void
@@ -534,13 +599,13 @@ class StudentExamTest extends TestCase
     }
 
     /**
-     * The upload shuts before the paper does, so a script handed in during the
-     * last quarter of an hour is refused even though the sitting is still running
-     * and the paper is still readable.
+     * The upload shuts once the sitting has been open long enough, so a script
+     * handed in after that is refused even though the window is still running and
+     * the paper is still readable.
      */
-    public function test_a_submission_in_the_last_minutes_before_the_end_is_refused(): void
+    public function test_a_submission_after_the_upload_window_shuts_is_refused(): void
     {
-        $sitting = $this->sittingEndingIn(ExamQuestion::SUBMIT_LOCK_MINUTES - 5);
+        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 5);
 
         $this->asStudent()
             ->from(route('student.exam'))
@@ -560,9 +625,9 @@ class StudentExamTest extends TestCase
         $this->assertTrue($sitting->fresh()->isOpen());
     }
 
-    public function test_a_submission_outside_the_lockout_is_accepted(): void
+    public function test_a_submission_inside_the_upload_window_is_accepted(): void
     {
-        $sitting = $this->sittingEndingIn(ExamQuestion::SUBMIT_LOCK_MINUTES + 20);
+        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES - 10);
 
         $this->asStudent()
             ->post(route('student.exam.submit', ['examId' => $sitting->id]), [
@@ -579,32 +644,34 @@ class StudentExamTest extends TestCase
     }
 
     /**
-     * The page is told about the upload deadline separately from the window, so
-     * it can close the form on its own clock without ever offering a form the
-     * submit endpoint would refuse.
+     * The page is told about the sitting's own deadline separately from its
+     * window, so it can close the paper and the form on one clock without ever
+     * offering either the submit endpoint would refuse. A student whose time has
+     * run out is not even handed the paper's URL.
      */
     public function test_the_sitting_page_is_told_when_the_upload_closes(): void
     {
-        $closing = $this->sittingEndingIn(ExamQuestion::SUBMIT_LOCK_MINUTES - 2);
+        $closing = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 2);
 
         $this->asStudent()
             ->get(route('student.exam.show', ['examId' => $closing->id]))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->where('exam.can_open', true)
-                ->where('exam.paper_url', route('student.exam.paper', ['examId' => $closing->id]))
+                ->where('exam.paper_url', null)
                 ->where('exam.submit_open', false)
-                ->where('exam.submit_lock_minutes', ExamQuestion::SUBMIT_LOCK_MINUTES)
+                ->where('exam.submit_window_minutes', ExamQuestion::SUBMIT_WINDOW_MINUTES)
                 ->where('exam.submit_closes_at', $closing->submissionClosesAt()->toIso8601String())
             );
 
-        $open = $this->sittingEndingIn(ExamQuestion::SUBMIT_LOCK_MINUTES + 20);
+        $open = $this->sittingOpenedFor(2);
 
         $this->asStudent()
             ->get(route('student.exam.show', ['examId' => $open->id]))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->where('exam.submit_open', true)
+                ->where('exam.paper_url', route('student.exam.paper', ['examId' => $open->id]))
                 ->where('exam.submit_seconds_remaining', fn ($seconds) => $seconds > 0)
             );
     }

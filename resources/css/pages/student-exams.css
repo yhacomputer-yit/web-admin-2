@@ -523,33 +523,7 @@ button.se-stretch {
     margin-top: 1rem;
 }
 
-/* ---------- when the upload is closed ---------- */
-/* The last minutes before the upload closes, counted down on the page: a student
-   who can no longer submit needs to be told while they still have the time to do
-   something about it. */
-.se-closing {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #fde68a;
-    border-radius: 0.5rem;
-    background: #fffbeb;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: #92400e;
-}
-
-.se-closing > i {
-    flex: 0 0 auto;
-    margin-top: 0.1rem;
-}
-
-.se-closing strong {
-    font-variant-numeric: tabular-nums;
-}
-
+/* ---------- when the sitting is closed ---------- */
 /* The dark box. It is dark because it is the one thing on the page that closes
    the page off, and a soft panel would read as a note rather than as a door. */
 .se-dark {

@@ -16,6 +16,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\SubjectController;
@@ -163,6 +164,17 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [MaterialController::class, 'edit'])->name('material.edit');
             Route::post('/update/{id}', [MaterialController::class, 'update'])->name('material.update');
             Route::get('/delete/{id}', [MaterialController::class, 'delete'])->name('material.delete');
+        });
+
+        // exam sittings: the day, the window, the question paper and whether a
+        // student can see it at all
+        Route::prefix('exam')->group(function () {
+            Route::get('/', [ExamController::class, 'index'])->name('exam.index');
+            Route::get('/createPage', [ExamController::class, 'createPage'])->name('exam.createPage');
+            Route::post('/create', [ExamController::class, 'create'])->name('exam.create');
+            Route::get('/edit/{id}', [ExamController::class, 'edit'])->name('exam.edit');
+            Route::post('/update/{id}', [ExamController::class, 'update'])->name('exam.update');
+            Route::get('/delete/{id}', [ExamController::class, 'delete'])->name('exam.delete');
         });
 
         // for course type section

@@ -45,11 +45,16 @@ class ExamQuestion extends Model
 
     public const PUBLISHED = 'published';
 
-    /** the states the flag can hold, and what an admin list would call them */
-    public const STATUSES = [
-        'draft' => 'Draft',
+    /**
+     * The two values `is_published` holds in practice, and what an admin calls
+     * them. Only `published` is something a student may see; `unpublish` is a
+     * draft sitting that exists only in this admin.
+     */
+    public const UNPUBLISHED = 'unpublish';
+
+    public const PUBLISH_STATES = [
         self::PUBLISHED => 'Published',
-        'closed' => 'Closed',
+        self::UNPUBLISHED => 'Not published',
     ];
 
     /* what a sitting is right now, as the portal reads it */
@@ -80,14 +85,16 @@ class ExamQuestion extends Model
     public const PAPER_MAX_KILOBYTES = 20480;
 
     /**
-     * How long before the window shuts the upload stops.
+     * How long the upload stays open once the paper does.
      *
-     * The paper stays readable until `end_time`, but a script has to be in before
-     * the marking starts, so the last stretch of a sitting is for a student
-     * reading their own answers rather than for uploading them. Two deadlines
-     * rather than one, both of them the same instant to everyone.
+     * Measured from the start of the window, not backwards from its end: a
+     * student is given this long to download the paper, write their answers and
+     * upload the script, and after that the upload is gone even though the paper
+     * itself stays readable until the window shuts.
+     *
+     * Two deadlines rather than one, and both are the same instant to everyone.
      */
-    public const SUBMIT_LOCK_MINUTES = 15;
+    public const SUBMIT_WINDOW_MINUTES = 15;
 
     /** where papers are filed on the private disk */
     public const PAPER_DIRECTORY = 'exam/questions';
@@ -114,6 +121,23 @@ class ExamQuestion extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
+    /**
+     * Every script handed in for this course + subject.
+     *
+     * `exam_answers` has no exam_question_id, so a script belongs to a course and
+     * a subject rather than to one sitting of it -- which is why the join is on
+     * both columns instead of on this row's id. The consequence an admin has to
+     * know about: one script per student per subject, so a second sitting of the
+     * same subject shows the answers already given for the first.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ExamAnswer>
+     */
+    public function answers()
+    {
+        return $this->hasMany(ExamAnswer::class, 'course_id', 'course_id')
+            ->whereColumn('exam_answers.subject_id', 'exam_questions.subject_id');
     }
 
     /**
@@ -186,24 +210,25 @@ class ExamQuestion extends Model
     }
 
     /**
-     * When the upload stops, which is before the paper does.
+     * When the upload stops, which is long before the paper does.
      *
-     * Null when the window cannot be read, in which case there is nothing to
-     * submit into anyway and the upload is closed.
+     * Counted forward from the start of the window, so it is the same length of
+     * time for every sitting rather than a slice of whatever the admin happened
+     * to make the window. Null when the window cannot be read, in which case
+     * there is nothing to submit into anyway and the upload is closed.
      */
     public function submissionClosesAt(): ?Carbon
     {
-        return $this->endsAt()?->copy()->subMinutes(self::SUBMIT_LOCK_MINUTES);
+        return $this->startsAt()?->copy()->addMinutes(self::SUBMIT_WINDOW_MINUTES);
     }
 
     /**
      * Whether a script can still be handed in.
      *
-     * Deliberately not the same question as isOpen(): a student in the last
-     * fifteen minutes may still read the paper, and must still be able to leave
-     * the page, but the server will not take a script off them. Checked on the
-     * submission itself rather than only on the page, because the page is only a
-     * page.
+     * Deliberately not the same question as isOpen(): a student past the upload
+     * window may still read the paper, and must still be able to leave the page,
+     * but the server will not take a script off them. Checked on the submission
+     * itself rather than only on the page, because the page is only a page.
      */
     public function isSubmitOpen(?Carbon $now = null): bool
     {

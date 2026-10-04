@@ -105,8 +105,11 @@ class ExamDemoSeeder extends Seeder
     {
         if ($index === 0) {
             // the window is pinned around now and clamped to the day, so the
-            // sitting is still open at any hour it is seeded at
-            $start = max($now->copy()->startOfDay(), $now->copy()->subMinutes(45));
+            // sitting is still open at any hour it is seeded at. It starts a few
+            // minutes ago rather than an hour, because the upload shuts
+            // SUBMIT_WINDOW_MINUTES after the start and a demo sitting seeded any
+            // earlier would only ever show a student the closed box.
+            $start = max($now->copy()->startOfDay(), $now->copy()->subMinutes(5));
             $end = min($now->copy()->endOfDay(), $now->copy()->addHours(3));
 
             return [$now->copy(), $start->format('H:i:s'), $end->format('H:i:s'), false];

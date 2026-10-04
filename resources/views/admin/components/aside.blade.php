@@ -100,6 +100,13 @@
                 <div data-i18n="Dashboards">Reference</div>
             </a>
         </li>
+        {{-- exam sittings, with their papers --}}
+        <li class="menu-item {{ request()->routeIs('exam.*') ? 'active' : '' }}">
+            <a href="{{ route('exam.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file-pdf"></i>
+                <div data-i18n="Dashboards">Exam</div>
+            </a>
+        </li>
 
         <!-- Student -->
         <li class="menu-item {{ request()->routeIs('admin.student') ? 'active' : '' }}">

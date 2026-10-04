@@ -19,6 +19,11 @@ use Illuminate\Support\Str;
  * store uploads this way and all of them need the same three answers -- the name
  * to show, the URL to link to, and whether the file is still there -- so the
  * answers live here rather than being written once per model.
+ *
+ * Public is the default disk because almost every upload belongs there. An exam
+ * paper is the exception and names its own disk: it must not have a URL anyone
+ * can guess, because the time window on it is enforced by a controller rather
+ * than by the file being unreachable.
  */
 final class StoredFile
 {
@@ -62,7 +67,7 @@ final class StoredFile
     }
 
     /**
-     * Put an upload on the public disk under a name a list can still read.
+     * Put an upload under a name a list can still read.
      *
      * The uniqid prefix is what stops two "notes.pdf" uploads from overwriting
      * each other; the slugged original is what keeps the row recognisable.
@@ -75,8 +80,10 @@ final class StoredFile
      * upload never lands with a .bin name.
      *
      * @param  array<int, string>  $allowed  extensions without the dot
+     * @param  string  $disk  where it lands; `public` unless the file must stay
+     *                         unreachable, which is what an exam paper needs
      */
-    public static function store(UploadedFile $file, string $directory, array $allowed): string
+    public static function store(UploadedFile $file, string $directory, array $allowed, string $disk = 'public'): string
     {
         $original = strtolower((string) $file->getClientOriginalExtension());
         $guessed = strtolower((string) $file->guessExtension());
@@ -90,17 +97,17 @@ final class StoredFile
 
         $base = Str::slug(pathinfo((string) $file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
 
-        return $file->storeAs($directory, uniqid() . '_' . $base . '.' . $extension, 'public');
+        return $file->storeAs($directory, uniqid() . '_' . $base . '.' . $extension, $disk);
     }
 
     /**
      * Remove a stored file. Safe to call with a path that is already gone, which
      * is what makes it usable on a replace or a rollback.
      */
-    public static function delete(?string $path): void
+    public static function delete(?string $path, string $disk = 'public'): void
     {
         if (filled($path)) {
-            Storage::disk('public')->delete($path);
+            Storage::disk($disk)->delete($path);
         }
     }
 }

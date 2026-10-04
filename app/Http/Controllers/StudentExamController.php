@@ -141,19 +141,25 @@ class StudentExamController extends Controller
      * The endpoint the viewer page points at, and the only way to the file. Every
      * gate is re-applied here because this request is independent of the page
      * that made it: a student who bookmarked the URL, or who had the tab open
-     * when the window shut, gets a 403 rather than the paper.
+     * when the sitting's own time ran out, gets a 403 rather than the paper.
+     *
+     * The gate is the sitting's session rather than its window. A student is
+     * given the paper for as long as they are given the upload, and after that
+     * the paper is gone even though the exam is still listed and still open to
+     * enter -- otherwise the countdown that closed the viewer on the page would
+     * be a courtesy the URL did not keep.
      *
      * The response is not cacheable, for the same reason -- a stored copy in a
      * shared cache or in the browser's back/forward store would outlive the
-     * window the gate is protecting.
+     * session the gate is protecting.
      */
     public function paper(Request $request, $examId)
     {
         $student = Auth::guard('student')->user();
         $exam = $this->portalExam($student, (int) $examId);
 
-        if (! $exam->isOpen()) {
-            abort(403, 'This exam paper is only available while the exam is open.');
+        if (! $exam->isSubmitOpen()) {
+            abort(403, 'This exam paper is only available while you have time left to answer.');
         }
 
         $path = $exam->paperPath();
@@ -421,13 +427,13 @@ class StudentExamController extends Controller
             'submit_open' => $sitting->isSubmitOpen($now),
             'submit_closes_at' => $sitting->submissionClosesAt()?->toIso8601String(),
             'submit_seconds_remaining' => $sitting->secondsUntilSubmitCloses($now),
-            'submit_lock_minutes' => ExamQuestion::SUBMIT_LOCK_MINUTES,
+            'submit_window_minutes' => ExamQuestion::SUBMIT_WINDOW_MINUTES,
             'submit_closes_label' => TimeOfDay::format($sitting->submissionClosesAt()),
             'has_paper' => $hasPaper,
-            // the streaming endpoint, which re-checks the window on every hit;
-            // null when there is no paper, so the viewer is never pointed at a
-            // request that would 404
-            'paper_url' => $hasPaper && $status === ExamQuestion::ONGOING
+            // the streaming endpoint, which re-checks the sitting's own time on
+            // every hit; null whenever there is no paper or the student is past
+            // it, so the viewer is never pointed at a request that would 403
+            'paper_url' => $hasPaper && $status === ExamQuestion::ONGOING && $sitting->isSubmitOpen($now)
                 ? route('student.exam.paper', ['examId' => $sitting->id])
                 : null,
             // the moment the script was accepted, and only that: the page says
@@ -458,8 +464,8 @@ class StudentExamController extends Controller
      *
      * Two sentences, because there are two reasons and they are not the same
      * thing to a student: the window can be shut, or the upload can have closed
-     * while the paper is still readable for a last check. Saying which one it was
-     * is the difference between "come back sooner" and "you are late".
+     * while the paper is still readable. Saying which one it was is the
+     * difference between "come to this one sooner" and "you are late".
      */
     private function submitClosedMessage(ExamQuestion $exam, Carbon $now): string
     {
@@ -467,9 +473,9 @@ class StudentExamController extends Controller
             return $this->closedMessage($exam, $exam->scheduleStatus($now));
         }
 
-        return 'Submissions are closed. Upload your script before '
-            . (TimeOfDay::format($exam->submissionClosesAt()) ?? 'the scheduled time')
-            . ', which is ' . ExamQuestion::SUBMIT_LOCK_MINUTES . ' minutes before the exam closes.';
+        return 'Submissions are closed. Uploads stayed open for '
+            . ExamQuestion::SUBMIT_WINDOW_MINUTES . ' minutes after the exam opened at '
+            . (TimeOfDay::format($exam->start_time) ?? 'the scheduled time') . '.';
     }
 
     /**

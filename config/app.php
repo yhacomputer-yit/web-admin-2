@@ -64,13 +64,17 @@ return [
     | Application Timezone
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. We have gone
-    | ahead and set this to a sensible default for you out of the box.
+    | The timezone the school is in, not the timezone the server happens to be
+    | in. Every date the app writes or compares -- an attendance row, a file's
+    | created_at, and above all the wall-clock start and end times on an exam
+    | sitting -- is read as this one, so an admin typing 09:00 means 09:00 where
+    | the students are. Set it in .env rather than here: a hosted box is often
+    | in a different country from the school it serves, and leaving this on UTC
+    | makes every exam open and close six and a half hours out.
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------

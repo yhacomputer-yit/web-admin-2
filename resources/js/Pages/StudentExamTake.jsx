@@ -53,13 +53,12 @@ function Timer({ seconds, expired }) {
 export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
     const { url, props } = usePage();
 
-    const { seconds, expired } = useCountdown(exam.ends_at, server_time);
-
-    /* The upload has its own, earlier deadline: the paper shuts at end_time, but
-       the form shuts SUBMIT_LOCK_MINUTES before it. Both are counted down from
-       the server's own timestamps so the page cannot disagree with the endpoint
-       that will refuse the upload. */
-    const { seconds: submitSeconds, expired: submitExpired } = useCountdown(exam.submit_closes_at, server_time);
+    /* The countdown runs to the sitting's own deadline rather than to the end of its
+       window: a student is given SUBMIT_WINDOW_MINUTES to read the paper, answer
+       it and upload the script, and that is what "time remaining" means here. When
+       it reaches zero the paper is gone and the upload is refused, which is the
+       same instant the server draws. */
+    const { seconds, expired } = useCountdown(exam.submit_closes_at, server_time);
 
     const input = useRef(null);
     const [picked, setPicked] = useState(null);
@@ -71,15 +70,9 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
     const showPaper = Boolean(exam.paper_url) && !expired;
 
     /* the server's own reading on arrival, then the local clock. The pair matters
-       at the boundary: a page rendered one second inside the window arrives with
+       at the boundary: a page rendered one second inside the sitting arrives with
        submit_open false and must not offer a form the endpoint would refuse. */
-    const submitClosed = !exam.submit_open || submitExpired;
-
-    /* the upload closes SUBMIT_LOCK_MINUTES before the window, so the countdown
-       reaching that many minutes means the closing stretch has begun: the form
-       is still there, but it says how long is left to use it. Left alone, the
-       strip would sit on screen for the whole sitting with an hour on it. */
-    const submitClosingSoon = !submitClosed && submitSeconds <= (exam.submit_lock_minutes ?? 15) * 60;
+    const submitClosed = !exam.submit_open || expired;
 
     const submit = (e) => {
         e.preventDefault();
@@ -164,7 +157,7 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                             </div>
                             <div className="se-paper-gone-sub">
                                 {expired
-                                    ? "The exam window closed, so the paper is no longer available."
+                                    ? `Your ${exam.submit_window_minutes ?? 15} minutes ran out, so the paper is no longer available.`
                                     : "Ask your teacher to upload the question paper for this exam."}
                             </div>
                         </div>
@@ -199,46 +192,23 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                         </div>
                     )}
 
-                    {submitClosingSoon && (
-                        <div className="se-closing" role="status">
-                            <i className="fas fa-triangle-exclamation"></i>
-                            <span>
-                                Uploads close in <strong>{formatCountdown(submitSeconds)}</strong> — submit your
-                                script before {exam.submit_closes_label || "the exam closes"}.
-                            </span>
-                        </div>
-                    )}
-
                     {submitClosed ? (
-                        /* one dark box for both deadlines. The paper closing and the
-                           upload closing are the same thing to a student who has
-                           just lost the ability to hand anything in, and they land
-                           in the same place on the page. */
+                        /* one dark box for the whole closed state. The page only
+                           renders while the exam is still listed, so reaching here
+                           means the student's own time ran out -- the paper and the
+                           upload stopped together. */
                         <div className="se-dark" role="alert">
                             <div className="se-dark-icon">
-                                <i className={`fas ${expired ? "fa-door-closed" : "fa-lock"}`}></i>
+                                <i className="fas fa-door-closed"></i>
                             </div>
 
                             <div className="se-dark-body">
-                                <div className="se-dark-title">
-                                    {expired
-                                        ? "Exam time is over — you cannot enter this exam"
-                                        : "Submissions are closed"}
-                                </div>
+                                <div className="se-dark-title">Time is over — this exam is closed</div>
 
                                 <div className="se-dark-sub">
-                                    {expired ? (
-                                        <>
-                                            The window closed at {exam.end_time || "the scheduled time"}. The question
-                                            paper is no longer available and nothing can be uploaded.
-                                        </>
-                                    ) : (
-                                        <>
-                                            Uploads closed at {exam.submit_closes_label || "the scheduled time"}{" "}
-                                            {exam.submit_lock_minutes ?? 15} minutes before the exam ends. You can
-                                            still read the paper until {exam.end_time || "the scheduled time"}.
-                                        </>
-                                    )}
+                                    You had {exam.submit_window_minutes ?? 15} minutes from{" "}
+                                    {exam.start_time || "the scheduled time"}. The paper and the upload are both
+                                    closed, and nothing more can be submitted.
                                 </div>
                             </div>
                         </div>
