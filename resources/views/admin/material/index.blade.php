@@ -245,7 +245,7 @@
                     <div class="mat-line" style="min-width: 0;">
                         <span class="mat-num">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                         <span class="mat-name">{{ $subject?->name ?? 'Unknown subject' }}</span>
-                        <span class="badge bg-light text-muted">{{ $subjectRows->count() }} file(s)</span>
+                        {{-- <span class="badge bg-light text-muted">{{ $subjectRows->count() }} file(s)</span> --}}
                     </div>
 
                     <div class="mat-files">

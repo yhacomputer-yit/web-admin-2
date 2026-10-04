@@ -8,6 +8,7 @@ import '../css/layouts/student-layout.css'
 import '../css/pages/student-attendance.css'
 import '../css/pages/student-portal.css'
 import '../css/pages/student-courses.css'
+import '../css/pages/student-exams.css'
 
 // Create the Inertia app
 createInertiaApp({

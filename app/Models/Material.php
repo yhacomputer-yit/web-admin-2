@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\StoredFile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * One file a course teaches under one subject.
@@ -129,7 +129,7 @@ class Material extends Model
     {
         return filled($this->title)
             ? $this->title
-            : (static::fileLabel($this->file_link) ?? 'Untitled');
+            : (StoredFile::label($this->file_link) ?? 'Untitled');
     }
 
     /**
@@ -137,25 +137,6 @@ class Material extends Model
      */
     public function url(): ?string
     {
-        return filled($this->file_link) ? Storage::url($this->file_link) : null;
-    }
-
-    /**
-     * The name to show for a stored file.
-     *
-     * Uploads are stored as `{uniqid}_{slug}.{ext}` so two "notes.pdf" uploads
-     * cannot overwrite each other. The prefix is an implementation detail that
-     * only gets in the way in a list, so it is dropped for display while the
-     * path on disk keeps it.
-     */
-    public static function fileLabel(?string $path): ?string
-    {
-        if (blank($path)) {
-            return null;
-        }
-
-        $name = basename($path);
-
-        return preg_replace('/^[0-9a-f]{13}_/', '', $name) ?: $name;
+        return StoredFile::url($this->file_link);
     }
 }

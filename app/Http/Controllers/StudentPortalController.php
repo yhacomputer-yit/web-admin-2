@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Material;
 use App\Models\Student;
+use App\Support\TimeOfDay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -31,29 +32,10 @@ class StudentPortalController extends Controller
                 'course_image' => $e->course?->image,
                 'course_type' => $e->course?->courseType?->name,
                 'section_name' => $e->section?->name,
-                'section_start' => $this->sectionTime($e->section?->start),
-                'section_end' => $this->sectionTime($e->section?->end),
+                'section_start' => TimeOfDay::format($e->section?->start),
+                'section_end' => TimeOfDay::format($e->section?->end),
                 'enroll_date' => $e->enroll_date?->format('Y-m-d'),
             ])->values();
-    }
-
-    /**
-     * A section's start/end is a plain `time` column, so Eloquent hands it back as
-     * a "H:i:s" string. The portal only ever needs the hour and minute, and the
-     * column is free-form enough that anything unparseable falls back to null
-     * rather than throwing on a page load.
-     */
-    private function sectionTime($value): ?string
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        try {
-            return Carbon::parse($value)->format('H:i');
-        } catch (\Throwable $e) {
-            return null;
-        }
     }
 
     /**
@@ -329,13 +311,11 @@ class StudentPortalController extends Controller
         ]);
     }
 
-    // assignments list (UI only, mock data lives in the page until the
-    // assignment tables exist)
+    // assignments list. The page is an empty shell until the assignment tables
+    // exist, so nothing is passed to it and it renders no UI at all.
     public function assignments()
     {
-        return Inertia::render('StudentAssignments', [
-            'assignments' => [],
-        ]);
+        return Inertia::render('StudentAssignments');
     }
 
     // course detail with its learning reference files

@@ -32,7 +32,7 @@
                 <h4 class="att-page-title">Mark Attendance</h4>
                 <p class="att-page-sub">Only students with an active enrollment for this class are listed.</p>
             </div>
-            <div class="d-flex flex-wrap gap-2">
+            {{-- <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('attendance.report') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="bx bx-bar-chart-alt-2 me-1"></i> Reports
                 </a>
@@ -42,7 +42,7 @@
                 <a href="{{ route('course.section.index') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="bx bx-link-alt me-1"></i> Sections
                 </a>
-            </div>
+            </div> --}}
         </div>
 
         @if ($errors->any())
@@ -90,7 +90,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <label for="subject_id" class="form-label small fw-semibold mb-1">Subject <span class="text-danger">*</span></label>
                         <select name="subject_id" id="subject_id" class="form-select" required>
                             @if (! $selectedCourseId)
@@ -102,7 +102,7 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
 
                     <div class="col-md-2">
                         <label for="date" class="form-label small fw-semibold mb-1">Date <span class="text-danger">*</span></label>

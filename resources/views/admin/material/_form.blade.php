@@ -114,10 +114,10 @@
                         @error('subject_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
+                        {{-- <div class="form-text">
                             Only subjects linked to the chosen course are listed. Link more under
                             <a href="{{ route('admin.course') }}" class="text-decoration-none">Course</a>.
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="mb-2 form-group">

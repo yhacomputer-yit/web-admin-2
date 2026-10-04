@@ -1,9 +1,9 @@
-
 <style>
-    .menu-item:hover{
+    .menu-item:hover {
         background: rgb(241, 241, 241);
-   }
-    .dropdown-menu a:hover{
+    }
+
+    .dropdown-menu a:hover {
         background-color: #ff6c0f;
         color: white;
     }
@@ -25,15 +25,14 @@
 
     <div class="menu-inner-shadow"></div>
 
-    {{-- collapse / expand the sidebar to an icon-only rail  --}}
-    <button type="button" id="sidebarToggle" class="sidebar-toggle"
-        aria-controls="layout-menu" aria-expanded="true" aria-label="Collapse sidebar"
-        title="Collapse sidebar">
+    {{-- collapse / expand the sidebar to an icon-only rail --}}
+    <button type="button" id="sidebarToggle" class="sidebar-toggle" aria-controls="layout-menu" aria-expanded="true"
+        aria-label="Collapse sidebar" title="Collapse sidebar">
         <i class="bx bx-chevron-left"></i>
     </button>
 
     <ul class="menu-inner py-1">
-         <li class="menu-item">
+        <li class="menu-item">
             <a href="{{ route('admin.home') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chart"></i>
                 <div data-i18n="userInterface">Dashboard</div>
@@ -44,6 +43,13 @@
             <a href="{{ route('admin.home') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bx-color-fill"></i>
                 <div data-i18n="userInterface">User Interface</div>
+            </a>
+        </li>
+        <!-- Teacher -->
+        <li class="menu-item {{ request()->routeIs('admin.teacher') ? 'active' : '' }}">
+            <a href="{{ route('admin.teacher') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bx-user-check"></i>
+                <div data-i18n="Dashboards">Instructor</div>
             </a>
         </li>
         <!-- TimeTable -->
@@ -60,12 +66,12 @@
                 <div data-i18n="Dashboards">Attendance</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('attendance.report*') ? 'active' : '' }}">
+        {{-- <li class="menu-item {{ request()->routeIs('attendance.report*') ? 'active' : '' }}">
             <a href="{{ route('attendance.report') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
                 <div data-i18n="Dashboards">Attendance Reports</div>
             </a>
-        </li>
+        </li> --}}
         <!-- Course -->
         <li class="menu-item {{ request()->routeIs('admin.course') ? 'active' : '' }}">
             <a href="{{ route('admin.course') }}" class="menu-link ">
@@ -80,7 +86,7 @@
                 <div data-i18n="Dashboards">Section</div>
             </a>
         </li>
-                {{-- Course -> Section linking --}}
+        {{-- Course -> Section linking --}}
         <li class="menu-item {{ request()->routeIs('course.section.*') ? 'active' : '' }}">
             <a href="{{ route('course.section.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-link-alt"></i>
@@ -91,16 +97,10 @@
         <li class="menu-item {{ request()->routeIs('material.*') ? 'active' : '' }}">
             <a href="{{ route('material.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-folder-open"></i>
-                <div data-i18n="Dashboards">Materials</div>
+                <div data-i18n="Dashboards">Reference</div>
             </a>
         </li>
-        <!-- Teacher -->
-        <li class="menu-item {{ request()->routeIs('admin.teacher') ? 'active' : '' }}">
-            <a href="{{ route('admin.teacher') }}" class="menu-link ">
-                <i class="menu-icon tf-icons bx bx-user-check"></i>
-                <div data-i18n="Dashboards">Instructor</div>
-            </a>
-        </li>
+
         <!-- Student -->
         <li class="menu-item {{ request()->routeIs('admin.student') ? 'active' : '' }}">
             <a href="{{ route('admin.student') }}" class="menu-link">
@@ -171,61 +171,61 @@
 <!-- / Menu -->
 
 <script>
-(function () {
-    const KEY = 'yha.sidebar.collapsed';
-    const root = document.documentElement;
-    const btn = document.getElementById('sidebarToggle');
-    const menu = document.getElementById('layout-menu');
-    if (!btn || !menu) return;
+    (function () {
+        const KEY = 'yha.sidebar.collapsed';
+        const root = document.documentElement;
+        const btn = document.getElementById('sidebarToggle');
+        const menu = document.getElementById('layout-menu');
+        if (!btn || !menu) return;
 
-    // labels come from the markup so the tooltip can never drift from the menu text
-    menu.querySelectorAll('.menu-inner > .menu-item > .menu-link').forEach(function (link) {
-        const label = link.querySelector('div:not(.menu-block)');
-        if (label && !link.dataset.label) {
-            link.dataset.label = label.textContent.trim();
+        // labels come from the markup so the tooltip can never drift from the menu text
+        menu.querySelectorAll('.menu-inner > .menu-item > .menu-link').forEach(function (link) {
+            const label = link.querySelector('div:not(.menu-block)');
+            if (label && !link.dataset.label) {
+                link.dataset.label = label.textContent.trim();
+            }
+        });
+
+        function isCollapsed() {
+            return root.classList.contains('sidebar-collapsed');
         }
-    });
 
-    function isCollapsed() {
-        return root.classList.contains('sidebar-collapsed');
-    }
-
-    function syncButton() {
-        const collapsed = isCollapsed();
-        btn.setAttribute('aria-expanded', String(!collapsed));
-        btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
-        btn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
-    }
-
-    function setCollapsed(collapsed, persist) {
-        root.classList.toggle('sidebar-collapsed', collapsed);
-        if (persist) {
-            try {
-                if (collapsed) { localStorage.setItem(KEY, '1'); }
-                else { localStorage.removeItem(KEY); }
-            } catch (e) { /* private mode: just don't remember it */ }
+        function syncButton() {
+            const collapsed = isCollapsed();
+            btn.setAttribute('aria-expanded', String(!collapsed));
+            btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+            btn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
         }
-        syncButton();
-    }
 
-    btn.addEventListener('click', function () {
-        setCollapsed(!isCollapsed(), true);
-    });
-
-    // reset the rail on small screens where the template uses an overlay menu
-    let mq = window.matchMedia('(min-width: 1200px)');
-    function applyViewport(e) {
-        if (!e.matches) {
-            root.classList.remove('sidebar-collapsed');
-        } else {
-            let saved = null;
-            try { saved = localStorage.getItem(KEY); } catch (err) { /* ignore */ }
-            root.classList.toggle('sidebar-collapsed', saved === '1');
+        function setCollapsed(collapsed, persist) {
+            root.classList.toggle('sidebar-collapsed', collapsed);
+            if (persist) {
+                try {
+                    if (collapsed) { localStorage.setItem(KEY, '1'); }
+                    else { localStorage.removeItem(KEY); }
+                } catch (e) { /* private mode: just don't remember it */ }
+            }
+            syncButton();
         }
-        syncButton();
-    }
-    applyViewport(mq);
-    if (mq.addEventListener) { mq.addEventListener('change', applyViewport); }
-    else if (mq.addListener) { mq.addListener(applyViewport); }
-})();
+
+        btn.addEventListener('click', function () {
+            setCollapsed(!isCollapsed(), true);
+        });
+
+        // reset the rail on small screens where the template uses an overlay menu
+        let mq = window.matchMedia('(min-width: 1200px)');
+        function applyViewport(e) {
+            if (!e.matches) {
+                root.classList.remove('sidebar-collapsed');
+            } else {
+                let saved = null;
+                try { saved = localStorage.getItem(KEY); } catch (err) { /* ignore */ }
+                root.classList.toggle('sidebar-collapsed', saved === '1');
+            }
+            syncButton();
+        }
+        applyViewport(mq);
+        if (mq.addEventListener) { mq.addEventListener('change', applyViewport); }
+        else if (mq.addListener) { mq.addListener(applyViewport); }
+    })();
 </script>

@@ -25,7 +25,7 @@ const LINKS = [
     { key: "attendance", label: "My Attendance", href: "/student-portal/attendance", icon: "fas fa-calendar-check" },
     { key: "courses", label: "My Courses", href: "/student-portal/courses", icon: "fas fa-book-open" },
     { key: "assignments", label: "Assignment", href: "/student-portal/assignments", icon: "fas fa-file-lines" },
-    { key: "exams", label: "Exam", href: "/student-portal/exam", icon: "fas fa-file-lines" },
+    { key: "exams", label: "Exam", href: "/student-portal/exam", icon: "fas fa-clipboard-list" },
 ];
 
 const STORAGE_KEY = "yha.portal.sidebar.collapsed";

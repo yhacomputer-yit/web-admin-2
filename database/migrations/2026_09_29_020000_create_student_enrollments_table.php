@@ -22,6 +22,14 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id');
             $table->unsignedBigInteger('section_id')->nullable();
             $table->date('enroll_date');
+
+            // a class can be finished or dropped, not only left open, so an
+            // enrollment carries its own state. The later migration that
+            // backfills and locks this column assumes it is here, which is why
+            // it is declared with the table rather than added by it
+            $table->string('status', 20)->nullable();
+            $table->dateTime('complete_date')->nullable();
+
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');

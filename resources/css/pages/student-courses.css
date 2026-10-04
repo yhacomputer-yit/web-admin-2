@@ -1,36 +1,4 @@
-﻿/* ==========================================================================
-   Student portal - My Courses
-   Two columns and no third one.
-
-     left  (~38%)  the whole tree. A course is an accordion; a subject is an
-                   accordion inside it; the PDFs, videos and ZIP folders of that
-                   subject drop out under the subject row. Everything you can
-                   click to navigate lives here.
-     right (~62%)  a preview surface and nothing else. It shows the one file
-                   that is selected - a PDF frame, a video player, or a ZIP
-                   folder's download card.
-
-   Three rules shape the layout:
-
-   1. Nothing stacks. `grid-template-areas` is a single line from the first
-      desktop breakpoint up, so the preview column is never pushed under the tree.
-   2. The page never scrolls and each column does. The page opts into the shell's
-      fill mode, every column is a flex column exactly one viewport tall, and
-      only .mc-body inside a column ever scrolls.
-   3. Nesting is drawn with three greys, not with three borders: the course panel
-      is grey, the subject panel is a shade deeper, and the file rows are white
-      again. Orange is a state, never a decoration - it marks the open course,
-      the open subject and the file being previewed.
-
-   A CSS grid rather than Bootstrap rows, so the first column keeps a percentage
-   width and the second takes minmax(0, 1fr) and absorbs the leftover width
-   instead of forcing the page to scroll sideways.
-
-   The split moves with `data-step` on the grid: on a phone it says which of the
-   two columns is on screen, and on a desktop it says whether a file is open -
-   step 2 gives the preview column the width the tree was holding.
-   ========================================================================== */
-
+﻿
 .mc-root {
     /* fill mode: the page box is one viewport tall, so this and the grid below
        have to be allowed to shrink for the columns to own their scrolling */

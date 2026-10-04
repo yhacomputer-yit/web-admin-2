@@ -17,6 +17,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\CourseTypeController;
 use App\Http\Controllers\TeacherController;
@@ -307,8 +308,23 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['student_auth'])->prefix('student-portal')->group(function () {
     Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('student.dashboard');
     Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('student.attendance');
-    // UI-only pages for now: these render mock data until the real tables exist
+    // an empty shell until the assignment tables exist
     Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('student.assignments');
+    // published sittings for the courses the student is enrolled in
+    Route::get('/exam', [StudentExamController::class, 'index'])->name('student.exam');
+    // the sitting itself: the paper, the countdown and the submit panel, reachable
+    // only while the window is open
+    Route::get('/exam/{examId}', [StudentExamController::class, 'show'])
+        ->name('student.exam.show')
+        ->whereNumber('examId');
+    // the paper, streamed rather than linked, so the window keeps applying after
+    // the page has loaded
+    Route::get('/exam/{examId}/paper', [StudentExamController::class, 'paper'])
+        ->name('student.exam.paper')
+        ->whereNumber('examId');
+    Route::post('/exam/{examId}/submit', [StudentExamController::class, 'submit'])
+        ->name('student.exam.submit')
+        ->whereNumber('examId');
     Route::get('/courses', [StudentPortalController::class, 'courses'])->name('student.courses');
     Route::get('/courses/{courseId}', [StudentPortalController::class, 'courseDetail'])
         ->name('student.courseDetail')

@@ -1,0 +1,1034 @@
+
+/* both exam pages are one vertical stack, so the bands of the sitting page and the
+   blocks of the list page keep the same rhythm */
+.se-page {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.se-flash {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.se-flash-ok {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #15803d;
+}
+
+.se-flash-bad {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+/* ---------- the filters ---------- */
+/* a single row above the schedule: the cards are grouped by nothing at all, so
+   the filters are for narrowing a long grid rather than for navigating it */
+.se-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.se-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 12rem;
+}
+
+.se-filter-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sa-muted);
+}
+
+.se-filter-select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.45rem;
+    background: #fff;
+    color: var(--sa-ink);
+    font-size: 0.875rem;
+}
+
+.se-filter-select:focus-visible {
+    outline: 2px solid var(--sa-blue);
+    outline-offset: 1px;
+}
+
+.se-filters-count {
+    margin-left: auto;
+    padding-bottom: 0.45rem;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+/* ---------- the grid ---------- */
+/* every card in one grid, three to a row on a desktop. The track is
+   minmax(0, 1fr) rather than 1fr so a long subject name ellipsizes inside its
+   card instead of stretching the column and pushing the row out of shape. */
+.se-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+/* ---------- one sitting ---------- */
+/* a card, because a student on a phone aims at the card rather than at a control
+   inside it, and a grid of three is only cards */
+.se-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.85rem;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.se-card:hover {
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+    border-color: #dfe2e8;
+}
+
+/* an open card invites a press, a closed one does not, and the difference is
+   carried by the whole card rather than by a control the student has to find */
+.se-card.is-open {
+    cursor: pointer;
+}
+
+.se-card.is-open:hover {
+    border-color: var(--sd-orange);
+}
+
+/* flat rather than dimmed: a sitting that is not open is still a real entry on
+   the schedule, and greying it out would read as deleted */
+.se-card.is-locked {
+    background: #fcfcfd;
+    border-style: dashed;
+    box-shadow: none;
+}
+
+.se-card.is-locked:hover {
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+    border-color: var(--sa-line);
+}
+
+/* the control that makes the whole card pressable, stretched over it. A link
+   wrapping the card is not an option: the card holds the answer state as its
+   own element, and an anchor inside an anchor is invalid markup. */
+.se-stretch {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: inherit;
+    text-decoration: none;
+    color: inherit;
+}
+
+button.se-stretch {
+    cursor: pointer;
+}
+
+/* focus lands on the stretched target, so the ring is drawn on the card */
+.se-card:focus-within {
+    outline: 2px solid var(--sd-orange);
+    outline-offset: 2px;
+}
+
+.se-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.se-card-head {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.se-card-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--sa-ink);
+    /* two lines then an ellipsis, so a long subject name cannot make one card
+       taller than the two beside it */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+/* a block rather than a flex row, because ellipsis only reaches a text node that
+   is inline in its own line box -- in a flex container the text is a flex item and
+   overflow is clipped instead of shortened */
+.se-card-course {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.se-card-course i {
+    margin-right: 0.35rem;
+    font-size: 0.6875rem;
+    color: var(--sd-orange);
+}
+
+/* the day and month, as a block rather than as text in the meta line: it is the
+   one thing a student scans the grid for */
+.se-date {
+    flex: 0 0 auto;
+    width: 3.25rem;
+    padding: 0.35rem 0;
+    border-radius: 0.5rem;
+    background: var(--sa-blue-soft);
+    color: var(--sa-blue);
+    text-align: center;
+    line-height: 1.1;
+}
+
+.se-date-day {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.se-date-mon {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+/* one accent per state, so the block means the same thing as the card's own
+   affordance: orange is the portal's accent and marks the sitting that is live
+   now, which is the one a student can act on */
+.se-card-upcoming .se-date { background: var(--sa-blue-soft); color: var(--sa-blue); }
+.se-card-ongoing .se-date { background: #fff7ed; color: #c2410c; }
+.se-card-finished .se-date { background: #f4f5f7; color: #6b7280; }
+
+.se-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--sa-line);
+}
+
+.se-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    white-space: nowrap;
+}
+
+.se-meta-item i {
+    font-size: 0.6875rem;
+    color: var(--sd-orange);
+}
+
+/* ---------- the answer state ---------- */
+/* its own column on the right of every card, and the only thing on the card a
+   student came to check */
+.se-status {
+    flex: 0 0 auto;
+}
+
+.se-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.se-status-pill i {
+    font-size: 0.625rem;
+}
+
+.se-status-pill.is-done {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.se-status-pill.is-todo {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* the one control on this page a student may come here to use, so it is drawn
+   as a button and given the portal's orange */
+.se-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid var(--sd-orange);
+    border-radius: 0.45rem;
+    background: var(--sd-orange);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.se-btn:hover {
+    background: #e8610c;
+    border-color: #e8610c;
+    color: #fff;
+}
+
+.se-btn:focus-visible {
+    outline: 2px solid var(--sd-orange);
+    outline-offset: 2px;
+}
+
+/* the way out of the form, which has to look like a way out rather than a
+   second Submit */
+.se-btn.is-quiet {
+    background: #fff;
+    border-color: var(--sa-line);
+    color: var(--sa-muted);
+}
+
+.se-btn.is-quiet:hover {
+    background: #f4f5f7;
+    border-color: #dfe2e8;
+    color: var(--sa-ink);
+}
+
+/* disabled until a file is chosen, so it has to look disabled */
+.se-btn:disabled {
+    background: #eef0f3;
+    border-color: #e3e5ea;
+    color: #9aa0ab;
+    cursor: not-allowed;
+}
+
+/* ---------- the submit page ---------- */
+.se-form-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    padding: 0.75rem 1.1rem;
+    border-bottom: 1px solid var(--sa-line);
+    background: #fbfbfc;
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+.se-form-meta i {
+    font-size: 0.6875rem;
+    color: var(--sd-orange);
+}
+
+.se-form-body {
+    padding: 1.1rem;
+}
+
+/* ---------- the script already on record ---------- */
+/* one line: the moment it was accepted, and nothing about the file behind it */
+.se-current {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.55rem;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.se-current > i {
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+}
+
+.se-current-head {
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+/* ---------- the upload ---------- */
+/* the input is a real file input, only pushed out of sight, so a phone gets the
+   native picker and a keyboard gets a real control to focus */
+.visually-hidden-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.se-drop {
+    position: relative;
+}
+
+/* one compact row rather than a tall dashed well: the questions above are what
+   the page is for, and the upload is one step at the end of them, so it takes
+   one line of the screen instead of five */
+.se-drop-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px dashed #cbd5e1;
+    border-radius: 0.6rem;
+    background: #fbfbfc;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.se-drop-label:hover {
+    border-color: var(--sd-orange);
+    background: #fffaf5;
+}
+
+/* focus lands on the hidden input, so the ring is drawn on its label */
+.se-drop:focus-within .se-drop-label {
+    outline: 2px solid var(--sd-orange);
+    outline-offset: 2px;
+}
+
+.se-drop-label > i {
+    flex: 0 0 auto;
+    font-size: 1.15rem;
+    color: var(--sd-orange);
+}
+
+.se-drop-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--sa-ink);
+}
+
+.se-drop-hint {
+    flex: 0 0 auto;
+    margin-left: auto;
+    font-size: 0.6875rem;
+    color: var(--sa-muted);
+    white-space: nowrap;
+}
+
+/* the file the student just picked, echoed back: "Submit" on a file whose name
+   is not on screen is a guess */
+.se-picked {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.8125rem;
+}
+
+.se-picked > i {
+    flex: 0 0 auto;
+    color: var(--sa-muted);
+}
+
+.se-picked-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.se-picked-size {
+    flex: 0 0 auto;
+    font-size: 0.6875rem;
+    color: #9aa0ab;
+}
+
+.se-picked-clear {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: var(--sa-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.se-picked-clear:hover {
+    color: #b91c1c;
+}
+
+.se-error {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #b91c1c;
+}
+
+.se-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+/* ---------- when the upload is closed ---------- */
+/* The last minutes before the upload closes, counted down on the page: a student
+   who can no longer submit needs to be told while they still have the time to do
+   something about it. */
+.se-closing {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #fde68a;
+    border-radius: 0.5rem;
+    background: #fffbeb;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #92400e;
+}
+
+.se-closing > i {
+    flex: 0 0 auto;
+    margin-top: 0.1rem;
+}
+
+.se-closing strong {
+    font-variant-numeric: tabular-nums;
+}
+
+/* The dark box. It is dark because it is the one thing on the page that closes
+   the page off, and a soft panel would read as a note rather than as a door. */
+.se-dark {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1rem 1.1rem;
+    border-radius: 0.6rem;
+    background: var(--sd-ink, #1e1e2d);
+    color: #fff;
+}
+
+.se-dark-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: var(--sd-orange);
+}
+
+.se-dark-body {
+    min-width: 0;
+}
+
+.se-dark-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.se-dark-sub {
+    margin-top: 0.2rem;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- the way out, under everything ---------- */
+.se-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.25rem 0.15rem 0;
+}
+
+.se-foot-note {
+    font-size: 0.75rem;
+    color: var(--sa-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- the message box for a card that cannot be opened ---------- */
+/* A dialog rather than window.alert: it can be styled, Escape closes it, and it
+   says which sitting was clicked instead of showing a bare sentence with no
+   context. */
+.se-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.se-modal-box {
+    width: 100%;
+    max-width: 26rem;
+    padding: 1.5rem;
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    text-align: center;
+}
+
+.se-modal-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.85rem;
+    border-radius: 999px;
+    font-size: 1.25rem;
+}
+
+.se-modal-icon.is-upcoming {
+    background: #fff7ed;
+    color: #d97706;
+}
+
+.se-modal-icon.is-finished {
+    background: #f4f5f7;
+    color: #6b7280;
+}
+
+.se-modal-title {
+    margin: 0 0 0.4rem;
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: var(--sa-ink);
+}
+
+.se-modal-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--sa-muted);
+}
+
+/* the three facts the message refers to, restated, so "please wait until 09:00"
+   has something to attach to */
+.se-modal-facts {
+    display: grid;
+    gap: 0.35rem;
+    margin: 1rem 0 0;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.6rem;
+    background: #fbfbfc;
+    text-align: left;
+}
+
+.se-modal-facts > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.se-modal-facts dt {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9aa0ab;
+}
+
+.se-modal-facts dd {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sa-ink);
+    text-align: right;
+}
+
+.se-modal-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.1rem;
+}
+
+.se-modal-actions .se-btn {
+    justify-content: center;
+    min-width: 7rem;
+}
+
+/* ---------- the sitting page ---------- */
+/* band 1: the two info cards and the clock, in one row on a desktop and stacked
+   on a phone */
+.se-take-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+.se-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.se-info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.6rem;
+    background: var(--sa-blue-soft);
+    color: var(--sa-blue);
+}
+
+.se-info.is-time .se-info-icon {
+    background: #fff7ed;
+    color: #d97706;
+}
+
+.se-info-body {
+    min-width: 0;
+}
+
+.se-info-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9aa0ab;
+}
+
+.se-info-line {
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+    overflow-wrap: anywhere;
+}
+
+.se-info-line.is-lead {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--sa-ink);
+}
+
+/* the clock. It is a card like the other two, but it is the only one on the page
+   that changes, so it is drawn heavier and gains colour as the window closes */
+.se-timer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.1rem;
+    min-width: 9.5rem;
+    padding: 0.8rem 1.1rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.se-timer-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9aa0ab;
+}
+
+/* tabular figures, so the clock does not shuffle sideways on every tick */
+.se-timer-clock {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--sa-ink);
+}
+
+.se-timer.is-urgent {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.se-timer.is-urgent .se-timer-clock {
+    color: #b45309;
+}
+
+.se-timer.is-critical {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.se-timer.is-critical .se-timer-clock {
+    color: #b91c1c;
+}
+
+.se-timer.is-over {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.se-timer.is-over .se-timer-label,
+.se-timer.is-over .se-timer-clock {
+    color: #b91c1c;
+}
+
+/* ---------- the paper ---------- */
+.se-paper {
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.se-paper-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--sa-line);
+    background: #fbfbfc;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sa-muted);
+}
+
+.se-paper-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.se-paper-name i {
+    color: var(--sd-orange);
+}
+
+.se-paper-links a {
+    flex: 0 0 auto;
+    color: var(--sa-blue);
+    text-decoration: none;
+}
+
+.se-paper-links a:hover {
+    text-decoration: underline;
+}
+
+/* The viewer's height is a viewport fraction rather than a fixed pixel value so
+   the paper fills a laptop screen and still leaves the submit panel on screen on
+   a phone -- a student should not have to scroll past a full page of questions
+   to find the upload. */
+.se-paper-frame {
+    display: block;
+    width: 100%;
+    height: min(82vh, 72rem);
+    border: 0;
+    background: #f4f5f7;
+}
+
+.se-paper-gone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    height: min(40vh, 20rem);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.se-paper-gone > i {
+    font-size: 2rem;
+    color: #c7cbd3;
+}
+
+.se-paper-gone-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--sa-ink);
+}
+
+.se-paper-gone-sub {
+    font-size: 0.8125rem;
+    color: var(--sa-muted);
+}
+
+/* ---------- the submit band ---------- */
+.se-submit {
+    padding: 1rem 1.1rem 1.1rem;
+    border: 1px solid var(--sa-line);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.se-submit-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.se-submit-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--sa-ink);
+}
+
+.se-submit-title i {
+    color: var(--sd-orange);
+}
+
+.se-badge-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.se-badge-done i {
+    font-size: 0.625rem;
+}
+
+/* ---------- Responsive ---------- */
+/* the grid is the first thing to give: two cards on a tablet, so a card is still
+   wide enough to hold its title and its status on one line */
+@media (max-width: 1199.98px) {
+    .se-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .se-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .se-btn {
+        justify-content: center;
+    }
+
+    /* the clock gets its own row on a phone: sharing one with the two info
+       cards would squeeze all three into unreadable slivers */
+    .se-take-head {
+        grid-template-columns: 1fr;
+    }
+
+    .se-timer {
+        flex-direction: row;
+        align-items: baseline;
+        justify-content: space-between;
+        min-width: 0;
+    }
+
+    /* the paper takes the whole screen on a phone: the upload is one scroll away
+       either way, but the questions are what the student is here to read */
+    .se-paper-frame {
+        height: 78vh;
+    }
+
+    /* the compact upload row has no room for the hint beside the title on a
+       phone, so it drops under it rather than shrinking the target */
+    .se-drop-label {
+        flex-wrap: wrap;
+    }
+
+    .se-drop-hint {
+        flex: 1 0 100%;
+        margin-left: 0;
+        padding-left: 1.75rem;
+    }
+
+    .se-filters-count {
+        margin-left: 0;
+        padding-bottom: 0;
+    }
+
+    .se-filter {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .se-date {
+        width: 2.9rem;
+    }
+
+    .se-date-day {
+        font-size: 1.1rem;
+    }
+}

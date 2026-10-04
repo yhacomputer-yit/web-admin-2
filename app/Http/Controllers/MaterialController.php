@@ -6,10 +6,9 @@ use App\Models\Course;
 use App\Models\Material;
 use App\Models\Subject;
 use App\Models\SubjectDetail;
+use App\Support\StoredFile;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class MaterialController extends Controller
@@ -205,33 +204,17 @@ class MaterialController extends Controller
     }
 
     /**
-     * Store an upload on the public disk under a name the admin list can still
-     * read: the uniqid prefix stops two "notes.pdf" uploads from overwriting each
-     * other, while the slugged original keeps the row recognisable instead of
-     * showing a bare hash.
+     * Store an upload on the public disk. See StoredFile::store() for the naming
+     * rule; it is the same one every upload in the portal follows.
      */
     private function storeFile(UploadedFile $file): string
     {
-        $extension = strtolower((string) $file->getClientOriginalExtension());
-
-        if (! in_array($extension, Material::EXTENSIONS, true)) {
-            $extension = (string) $file->guessExtension();
-        }
-
-        if (! in_array($extension, Material::EXTENSIONS, true)) {
-            $extension = 'bin';
-        }
-
-        $base = Str::slug(pathinfo((string) $file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
-
-        return $file->storeAs('reference', uniqid() . '_' . $base . '.' . $extension, 'public');
+        return StoredFile::store($file, 'reference', Material::EXTENSIONS);
     }
 
     private function deleteFile(?string $path): void
     {
-        if (filled($path)) {
-            Storage::disk('public')->delete($path);
-        }
+        StoredFile::delete($path);
     }
 
     /**
@@ -246,7 +229,7 @@ class MaterialController extends Controller
 
         $name = filled($material['title'] ?? null)
             ? '"' . $material['title'] . '"'
-            : '"' . (Material::fileLabel($material['file_link'] ?? null) ?? 'file') . '"';
+            : '"' . (StoredFile::label($material['file_link'] ?? null) ?? 'file') . '"';
 
         return $kind . ' ' . $name . ' for ' . $this->subjectName((int) ($material['subject_id'] ?? 0)) . '.';
     }
