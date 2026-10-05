@@ -251,7 +251,7 @@
                             <th scope="col">Subject</th>
                             <th scope="col">Time</th>
                             <th scope="col">Visibility</th>
-                            <th scope="col">Question paper</th>
+                            {{-- <th scope="col">Question paper</th> --}}
                             <th scope="col" class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -301,7 +301,7 @@
                                     </span>
                                 </td> --}}
 
-                                <td>
+                                {{-- <td>
                                     @if ($file['label'] === null)
                                         <span class="text-muted small">No paper uploaded</span>
                                     @else
@@ -317,7 +317,7 @@
                                             @endif
                                         </div>
                                     @endif
-                                </td>
+                                </td> --}}
 
                                 <td class="text-right text-nowrap">
                                     <a href="{{ route('exam.edit', ['id' => $exam->id]) }}"

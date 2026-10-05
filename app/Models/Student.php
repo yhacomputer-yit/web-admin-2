@@ -67,6 +67,32 @@ class Student extends Authenticatable
     }
 
     /**
+     * Classes this student left before they finished. One row per event, so this
+     * can hold more than one: dropping out, coming back and dropping out again is
+     * a real sequence and all of it is worth keeping.
+     */
+    public function dropOuts()
+    {
+        return $this->hasMany(DropOut::class, 'student_id');
+    }
+
+    /**
+     * Certificates issued to this student, collected or still waiting.
+     */
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class, 'student_id');
+    }
+
+    /**
+     * Marks recorded against this student, one per subject per sitting.
+     */
+    public function gradingResults()
+    {
+        return $this->hasMany(GradingResult::class, 'student_id');
+    }
+
+    /**
      * Does this student hold an active enrollment for the given class?
      * This is the rule that gates attendance marking.
      */

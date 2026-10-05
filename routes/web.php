@@ -30,6 +30,10 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\FrontendSectionController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\DropOutController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\GradingController;
+use App\Http\Controllers\GradingResultController;
 
 // Homepage route
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('user.home');
@@ -175,6 +179,47 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [ExamController::class, 'edit'])->name('exam.edit');
             Route::post('/update/{id}', [ExamController::class, 'update'])->name('exam.update');
             Route::get('/delete/{id}', [ExamController::class, 'delete'])->name('exam.delete');
+        });
+
+        // students who left a class before it finished: the event is recorded
+        // with its date, because a student can be in one class and out of another
+        Route::prefix('drop-out')->group(function () {
+            Route::get('/', [DropOutController::class, 'index'])->name('dropOut.index');
+            Route::get('/createPage', [DropOutController::class, 'createPage'])->name('dropOut.createPage');
+            Route::post('/create', [DropOutController::class, 'create'])->name('dropOut.create');
+            Route::get('/edit/{id}', [DropOutController::class, 'edit'])->name('dropOut.edit');
+            Route::post('/update/{id}', [DropOutController::class, 'update'])->name('dropOut.update');
+            Route::get('/delete/{id}', [DropOutController::class, 'delete'])->name('dropOut.delete');
+        });
+
+        // certificates issued to students, and whether they have been collected
+        Route::prefix('certificate')->group(function () {
+            Route::get('/', [CertificateController::class, 'index'])->name('certificate.index');
+            Route::get('/createPage', [CertificateController::class, 'createPage'])->name('certificate.createPage');
+            Route::post('/create', [CertificateController::class, 'create'])->name('certificate.create');
+            Route::get('/edit/{id}', [CertificateController::class, 'edit'])->name('certificate.edit');
+            Route::post('/update/{id}', [CertificateController::class, 'update'])->name('certificate.update');
+            Route::get('/delete/{id}', [CertificateController::class, 'delete'])->name('certificate.delete');
+        });
+
+        // the grade bands a mark is filed into
+        Route::prefix('grading')->group(function () {
+            Route::get('/', [GradingController::class, 'index'])->name('grading.index');
+            Route::get('/createPage', [GradingController::class, 'createPage'])->name('grading.createPage');
+            Route::post('/create', [GradingController::class, 'create'])->name('grading.create');
+            Route::get('/edit/{id}', [GradingController::class, 'edit'])->name('grading.edit');
+            Route::post('/update/{id}', [GradingController::class, 'update'])->name('grading.update');
+            Route::get('/delete/{id}', [GradingController::class, 'delete'])->name('grading.delete');
+        });
+
+        // the marks themselves: a student's score on one subject of one course
+        Route::prefix('grading-result')->group(function () {
+            Route::get('/', [GradingResultController::class, 'index'])->name('gradingResult.index');
+            Route::get('/createPage', [GradingResultController::class, 'createPage'])->name('gradingResult.createPage');
+            Route::post('/create', [GradingResultController::class, 'create'])->name('gradingResult.create');
+            Route::get('/edit/{id}', [GradingResultController::class, 'edit'])->name('gradingResult.edit');
+            Route::post('/update/{id}', [GradingResultController::class, 'update'])->name('gradingResult.update');
+            Route::get('/delete/{id}', [GradingResultController::class, 'delete'])->name('gradingResult.delete');
         });
 
         // for course type section

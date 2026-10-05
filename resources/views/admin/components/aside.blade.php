@@ -115,11 +115,38 @@
                 <div data-i18n="Dashboards">Student</div>
             </a>
         </li>
-        <!-- Course Enrollment -->
+<!-- Course Enrollment -->
         <li class="menu-item {{ request()->routeIs('admin.enrollment') ? 'active' : '' }}">
-            <a href="{{ route('admin.enrollment') }}" class="menu-link">
+            <a href="{{ route('admin.enrollment') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bx-book-add"></i>
                 <div data-i18n="Dashboards">Course Enrollment</div>
+            </a>
+        </li>
+        {{-- students who left a class before it finished --}}
+        <li class="menu-item {{ request()->routeIs('dropOut.*') ? 'active' : '' }}">
+            <a href="{{ route('dropOut.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-minus"></i>
+                <div data-i18n="Dashboards">Drop Outs</div>
+            </a>
+        </li>
+        {{-- certificates issued, and which have been handed over --}}
+        <li class="menu-item {{ request()->routeIs('certificate.*') ? 'active' : '' }}">
+            <a href="{{ route('certificate.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-award"></i>
+                <div data-i18n="Dashboards">Certificates</div>
+            </a>
+        </li>
+        {{-- the grade bands, then the marks filed against them --}}
+        <li class="menu-item {{ request()->routeIs('grading.*') ? 'active' : '' }}">
+            <a href="{{ route('grading.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-slider-alt"></i>
+                <div data-i18n="Dashboards">Grading</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('gradingResult.*') ? 'active' : '' }}">
+            <a href="{{ route('gradingResult.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-note"></i>
+                <div data-i18n="Dashboards">Marks</div>
             </a>
         </li>
         <!-- Project -->
