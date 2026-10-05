@@ -5,13 +5,7 @@
 @section('content')
     <div class="att-page">
 
-        @if (session('success'))
-            <span data-flash-toast="{{ session('success') }}" data-flash-type="success" hidden></span>
-        @endif
 
-        @if (session('error'))
-            <span data-flash-toast="{{ session('error') }}" data-flash-type="error" hidden></span>
-        @endif
 
         <div class="att-page-head">
             <div>
@@ -416,8 +410,4 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/attendance.css') }}">
-@endpush
-
-@push('scripts')
-    <script src="{{ asset('admin/toast.js') }}"></script>
 @endpush

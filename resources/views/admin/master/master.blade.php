@@ -41,16 +41,23 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('admin/assets/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/admin-sidebar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}" />
+    {{-- toasts and the delete confirmation modal: needed by every admin page, so the
+         layout loads them once rather than each page loading its own copy --}}
+    <link rel="stylesheet" href="{{ asset('admin/notifications.css') }}" />
     @stack('styles')
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    {{-- core.css already bundles Bootstrap 5, so only its JS was missing. These
+         stay in the head because pages carry inline jQuery scripts inside the
+         content block, which the old bottom-of-body load left undefined. A
+         Bootstrap 4.3.1 CDN copy used to sit here and, being loaded last,
+         overrode the bundled Bootstrap 5 and broke every data-bs-* control. --}}
+    <script src="{{ asset('admin/assets/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('admin/assets/vendor/libs/popper/popper.js') }}"></script>
+    <script src="{{ asset('admin/assets/vendor/js/bootstrap.js') }}"></script>
 
     <!-- Helpers -->
     <script src="{{ asset('admin/assets/vendor/js/helpers.js') }}"></script>
@@ -59,6 +66,11 @@
 </head>
 
 <body>
+    {{-- session('success') / session('error') become top-right toasts. Marked
+         here, once, so no page has to remember to render its own flash, and
+         toast.js removes these nodes so a refresh does not replay them. --}}
+    @include('admin.partials.flash')
+
     <!-- Layout wrapper -->
 
 
@@ -111,9 +123,6 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
 
-    <script src="{{ asset('admin/assets/vendor/libs/jquery/jquery.js') }}"></script>
-    <script src="{{ asset('admin/assets/vendor/libs/popper/popper.js') }}"></script>
-    <script src="{{ asset('admin/assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('admin/assets/vendor/js/menu.js') }}"></script>
 
@@ -129,22 +138,35 @@
     <script src="{{ asset('admin/assets/js/dashboards-analytics.js') }}"></script>
     <script src="{{ asset('admin/form-loading.js') }}"></script>
 
+    {{-- the notification pair: flash toasts at the top right, and the modal
+         that replaces window.confirm() on a delete --}}
+    <script src="{{ asset('admin/toast.js') }}"></script>
+    <script src="{{ asset('admin/confirm.js') }}"></script>
+
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
+    {{-- the course -> subject/section/student cascade, used by the timetable and
+         monthly-course forms. The endpoint was hardcoded to a dev machine's
+         address, so the chain silently stopped loading on any other host. --}}
     <script>
         $(document).ready(function() {
+            var $course = $('#course');
+
+            if ($course.length === 0) {
+                return;
+            }
 
             // at first section the select option to default
             $('#subjects').append('<option value="" selected>Open this selected menu</option>')
             $('#sections').append('<option value="" selected>Open this selected menu</option>')
             $('#students').append('<option value="" selected>Open this selected menu</option>')
 
-            $('#course').change(function() {
-                value = $('#course').val();
+            $course.change(function() {
+                value = $course.val();
                 $.ajax({
                     type: 'get', // http method
-                    url: 'http://127.0.0.1:8000/ajax/course/list', // specific url
+                    url: '{{ route('ajax.courseList') }}', // specific url
                     dataType: 'json', // format
                     data: {
                         status: value // form data to controller

@@ -1,0 +1,364 @@
+/* Admin table and utility styling.
+   Bootstrap 5 is bundled in admin/assets/vendor/css/core.css, so this file only
+   layers admin-specific touches on top of it. Anything Bootstrap already does
+   well (cards, alerts, badges, button padding) is deliberately left alone. */
+
+body {
+    background-color: #f5f7fa;
+}
+
+/* ==================== Table Container ==================== */
+.table-responsive {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    /* scroll instead of clip: admin tables are wrapped in text-nowrap and are
+       wider than the viewport on laptops and phones */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Windows hides the horizontal scrollbar until it is needed, so a table that
+       runs off the edge just looks truncated with nothing to drag */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 0 0 11px 11px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 5px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==================== Table Header ==================== */
+.table thead th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-bottom: 2px solid #cbd5e1;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 11px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 11px;
+}
+
+/* ==================== Table Rows ==================== */
+.table tbody td {
+    color: #334155;
+    font-size: 0.9rem;
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ==================== Table Small Variant ==================== */
+.table-sm thead th,
+.table-sm tbody td {
+    padding: 10px 12px;
+}
+
+/* ==================== Action Cells ==================== */
+/* keep edit/delete controls from wrapping mid-button on narrow screens */
+.table td .btn,
+.table td .dropdown,
+.table td .badge {
+    white-space: nowrap;
+}
+
+/* ==================== Dropdown Menu ==================== */
+.dropdown-menu {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.1);
+    padding: 8px 0;
+}
+
+.dropdown-item {
+    color: #334155;
+    font-size: 0.9rem;
+    padding: 10px 16px;
+    border-radius: 4px;
+    margin: 0 4px;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: #ff6c0f;
+    color: #fff;
+}
+
+/* ==================== Bulk Actions Bar ==================== */
+#bulkBar {
+    background-color: #ff6c0f;
+    color: #fff;
+    border-radius: 8px;
+    padding: 12px 20px;
+    box-shadow: 0 2px 8px rgba(255, 108, 15, 0.3);
+}
+
+#bulkBar .btn {
+    background-color: #fff;
+    color: #ff6c0f;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+#bulkBar .btn:hover {
+    background-color: #f8fafc;
+}
+
+/* ==================== Pagination ==================== */
+.pagination .page-link {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #ff6c0f;
+    font-weight: 500;
+    margin: 0 4px;
+    padding: 8px 14px;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #ff6c0f;
+    border-color: #ff6c0f;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #ff6c0f;
+    border-color: #ff6c0f;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #94a3b8;
+}
+
+/* ==================== Back Button ==================== */
+.btn-back {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background-color: #2c3e50;
+    color: #fff;
+    border-radius: 50px;
+    padding: 14px 28px;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.22);
+    z-index: 1000;
+    font-weight: 600;
+    transition: all 0.3s ease, left 0.25s ease;
+}
+
+.btn-back:hover {
+    background-color: #1a252f;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+}
+
+/* From 1200px up the rail is fixed and reserves a gutter in .layout-page, so a
+   button pinned to the viewport's left edge ends up underneath it. Follow the
+   rail instead - and follow it collapsing too, on the same 0.25s the rail uses,
+   so the two move as one. */
+@media (min-width: 1200px) {
+    .btn-back {
+        left: calc(var(--sidebar-width, 16.25rem) + 1.5rem);
+    }
+
+    html.sidebar-collapsed .btn-back {
+        left: calc(var(--sidebar-collapsed-width, 5.25rem) + 1.5rem);
+    }
+}
+
+/* ==================== Filter Form ==================== */
+.filter-form {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    margin-bottom: 24px;
+    padding: 24px;
+}
+
+.filter-form .form-label {
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* ==================== Form Controls ==================== */
+/* brand-orange focus ring, Bootstrap 5 handles the sizing */
+.form-control,
+.form-select {
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #ff6c0f;
+    box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.15);
+}
+
+/* ==================== Primary Buttons ==================== */
+.btn-primary {
+    background-color: #ff6c0f;
+    border-color: #ff6c0f;
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #e65a00;
+    border-color: #e65a00;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(255, 108, 15, 0.3);
+}
+
+/* ==================== Responsive ==================== */
+
+/* Below 1200px the rail becomes an overlay and the content takes the full width,
+   so the tables here are the widest thing on the page. Keep the columns readable
+   and let the wrapper scroll instead of crushing them into a phone screen. */
+@media (max-width: 1199.98px) {
+    .table thead th {
+        font-size: 0.78rem;
+        padding: 12px 14px;
+    }
+
+    .table tbody td {
+        font-size: 0.88rem;
+        padding: 12px 14px;
+    }
+
+    .table-responsive .table {
+        min-width: 640px;
+    }
+
+    /* cards carry most of the admin forms, so they have to give the padding back */
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-header {
+        font-size: 1rem;
+        padding: 14px 16px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .table thead th {
+        font-size: 0.72rem;
+        letter-spacing: 0.02em;
+        padding: 10px 12px;
+    }
+
+    .table tbody td {
+        font-size: 0.82rem;
+        padding: 10px 12px;
+    }
+
+    .table-responsive .table {
+        min-width: 560px;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+    }
+
+    /* the rail is an overlay here, so the button goes back to the screen edge */
+    .btn-back {
+        bottom: 20px;
+        left: 20px;
+        font-size: 0.9rem;
+        padding: 12px 24px;
+    }
+
+    .filter-form {
+        padding: 16px;
+    }
+
+    /* one control per row instead of a squeezed multi-column strip */
+    .filter-form .form-control,
+    .filter-form .form-select {
+        width: 100%;
+    }
+
+    /* a page of links in a row runs off a phone screen */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .table thead th {
+        font-size: 0.68rem;
+        padding: 8px 10px;
+    }
+
+    .table tbody td {
+        font-size: 0.78rem;
+        padding: 8px 10px;
+    }
+
+    .table-responsive .table {
+        min-width: 480px;
+    }
+
+    .btn-back {
+        bottom: 15px;
+        font-size: 0.85rem;
+        left: 15px;
+        max-width: calc(100vw - 30px);
+        overflow: hidden;
+        padding: 10px 20px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-body {
+        padding: 14px;
+    }
+
+    .pagination .page-link {
+        margin: 0 2px;
+        padding: 6px 10px;
+    }
+}

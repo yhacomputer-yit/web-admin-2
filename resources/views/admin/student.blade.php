@@ -13,19 +13,7 @@
         </div>
     @endif
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <div class="row mb-2">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -36,7 +24,7 @@
         </div>
 
         {{-- Filters  --}}
-        <form method="GET" action="{{ route('admin.student') }}" class="row g-2 align-items-end mb-3">
+        <form method="GET" action="{{ route('admin.student') }}" class="filter-form row g-2 align-items-end mb-3">
             <div class="col-md-4 col-lg-3">
                 <label for="search" class="form-label small mb-1">Search</label>
                 <input type="text" name="search" id="search" class="form-control form-control-sm"
@@ -101,7 +89,7 @@
         </form>
 
         <div class="col-12 mb-5">
-            <div class="table-responsive text-nowrap bg-light rounded shadow mb-3">
+            <div class="table-responsive text-nowrap mb-3">
                 <table class="table">
                     <thead>
                         <tr>
@@ -113,7 +101,6 @@
                             <th>Username</th>
                             <th>Ph No</th>
                             <th>Email</th>
-                            <th>Courses</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -135,18 +122,6 @@
                                 <td>{{ $student->username ?? '—' }}</td>
                                 <td>{{ $student->phone }}</td>
                                 <td>{{ $student->email }}</td>
-                                {{-- <td>
-                                    @forelse ($student->enrollments->take(3) as $enrollment)
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1">
-                                            {{ $enrollment->course?->name ?? '—' }}
-                                        </span>
-                                    @empty
-                                        <span class="text-muted">—</span>
-                                    @endforelse
-                                    @if ($student->enrollments_count > 3)
-                                        <span class="badge bg-secondary">+{{ $student->enrollments_count - 3 }}</span>
-                                    @endif
-                                </td> --}}
                                 <td>
                                     <span class="badge {{ $student->status === 'active' ? 'text-bg-success' : 'text-bg-secondary' }}">
                                         {{ ucfirst($student->status) }}
@@ -161,19 +136,20 @@
                                     </a>
                                     {{-- <a href="{{ route('student.resetPassword', ['id' => $student->id]) }}"
                                         class="text-decoration-none me-2 text-warning"
-                                        onclick="return confirm('Generate a new password for {{ $student->name }}?')">
+                                        data-confirm="Generate a new password for {{ $student->name }}? The current one stops working."
+                                                    data-confirm-tone="info" data-confirm-label="Generate">
                                         <i class="bx bx-key me-1"></i> Reset Pass
                                     </a> --}}
                                     <a href="{{ route('student.delete', ['id' => $student->id]) }}"
                                         class="text-decoration-none text-danger"
-                                        onclick="return confirm('Delete {{ $student->name }}?')">
+                                        data-confirm="Delete {{ $student->name }}? Their attendance, enrollments and marks go with them."
                                         <i class="bx bx-trash me-1"></i> Delete
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">
+                                <td colspan="8" class="text-center text-muted py-4">
                                     No students match these filters
                                 </td>
                             </tr>

@@ -484,12 +484,13 @@ class AdminStudentRecordsTest extends TestCase
         $this->assertTrue(Certificate::findOrFail($certificate->id)->isReceived());
     }
 
-    /**
-     * Leaving the date empty falls back to the student's own completed
-     * enrollment, which is where the date the certificate is for actually lives.
-     */
-    public function test_an_empty_complete_date_is_taken_from_a_completed_enrollment(): void
+/**
+ * Leaving the date empty falls back to the student's own completed
+ * enrollment, which is where the date the certificate is for actually lives.
+ */
+public function test_an_empty_complete_date_is_taken_from_a_completed_enrollment(): void
     {
+        $this->clearCompletions();
         $this->createEnrollment('2026-06-30');
 
         $this->asAdmin()
@@ -508,6 +509,7 @@ class AdminStudentRecordsTest extends TestCase
      */
     public function test_a_typed_complete_date_is_kept_as_it_is(): void
     {
+        $this->clearCompletions();
         $this->createEnrollment('2026-06-30');
 
         $this->asAdmin()
@@ -520,12 +522,16 @@ class AdminStudentRecordsTest extends TestCase
         $this->assertSame('2026-07-20', Certificate::latest('id')->first()->complete_date->toDateString());
     }
 
-    /**
-     * Nothing finished, nothing to borrow: the date stays empty and visible rather
-     * than becoming the day they enrolled.
-     */
-    public function test_an_unfinished_student_gets_no_complete_date(): void
+/**
+ * Nothing finished, nothing to borrow: the date stays empty and visible rather
+ * than becoming the day they enrolled.
+ */
+public function test_an_unfinished_student_gets_no_complete_date(): void
     {
+        // the fallback reads *any* finished enrollment this student has, in any
+        // course, so the precondition is stated rather than hoped for
+        $this->clearCompletions();
+
         $this->asAdmin()
             ->post(route('certificate.create'), ['student_id' => $this->student->id])
             ->assertRedirect(route('certificate.index'));
@@ -872,6 +878,454 @@ class AdminStudentRecordsTest extends TestCase
         $this->assertNotNull($enrollment);
     }
 
+    /**
+ * The flash arrives as a top-right toast and the delete prompt as a modal, and
+ * neither is a browser dialog any more.
+ *
+ * Asserted over the whole admin view tree rather than one page, because the way
+ * this can rot is quietly: a page adds its own inline alert again, or an old
+ * `onclick="return confirm(...)"` survives, and every page it touches is fine on
+ * its own. One test over every file catches either.
+ */
+public function test_the_admin_pages_notify_at_the_top_right_instead_of_a_browser_alert(): void
+{
+    $layout = file_get_contents(base_path('resources/views/admin/master/master.blade.php'));
+
+    $this->assertStringContainsString('admin/notifications.css', $layout);
+    $this->assertStringContainsString('admin/toast.js', $layout);
+    $this->assertStringContainsString('admin/confirm.js', $layout);
+    // rendered once, by the layout, so no page has to remember to show its flash
+    $this->assertStringContainsString("admin.partials.flash", $layout);
+
+    $files = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator(base_path('resources/views/admin'))
+    );
+
+    $browserDialogs = [];
+    $inlineAlerts = [];
+
+    foreach ($files as $file) {
+        if (! $file->isFile() || $file->getExtension() !== 'php') {
+            continue;
+        }
+
+        // normalised so the comparison below holds on Windows, where the
+        // iterator hands back backslashes
+        $path = str_replace('\\', '/', $file->getPathname());
+        $contents = file_get_contents($file->getPathname());
+
+        // the flash partial and the layout that includes it are where the message
+        // is *meant* to live; every other view is a page that must not render it
+        $isWhereTheFlashLives = str_ends_with($path, 'partials/flash.blade.php')
+            || str_ends_with($path, 'master/master.blade.php');
+
+        if (str_contains($contents, 'return confirm(')) {
+            $browserDialogs[] = $path;
+        }
+
+        if (! $isWhereTheFlashLives
+            // matched on the interpolation rather than the word, so a note about
+            // the arrangement in a comment is not a hit
+            && preg_match('/\{\{\s*session\(\s*[\'"]success[\'"]\s*\)\s*\}\}/', $contents)) {
+            $inlineAlerts[] = $path;
+        }
+    }
+
+    $this->assertSame([], $browserDialogs, 'A view still uses a browser confirm() dialog.');
+    $this->assertSame([], $inlineAlerts, 'A view still renders its own flash instead of leaving it to the layout.');
+
+    // and the page really does carry the styled prompt on its delete control
+    $this->createDropOut();
+
+    $page = $this->asAdmin()->get(route('dropOut.index', ['course_id' => $this->courseId]));
+
+    $page->assertOk()
+        ->assertSee('data-confirm="Delete the drop-out for', escape: false)
+        ->assertDontSee('return confirm(', escape: false);
+
+    // the prompt is a modal, not a corner box: a delete takes something away, so
+    // the page behind it has to be locked out until the question is answered
+    $script = file_get_contents(base_path('public/admin/confirm.js'));
+
+    $this->assertStringContainsString('aria-modal', $script);
+    $this->assertStringContainsString('yha-modal-backdrop', $script);
+    $this->assertStringContainsString('yha-modal-open', $script);
+
+    // both halves of the answer, and only Delete is the destructive one
+    $this->assertStringContainsString('Cancel', $script);
+    $this->assertStringContainsString('Delete', $script);
+}
+
+/**
+     * The admin runs on one Bootstrap, and it is the one the pages are written for.
+     *
+     * This is the one that bit, and it bit silently: the theme's core.css bundles
+     * Bootstrap 5, the pages are written in Bootstrap 5 (`form-select`, `text-bg-*`,
+     * `gap-*`, `data-bs-*`), and a Bootstrap 4.3.1 CDN copy was also linked. Being
+     * last, it won every tie - so the selects stopped looking like selects, the
+     * status badges lost their colours, the `me-*` spacing collapsed and the
+     * `data-bs-toggle` dropdowns and modals stopped opening, while the page still
+     * returned 200 and the markup still looked correct. Only rendering it shows the
+     * clash, so it is asserted as a fact about the loaded stylesheets.
+     *
+     * The two layout asks that came out of the same review are pinned here too: the
+     * floating back button sits on the left, and a table wrapper scrolls instead of
+     * clipping, because the tables are wrapped in `text-nowrap`.
+     */
+    public function test_the_admin_runs_on_the_bootstrap_the_pages_are_written_for(): void
+    {
+        $layout = file_get_contents(base_path('resources/views/admin/master/master.blade.php'));
+        $core = file_get_contents(base_path('public/admin/assets/vendor/css/core.css'));
+
+        // core.css carries Bootstrap 5: these utilities only exist there
+        $this->assertStringContainsString('.form-select', $core);
+        $this->assertStringContainsString('.btn-close', $core);
+        $this->assertStringContainsString('text-bg-success', $core);
+        $this->assertStringNotContainsString('.custom-select', $core, 'core.css looks like Bootstrap 4.');
+
+        // ...so the layout must not stack a second, older Bootstrap on top of it
+        $this->assertStringNotContainsString('bootstrap.min.css', $layout);
+        $this->assertStringNotContainsString('bootstrapcdn.com', $layout);
+        $this->assertStringNotContainsString('bootstrap@4', $layout);
+
+        // and the JS has to be the matching build, loaded before the pages run their
+        // own inline jQuery: they sit inside @yield('content'), not a pushed stack
+        $this->assertStringContainsString('vendor/js/bootstrap.js', $layout);
+        $this->assertLessThan(
+            strpos($layout, "@yield('content')"),
+            strpos($layout, 'vendor/js/bootstrap.js'),
+            'Bootstrap loads after the page content, so inline page scripts run without it.'
+        );
+        $this->assertLessThan(
+            strpos($layout, "@yield('content')"),
+            strpos($layout, 'libs/jquery/jquery.js'),
+            'jQuery loads after the page content, so inline page scripts run without it.'
+        );
+
+        // no page inside the layout brings its own Bootstrap or jQuery along and
+        // re-loads it mid-page; the standalone invoice and print pages are their
+        // own documents, so they are not in scope
+        $secondLoad = [];
+
+        foreach ($this->adminViews() as $path => $contents) {
+            if (! str_contains($contents, "@extends('admin.master.master')")) {
+                continue;
+            }
+
+            if (preg_match('/bootstrap(min)?\.(css|js)/', $contents)
+                || preg_match('/bootstrap@\d/', $contents)
+                || preg_match('/jquery[-\d]|code\.jquery\.com/', $contents)) {
+                $secondLoad[] = $path;
+            }
+        }
+
+        $this->assertSame([], $secondLoad, 'An admin page loads its own copy of Bootstrap or jQuery.');
+
+        // and the page that comes out says so, not just the layout on disk
+        $page = $this->asAdmin()->get(route('admin.home'));
+
+        $page->assertOk()
+            ->assertSee('admin/assets/vendor/js/bootstrap.js', escape: false)
+            ->assertDontSee('bootstrapcdn.com', escape: false)
+            ->assertDontSee('bootstrap.min.css', escape: false);
+
+        $tables = file_get_contents(base_path('public/css/admin-tables.css'));
+
+        $this->assertMatchesRegularExpression('/\.btn-back\s*\{[^}]*left:/', $tables);
+        $this->assertDoesNotMatchRegularExpression('/\.btn-back\s*\{[^}]*\bright:/', $tables);
+
+        // from 1200px the rail is position:fixed and reserves a 16.25rem gutter, so
+        // a button pinned to the left edge of the viewport ends up behind it; it has
+        // to track the rail, including the rail collapsing
+        $this->assertMatchesRegularExpression(
+            '/@media\s*\(min-width:\s*1200px\)\s*\{[^@]*?\.btn-back\s*\{[^}]*--sidebar-width/',
+            $tables,
+            'The back button does not clear the fixed sidebar, so the rail covers it.'
+        );
+        $this->assertMatchesRegularExpression('/html\.sidebar-collapsed \.btn-back/', $tables);
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/\.table-responsive\s*\{[^}]*overflow:\s*hidden/',
+            $tables,
+            'A hidden overflow clips the table instead of letting it scroll.'
+        );
+    }
+
+    /** @return array<string, string> every admin view, keyed by its repo-relative path */
+    private function adminViews(): array
+    {
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(base_path('resources/views/admin'))
+        );
+
+        $views = [];
+
+        foreach ($files as $file) {
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
+
+            // normalised so the keys match on Windows, where the iterator hands
+            // back backslashes
+            $views[str_replace('\\', '/', $file->getPathname())] = file_get_contents($file->getPathname());
+        }
+
+        return $views;
+    }
+
+    /**
+     * Every sidebar icon exists in the icon font the layout actually loads.
+     *
+     * A Boxicons class that is not in the bundled build is not an error: the element
+     * renders, the markup looks right, the page returns 200 - there is simply no
+     * glyph there. The Exam item sat that way with `bx-file-pdf`, which the bundled
+     * version has never had, so the item read as a bare word.
+     *
+     * Only the bundled Boxicons is checked, because that is the one that can rot
+     * silently; the Font Awesome icons come from a pinned CDN build.
+     */
+    public function test_every_sidebar_icon_exists_in_the_bundled_icon_font(): void
+    {
+        $aside = file_get_contents(base_path('resources/views/admin/components/aside.blade.php'));
+        $boxicons = file_get_contents(base_path('public/admin/assets/vendor/fonts/boxicons.css'));
+
+        preg_match_all('/class="menu-icon[^"]*?\b(bx-[a-z0-9-]+)\b/', $aside, $matches);
+
+        $icons = array_unique($matches[1]);
+
+        // a menu with no icons at all would pass the loop below silently
+        $this->assertNotEmpty($icons, 'No Boxicons icons were found in the sidebar.');
+
+        $missing = [];
+
+        foreach ($icons as $icon) {
+            if (! preg_match('/\.' . preg_quote($icon, '/') . ':before/', $boxicons)) {
+                $missing[] = $icon;
+            }
+        }
+
+        $this->assertSame([], $missing, 'These sidebar icons are not in the bundled Boxicons, so they render as nothing.');
+    }
+
+    /**
+     * Every sidebar item belongs to a foldable group, and every group is foldable.
+     *
+     * The headings are plain buttons rather than the template's `.menu-header`
+     * because that one fixes itself at the full 16.25rem width and holds only text,
+     * so it would force the collapsed rail open and had nothing to click. Items stay
+     * flat children of `.menu-inner` so the template's own collapsed-rail metrics,
+     * which key off `.menu-inner > .menu-item`, keep applying.
+     *
+     * Asserted as a pairing rather than a list of expected names: what breaks is an
+     * item with a group nobody toggles, or a group with no hiding rule behind it,
+     * and either leaves an item that can never be reached or a button that does
+     * nothing.
+     */
+    public function test_the_sidebar_groups_are_collapsible(): void
+    {
+        $aside = file_get_contents(base_path('resources/views/admin/components/aside.blade.php'));
+        $sidebar = file_get_contents(base_path('public/css/admin-sidebar.css'));
+
+        preg_match_all('/<li class="menu-item[^"]*" data-group="([a-z]+)"/', $aside, $items);
+        preg_match_all('/<button type="button" class="nav-group-toggle" data-group="([a-z]+)" aria-expanded="true">/', $aside, $headings);
+
+        $groups = array_unique($headings[1]);
+
+        $this->assertNotEmpty($groups, 'No foldable sidebar group was found.');
+
+        // every item sits under a heading, including Dashboard, which is a group of its own
+        preg_match_all('/<li class="menu-item[^>]*>/', $aside, $allItems);
+        $ungrouped = array_values(array_filter($allItems[0], function ($tag) {
+            return ! str_contains($tag, 'data-group');
+        }));
+
+        $this->assertSame([], $ungrouped, 'Every sidebar item should sit under a group heading.');
+
+        $this->assertSame([], array_diff($items[1], $groups), 'Some items point at a group with no heading.');
+        $this->assertSame([], array_diff($groups, $items[1]), 'Some groups have no items under them.');
+
+        foreach ($groups as $group) {
+            $this->assertStringContainsString(
+                "html.nav-hide-{$group} #layout-menu .menu-item[data-group=\"{$group}\"]",
+                $sidebar,
+                "Nothing hides the '{$group}' group when it is folded."
+            );
+            $this->assertStringContainsString(
+                "html.nav-hide-{$group} #layout-menu .nav-group-toggle[data-group=\"{$group}\"] .nav-group-chevron",
+                $sidebar,
+                "The '{$group}' chevron does not turn when the group is folded."
+            );
+        }
+
+        // a menu link is a full page load, so the open group has to outlive it
+        $this->assertStringContainsString('yha.nav.groups', $aside);
+        $this->assertStringContainsString('localStorage.setItem(GROUP_KEY', $aside);
+
+        // accordion, not independent folds: a click re-applies every group rather
+        // than only the one clicked, and a single name is what gets remembered
+        $this->assertStringContainsString('groupNames.forEach(function (other) {', $aside);
+        $this->assertStringContainsString('applyGroup(other, other === name)', $aside);
+        $this->assertStringContainsString('JSON.stringify({ open: name })', $aside);
+
+        // the page you are on always wins, so the item you navigated to is never
+        // left hidden inside a folded group
+        $this->assertStringContainsString(".menu-item.active[data-group]", $aside);
+
+        // and the icon-only rail shows every icon regardless, since it has no
+        // heading to fold and no button to undo it with
+        $this->assertMatchesRegularExpression(
+            '/html\.sidebar-collapsed #layout-menu \.menu-item\[data-group\]\s*\{\s*display:\s*block\s*!important/',
+            $sidebar
+        );
+    }
+
+    /**
+     * Below the template's 1200px breakpoint the rail becomes a drawer.
+     *
+     * The template only pins the menu with `position: fixed` from 1200px up; under
+     * that it drops back into the flex row as a 16.25rem block beside the content,
+     * so a tablet spent its width on navigation. There is no navbar in this admin,
+     * so nothing was left to open a drawer either - the rail was simply always
+     * there and always in the way.
+     */
+    public function test_the_sidebar_becomes_a_drawer_below_the_template_breakpoint(): void
+    {
+        $aside = file_get_contents(base_path('resources/views/admin/components/aside.blade.php'));
+        $sidebar = file_get_contents(base_path('public/css/admin-sidebar.css'));
+
+        // the opener and the backdrop live outside the aside, so the rail keeps the
+        // exact markup the template's own script initialises
+        $this->assertStringContainsString('id="sidebarDrawerToggle"', $aside);
+        $this->assertStringContainsString('sidebar-drawer-backdrop', $aside);
+
+        // the close chevron must not be the template's toggle: that would also flip
+        // `layout-menu-collapsed` and quietly collapse the desktop rail afterwards
+        $this->assertStringContainsString('sidebar-drawer-close', $aside);
+        $this->assertDoesNotMatchRegularExpression('/class="[^"]*layout-menu-toggle[^"]*"/', $aside);
+
+        // parked off the left edge, restored by the open state
+        $this->assertMatchesRegularExpression(
+            '/@media\s*\(max-width:\s*1199\.98px\)\s*\{(?:[^{}]|\{[^{}]*\})*#layout-menu\s*\{[^}]*transform:\s*translateX\(-100%\)/',
+            $sidebar
+        );
+        $this->assertStringContainsString('html.sidebar-open #layout-menu', $sidebar);
+
+        // the opener only exists where there is a drawer to open
+        $this->assertMatchesRegularExpression(
+            '/\.sidebar-drawer-toggle\s*\{[^}]*display:\s*none/',
+            $sidebar,
+            'The hamburger shows at desktop width, where the rail is already permanent.'
+        );
+        $this->assertMatchesRegularExpression(
+            '/@media\s*\(max-width:\s*1199\.98px\)\s*\{\s*\.sidebar-drawer-toggle\s*\{[^}]*display:\s*inline-flex/',
+            $sidebar
+        );
+
+        // and it can be opened, closed and dismissed
+        foreach (["applyDrawer(false)", 'backdrop.addEventListener', "event.key === 'Escape'"] as $wiring) {
+            $this->assertStringContainsString($wiring, $aside);
+        }
+    }
+
+    /**
+     * No admin view points at a developer's own machine.
+     *
+     * The course -> subject/section/student chain on the timetable form called
+     * `http://127.0.0.1:8000/ajax/course/list`, hardcoded in the layout. On a dev
+     * machine it worked, so it survived; everywhere else the request left the host
+     * and the three selects simply never filled, which looks like a bug in the form
+     * rather than a wrong URL.
+     */
+    public function test_no_admin_view_calls_a_hardcoded_local_address(): void
+    {
+        $offenders = [];
+
+        foreach ($this->adminViews() as $path => $contents) {
+            if (preg_match('#https?://(127\.0\.0\.1|localhost|0\.0\.0\.0)(:\d+)?/#i', $contents, $match)) {
+                $offenders[$path] = $match[0];
+            }
+        }
+
+        $this->assertSame([], $offenders, 'An admin view calls an address hardcoded to a local machine.');
+    }
+
+    /**
+  * Every delete control in the admin asks first.
+ *
+ * This is the one that bit: pages whose delete had no prompt at all. Nothing about
+ * those pages was broken-looking, they simply removed the record the moment they
+ * were clicked - and each page that had one was found by hand, one at a time.
+ *
+ * So it is checked the way it fails: by finding every link or form that points at
+ * a delete, destroy or remove route and asking whether that element carries the
+ * prompt. One new delete link anywhere in the admin fails this until it does.
+ */
+public function test_every_delete_control_in_the_admin_asks_first(): void
+{
+    $files = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator(base_path('resources/views/admin'))
+    );
+
+    $unconfirmed = [];
+
+    foreach ($files as $file) {
+        if (! $file->isFile() || $file->getExtension() !== 'php') {
+            continue;
+        }
+
+        $contents = file_get_contents($file->getPathname());
+
+        // every route() call that names a destructive action, with its position
+        preg_match_all(
+            '/route\(\s*[\'"]([a-zA-Z]+)\.(delete|destroy|remove)[^\'"]*[\'"]/',
+            $contents,
+            $routes,
+            PREG_OFFSET_CAPTURE
+        );
+
+        foreach ($routes[0] as $hit) {
+            $position = $hit[1];
+
+            // The element is found by walking out to its own boundaries rather
+            // than by matching the tag: a route() call whose arguments are an
+            // array contains "=>", and any attempt to stop the match at the
+            // first ">" cuts the tag in half and misses the attribute sitting
+            // after it.
+            $before = substr($contents, 0, $position);
+            $start = max(
+                (int) strrpos($before, '<a '),
+                (int) strrpos($before, '<a\r'),
+                (int) strrpos($before, '<form')
+            );
+
+            $after = substr($contents, $position);
+            $ends = PHP_INT_MAX;
+
+            foreach (['<a ', '<a\r', '<form'] as $next) {
+                $found = strpos($after, $next);
+
+                if ($found !== false) {
+                    $ends = min($ends, $found);
+                }
+            }
+
+            $element = $ends === PHP_INT_MAX
+                ? substr($contents, $start)
+                : substr($contents, $start, ($position - $start) + $ends);
+
+            if (! str_contains($element, 'data-confirm')) {
+                $unconfirmed[] = basename($file->getPathname()) . ': ' . $routes[1][0][0] . '.' . $routes[2][0][0];
+            }
+        }
+    }
+
+    $this->assertSame(
+        [],
+        $unconfirmed,
+        "These delete controls delete without asking:\n" . implode("\n", $unconfirmed)
+    );
+}
+
     // --------------------------------------------------------------- fixtures
 
     private function createDropOut(): DropOut
@@ -936,5 +1390,19 @@ class AdminStudentRecordsTest extends TestCase
         ])->save();
 
         return $enrollment->fresh();
+    }
+
+    /**
+     * Forget that this student has ever finished anything.
+     *
+     * Several rules read a student's finished enrollments rather than the course
+     * in front of them - the certificate form's default date is the obvious one -
+     * so a test that wants one particular answer has to remove the others. Done
+     * inside the test's transaction, so the dev data goes back untouched.
+     */
+    private function clearCompletions(): void
+    {
+        StudentEnrollment::where('student_id', $this->student->id)
+            ->update(['complete_date' => null, 'status' => StudentEnrollment::STATUS_ACTIVE]);
     }
 }

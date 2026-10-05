@@ -161,19 +161,7 @@
         </a>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bx bx-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bx bx-error-circle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     {{-- filters: the subject list follows the chosen course --}}
     <form method="GET" action="{{ route('exam.index') }}" class="ex-shell mb-3">
@@ -306,7 +294,7 @@
                                         <span class="text-muted small">No paper uploaded</span>
                                     @else
                                         <div class="ex-paper{{ $file['missing'] ? ' is-missing' : '' }}">
-                                            <i class="bx bx-file-pdf"></i>
+                                            <i class="bx bx-file"></i>
                                             <span class="ex-paper-name" title="{{ $file['label'] }}">
                                                 {{ $file['label'] }}
                                             </span>
@@ -326,7 +314,7 @@
                                     </a>
                                     <a href="{{ route('exam.delete', ['id' => $exam->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this exam"
-                                        onclick="return confirm('Delete the {{ $exam->subject?->name }} exam on {{ $exam->exam_date?->format('d M Y') }}? The uploaded paper is removed with it.')">
+                                        data-confirm="Delete the {{ $exam->subject?->name }} exam on {{ $exam->exam_date?->format('d M Y') }}? The uploaded paper and every script handed in for it are removed with it.">
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

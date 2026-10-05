@@ -16,7 +16,6 @@
         </a>
     </div>
 
-    @include('admin.partials.feedback')
 
     <form method="GET" action="{{ route('gradingResult.index') }}" class="card mb-3">
         <div class="card-body">
@@ -139,7 +138,7 @@
                                     </a>
                                     <a href="{{ route('gradingResult.delete', ['id' => $result->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this mark"
-                                        onclick="return confirm('Delete {{ $result->student?->name ?? 'this student' }}&#39;s mark for {{ $result->subject?->name ?? 'this subject' }}?')">
+                                        data-confirm="Delete {{ $result->student?->name ?? 'this student' }}&#39;s mark for {{ $result->subject?->name ?? 'this subject' }}?"
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

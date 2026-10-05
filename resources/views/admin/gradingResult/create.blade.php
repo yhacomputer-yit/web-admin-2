@@ -10,7 +10,6 @@
         </div>
     </div>
 
-    @include('admin.partials.feedback')
 
     @include('admin.gradingResult._form', ['action' => route('gradingResult.create')])
 @endsection

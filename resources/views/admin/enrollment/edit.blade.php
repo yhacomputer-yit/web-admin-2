@@ -7,10 +7,6 @@
         <div class="row d-flex justify-content-center">
             <div class="col-12 col-md-10 col-lg-9">
 
-                <a href="{{ route('admin.enrollment') }}" class="btn btn-secondary">
-                    <i class="bx bx-left-arrow-alt"></i> Back
-                </a>
-
                 <div class="card my-3 border-warning shadow">
                     {{-- Card Header  --}}
                     <div class="card-header border-warning">
@@ -50,6 +46,11 @@
         </div>
     </div>
 </main>
+
+{{-- Back button at bottom --}}
+<a href="{{ route('admin.enrollment') }}" class="btn btn-back">
+    <i class="bx bx-left-arrow-alt"></i> Back to Enrollments
+</a>
 
 @push('scripts')
     <script src="{{ asset('admin/course-section-link.js') }}"></script>

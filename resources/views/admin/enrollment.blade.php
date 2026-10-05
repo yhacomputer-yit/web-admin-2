@@ -3,19 +3,7 @@
 @section('content')
 <div class="container-fluid">
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <div class="row mb-2">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -118,7 +106,8 @@
                                                 @if ($enrollment->isActive() && $enrollment->section_id)
                                                     <form method="POST" class="d-inline"
                                                         action="{{ route('enrollment.completeClass') }}"
-                                                        onsubmit="return confirm('Mark {{ $enrollment->course?->name }} ({{ $enrollment->section?->name }}) as completed for {{ $student->name }}? Attendance can no longer be marked after this.')">
+                                                        data-confirm="Mark {{ $enrollment->course?->name }} ({{ $enrollment->section?->name }}) as completed for {{ $student->name }}? Attendance can no longer be marked after this."
+                                                        data-confirm-tone="info" data-confirm-label="Mark completed">
                                                         @csrf
                                                         <input type="hidden" name="course_id" value="{{ $enrollment->course_id }}">
                                                         <input type="hidden" name="section_id" value="{{ $enrollment->section_id }}">
@@ -134,7 +123,7 @@
                                                 </a>
                                                 <a href="{{ route('enrollment.delete', ['id' => $enrollment->id]) }}"
                                                     class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Remove this enrollment?')">
+                                                    data-confirm="Remove this enrollment?">
                                                     <i class="bx bx-trash"></i>
                                                 </a>
                                             </td>

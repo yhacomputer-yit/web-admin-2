@@ -198,7 +198,21 @@ class HomeController extends Controller
         $prog = $progType ? $progType->courses : collect();
         $graph = $graphType ? $graphType->courses : collect();
         $ict = $ictType ? $ictType->courses : collect();
-        
+
+        // Get statistics
+        $totalStudents = \App\Models\Student::count();
+
+        // Get CS students (enrolled in Programming courses)
+        $progType = \App\Models\course_type::where('name', 'Programming')->first();
+        if ($progType) {
+            $progCourseIds = $progType->courses->pluck('id');
+            $csStudents = \App\Models\StudentEnrollment::whereIn('course_id', $progCourseIds)
+                ->distinct('student_id')
+                ->count('student_id');
+        } else {
+            $csStudents = 0;
+        }
+
         return inertia('Homepage', [
             'abouts' => $abouts,
             'aboutDesc' => $aboutDesc,
@@ -211,7 +225,9 @@ class HomeController extends Controller
             'teacher' => $teacher,
             'prog' => $prog,
             'graph' => $graph,
-            'ict' => $ict
+            'ict' => $ict,
+            'totalStudents' => $totalStudents,
+            'csStudents' => $csStudents
         ]);
     }
 }

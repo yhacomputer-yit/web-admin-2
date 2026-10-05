@@ -17,7 +17,6 @@
         </a>
     </div>
 
-    @include('admin.partials.feedback')
 
     <form method="GET" action="{{ route('certificate.index') }}" class="card mb-3">
         <div class="card-body">
@@ -118,7 +117,7 @@
                                     </a>
                                     <a href="{{ route('certificate.delete', ['id' => $certificate->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this certificate"
-                                        onclick="return confirm('Delete the certificate for {{ $student?->name ?? 'this student' }}?')">
+                                        data-confirm="Delete the certificate for {{ $student?->name ?? 'this student' }}?">
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

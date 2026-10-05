@@ -11,7 +11,6 @@
         </div>
     </div>
 
-    @include('admin.partials.feedback')
 
     @include('admin.certificate._form', ['action' => route('certificate.create')])
 @endsection

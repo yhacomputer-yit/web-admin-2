@@ -33,9 +33,13 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('event.index') }}" class="btn btn-outline-secondary">Back</a>
         </form>
 
     </div>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('event.index') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Events
+    </a>
 
 {{-- @endsection --}}

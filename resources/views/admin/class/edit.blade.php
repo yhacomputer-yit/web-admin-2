@@ -7,9 +7,6 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-12 col-md-6 ">
 
-                    <a href="{{ route('admin.course') }}" class="btn btn-secondary"> <i class="bx bx-left-arrow-alt"></i>
-                        Back</a>
-
                     <div class="card my-3 border-warning shadow">
                         {{-- Card Header  --}}
                         <div class="card-header border-warning">
@@ -89,8 +86,6 @@
         </div>
     </main>
 
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.class_delete_other').on('click', function() {
@@ -157,4 +152,9 @@
 
         });
     </script>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.course') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Courses
+    </a>
 @endsection

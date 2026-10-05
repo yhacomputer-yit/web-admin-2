@@ -31,41 +31,7 @@
                         <form action="{{ route('student.create') }}" method="POST" enctype="multipart/form-data" id="studentForm">
                             @csrf
 
-                            {{-- Login credentials: auto generated, editable by admin  --}}
-                            <div class="card mb-4 border-primary">
-                                <div class="card-header bg-light">
-                                    <span class="fw-semibold"><i class="bx bx-key me-1"></i> Login Credentials</span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3 align-items-end">
-                                        <div class="col-md-4">
-                                            <label for="username" class="form-label h6 my-2">Username</label>
-                                            <input type="text" name="username" id="username"
-                                                class="form-control @error('username') is-invalid @enderror"
-                                                value="{{ old('username', session('username')) }}" placeholder="Auto generated" readonly>
-                                            @error('username')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="password" class="form-label h6 my-2">Password</label>
-                                            <input type="text" name="password" id="password"
-                                                class="form-control @error('password') is-invalid @enderror"
-                                                value="{{ old('password', session('password')) }}" placeholder="Auto generated" readonly>
-                                            @error('password')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button type="button" class="btn w-100" style="background-color: #ff6c0f; color: white;"
-                                                id="generateBtn">
-                                                <i class="bx bx-refresh"></i> Generate
-                                            </button>
-                                        </div>
-                                    </div>
 
-                                </div>
-                            </div>
 
                             {{-- Personal info  --}}
                             <h5 class="text-primary mb-3">Personal Information</h5>
@@ -245,6 +211,41 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                {{-- Login credentials: auto generated, editable by admin  --}}
+                            <div class="card mb-4 border-primary">
+                                <div class="card-header bg-light">
+                                    <span class="fw-semibold"><i class="bx bx-key me-1"></i> Login Credentials</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3 align-items-end">
+                                        <div class="col-md-4">
+                                            <label for="username" class="form-label h6 my-2">Username</label>
+                                            <input type="text" name="username" id="username"
+                                                class="form-control @error('username') is-invalid @enderror"
+                                                value="{{ old('username', session('username')) }}" placeholder="Auto generated" readonly>
+                                            @error('username')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="password" class="form-label h6 my-2">Password</label>
+                                            <input type="text" name="password" id="password"
+                                                class="form-control @error('password') is-invalid @enderror"
+                                                value="{{ old('password', session('password')) }}" placeholder="Auto generated" readonly>
+                                            @error('password')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" class="btn w-100" style="background-color: #ff6c0f; color: white;"
+                                                id="generateBtn">
+                                                <i class="bx bx-refresh"></i> Generate
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                             </div>
 
                             {{-- <p class="text-muted">

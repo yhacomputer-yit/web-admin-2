@@ -6,13 +6,7 @@
     <div class="att-page">
 
         {{-- session flashes become toasts; the nodes are removed by toast.js --}}
-        @if (session('success'))
-            <span data-flash-toast="{{ session('success') }}" data-flash-type="success" hidden></span>
-        @endif
 
-        @if (session('error'))
-            <span data-flash-toast="{{ session('error') }}" data-flash-type="error" hidden></span>
-        @endif
 
         {{-- Button metadata is built once, outside the loops: a raw
              @php ... @endphp block nested inside an @foreach gets swallowed
@@ -180,7 +174,7 @@
                         <div class="att-roster-head mb-3">
                             <div class="att-bulk-bar">
                                 <span class="fw-semibold small text-muted me-1">
-                                    <i class="bx bx-users me-1"></i> {{ $roster->count() }} student(s)
+                                    <i class="bx bx-group me-1"></i> {{ $roster->count() }} student(s)
                                 </span>
 
                                 <button type="button" class="btn btn-sm btn-outline-success" data-bulk="1">
@@ -324,7 +318,7 @@
 @endpush
 
 @push('scripts')
-    <script src="{{ asset('admin/toast.js') }}"></script>
+    {{-- toast.js is loaded by the layout, so every admin page has one --}}
     <script src="{{ asset('admin/course-section-link.js') }}"></script>
     <script src="{{ asset('admin/attendance-grid.js') }}"></script>
 @endpush

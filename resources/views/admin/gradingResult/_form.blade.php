@@ -69,9 +69,7 @@
                         @error('subject_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
-                            Only subjects linked to the chosen course are listed.
-                        </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -101,10 +99,7 @@
                         @error('grade_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
-                            A mark comes off the script on the day; the band is settled later.
-                            Leave this empty until then.
-                        </div>
+
                     </div>
 
                     <div class="mb-2">
@@ -117,9 +112,7 @@
                         @error('date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
-                            The day this mark is for, not the day it was typed in.
-                        </div>
+
                     </div>
                 </div>
             </div>

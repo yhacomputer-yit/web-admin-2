@@ -85,9 +85,10 @@
                         @error('subject_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
-                            Only subjects linked to the chosen course are listed.
-                        </div>
+                        {{-- <div class="form-text">
+                            Only subjects linked to the course above are listed. Changing the
+                            course reloads this list; nothing is written until you save.
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -144,12 +145,14 @@
                         </div>
                     </div>
 
-                    <div class="form-text mb-3" id="window-hint">
+                    {{-- <div class="form-text mb-3" id="window-hint">
                         Students open the paper at the start time, and uploads close{" "}
                         {{ ExamQuestion::SUBMIT_WINDOW_MINUTES }} minutes later
                         <span id="closes-hint">({{ $closesLabel ?? 'after the start time' }})</span>.
-                        The paper itself stays readable until {{ TimeOfDay::format($exam?->end_time) ?? 'the end time' }}.
-                    </div>
+                        The paper itself stays readable until {{ TimeOfDay::format($exam?->end_time) ?? 'the end time' }},
+                        after which the link stops working for everyone. Move the start time and
+                        this deadline moves with it; nothing is written until you save.
+                    </div> --}}
 
                     <div class="form-group mb-0">
                         <label for="question_file" class="form-label h6 my-2">Question paper</label>
@@ -158,7 +161,7 @@
                             <div class="ex-paper-now"
                                 style="background: {{ $onDisk ? '#fff8f2' : '#fef2f2' }};
                                        border: 1px solid {{ $onDisk ? '#ffe0c2' : '#fecaca' }};">
-                                <i class="bx bx-file-pdf"></i>
+                                <i class="bx bx-file"></i>
                                 <span class="text-truncate" style="max-width: 60%;" title="{{ $paperLabel }}">
                                     {{ $paperLabel }}
                                 </span>
@@ -173,18 +176,21 @@
                         @error('question_file')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
+                        {{-- <div class="form-text">
                             PDF only, up to {{ round(ExamQuestion::PAPER_MAX_KILOBYTES / 1024) }} MB.
                             @if ($isEdit)
-                                Leave empty to keep the current paper.
+                                Leave this empty to keep the paper already on file &mdash; picking
+                                a new one replaces it on save.
                             @else
-                                Optional — you can add it later.
+                                Optional &mdash; the sitting can be saved now and the paper added
+                                later.
                             @endif
-                        </div>
-                        <div class="form-text">
-                            The paper is stored privately and streamed to students only while the window
-                            is open, so the link stops working once the exam ends.
-                        </div>
+                        </div> --}}
+                        {{-- <div class="form-text">
+                            The paper is stored privately and streamed to students only while
+                            the window is open, so the link stops working the moment the exam
+                            ends &mdash; uploading a new paper does not reopen a finished exam.
+                        </div> --}}
                     </div>
                 </div>
             </div>

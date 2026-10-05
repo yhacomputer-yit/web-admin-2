@@ -7,8 +7,6 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-12 col-md-6 ">
 
-                    <a href="{{ route('admin.home') }}" class="btn btn-secondary"> <i class="bx bx-left-arrow-alt"></i> Back</a>
- 
                     <div class="card mt-3">
                         {{-- Header  --}}
                         <div class="card-header">
@@ -44,4 +42,9 @@
 
         </div>
     </main>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.home') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Home
+    </a>
 @endsection

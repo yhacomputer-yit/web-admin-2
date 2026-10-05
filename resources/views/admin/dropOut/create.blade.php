@@ -11,7 +11,6 @@
         </div>
     </div>
 
-    @include('admin.partials.feedback')
 
     @include('admin.dropOut._form', ['action' => route('dropOut.create')])
 @endsection

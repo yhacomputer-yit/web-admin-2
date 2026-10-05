@@ -3,12 +3,6 @@
 @section('content')
 
     {{-- alert section  --}}
-    @if (session('success'))
-        <div class="bg-white shadow-sm alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
 
 
@@ -57,7 +51,8 @@
                                                                 href="{{ route('welcome.edit', $data->id) }}"><i
                                                                     class="bx bx-edit-alt me-2"></i> Edit</a>
                                                             <a class="dropdown-item"
-                                                                href="{{ route('welcome.delete', $data->id) }}"><i
+                                                                href="{{ route('welcome.delete', $data->id) }}"
+                                                                data-confirm="Delete {{ $data->name }}?"><i
                                                                     class="bx bx-trash me-2"></i> Delete</a>
                                                         </div>
                                                     </div>
@@ -127,7 +122,8 @@
                                                                 href="{{ route('about.edit', $data->id) }}"><i
                                                                     class="bx bx-edit-alt me-2"></i> Edit</a>
                                                             <a class="dropdown-item"
-                                                                href="{{ route('about.delete', $data->id) }}"><i
+                                                                href="{{ route('about.delete', $data->id) }}"
+                                                                data-confirm="Delete {{ $data->name }}?"><i
                                                                     class="bx bx-trash me-2"></i> Delete</a>
                                                         </div>
                                                     </div>

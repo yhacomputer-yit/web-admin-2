@@ -1,0 +1,217 @@
+/* ==========================================================================
+   Notifications: toasts and the delete confirmation modal.
+
+   The toasts sit in a fixed host at the top right and are for messages; the
+   modal is centred with a backdrop and is for questions. They are kept in one
+   file because they are the same concern - telling the admin what just happened,
+   or asking before something is taken away - and are loaded together by the
+   admin layout.
+
+   Deliberately self-contained rather than built on bootstrap.Toast or
+   bootstrap.Modal: the admin layout loads Bootstrap 4.3.1 (CDN) and Materio's
+   Bootstrap 5 bundle at the same time, so which of the two owns the global is not
+   something to depend on.
+
+   The toast styles used to sit inside attendance.css, which meant only the three
+   attendance pages could have one. Nothing in here is attendance's.
+   ========================================================================== */
+
+.yha-toast-host {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    max-width: min(24rem, calc(100vw - 2rem));
+    pointer-events: none;
+}
+
+.yha-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .7rem .85rem;
+    border-radius: .5rem;
+    border: 1px solid #eceef2;
+    border-left-width: 3px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .12);
+    font-size: .8125rem;
+    color: #1e1e2d;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(1rem);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.yha-toast.is-in { opacity: 1; transform: translateX(0); }
+
+.yha-toast-ico {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    flex: 0 0 auto;
+}
+
+.yha-toast-body { flex: 1 1 auto; }
+
+.yha-toast-close {
+    border: 0;
+    background: none;
+    color: #6b7280;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 .1rem;
+    flex: 0 0 auto;
+}
+
+.yha-toast-success { border-left-color: #16a34a; }
+.yha-toast-success .yha-toast-ico { color: #16a34a; }
+.yha-toast-error { border-left-color: #dc2626; }
+.yha-toast-error .yha-toast-ico { color: #dc2626; }
+.yha-toast-info { border-left-color: #ff6c0f; }
+.yha-toast-info .yha-toast-ico { color: #ff6c0f; }
+
+/* --------------------------------------------------------------------------
+   The delete confirmation modal.
+
+   A real modal, unlike the toast: a delete is the one action here that takes
+   something away, so the page behind is locked out (backdrop, scroll lock, focus
+   trap) until the question is answered. The two buttons are told apart by colour
+   and position as well as by their labels, because "Are you sure?" asked twice in
+   the same font is a coin toss.
+   -------------------------------------------------------------------------- */
+
+.yha-modal {
+    position: fixed;
+    inset: 0;
+    /* above the toast host, so a message that arrives while the dialog is open
+       is still read rather than hidden behind it */
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity .16s ease;
+}
+
+.yha-modal.is-in { opacity: 1; }
+
+/* the page behind must not scroll under a dialog nobody can reach */
+body.yha-modal-open { overflow: hidden; }
+
+.yha-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .5);
+}
+
+.yha-modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    padding: 1.15rem 1.25rem 1rem;
+    border-radius: .625rem;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(16, 24, 40, .24);
+    transform: translateY(.5rem) scale(.98);
+    transition: transform .16s ease;
+}
+
+.yha-modal.is-in .yha-modal-dialog { transform: translateY(0) scale(1); }
+
+.yha-modal-head {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+}
+
+.yha-modal-ico {
+    flex: 0 0 auto;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: #dc2626;
+}
+
+.yha-modal-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #1e1e2d;
+}
+
+.yha-modal-message {
+    margin: .65rem 0 0;
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: #6b7280;
+    overflow-wrap: anywhere;
+}
+
+.yha-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1.1rem;
+}
+
+.yha-modal-btn {
+    border: 1px solid transparent;
+    border-radius: .375rem;
+    padding: .45rem 1rem;
+    font-size: .8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.yha-modal-btn-cancel {
+    background: #fff;
+    border-color: #d8dce3;
+    color: #1e1e2d;
+}
+
+.yha-modal-btn-cancel:hover { background: #f6f7f9; }
+
+.yha-modal-btn-ok {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+}
+
+.yha-modal-btn-ok:hover { background: #b91c1c; border-color: #b91c1c; }
+
+.yha-modal-btn:focus-visible {
+    outline: 2px solid #ff6c0f;
+    outline-offset: 2px;
+}
+
+/* a non-destructive confirmation is not a warning: same dialog, orange, so a
+   "generate a new password" prompt does not read as a deletion */
+.yha-modal-dialog.is-info .yha-modal-ico { color: #ff6c0f; }
+.yha-modal-dialog.is-info .yha-modal-btn-ok { background: #ff6c0f; border-color: #ff6c0f; }
+.yha-modal-dialog.is-info .yha-modal-btn-ok:hover { background: #e05f00; border-color: #e05f00; }
+
+@media (prefers-reduced-motion: reduce) {
+    .yha-toast,
+    .yha-modal,
+    .yha-modal-dialog {
+        transition: none;
+        transform: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .yha-toast-host {
+        top: auto;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+}

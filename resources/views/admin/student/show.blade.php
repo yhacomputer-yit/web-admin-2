@@ -3,29 +3,13 @@
 @section('content')
 <div class="container-fluid">
 
-    @if (session('new_password'))
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>New password for {{ session('new_password')['student'] }}:</strong>
-            <code class="fs-6">{{ session('new_password')['password'] }}</code>
-            <span class="text-muted">(copy it now - it will not be shown again)</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <a href="{{ route('admin.student') }}" class="btn btn-secondary">
-            <i class="bx bx-left-arrow-alt"></i> Back to Students
-        </a>
+    <div class="d-flex justify-content-end align-items-center flex-wrap gap-2 mb-3">
         <div class="d-flex gap-2">
             <a href="{{ route('student.resetPassword', ['id' => $student->id]) }}" class="btn btn-warning"
-                onclick="return confirm('Generate a new password for {{ $student->name }}?')">
+                data-confirm="Generate a new password for {{ $student->name }}? The current one stops working."
+                data-confirm-tone="info" data-confirm-label="Generate">
                 <i class="bx bx-key"></i> Reset Password
             </a>
             <a href="{{ route('student.edit', ['id' => $student->id]) }}" class="btn"
@@ -176,7 +160,7 @@
                                             </a>
                                             <a href="{{ route('enrollment.delete', ['id' => $enrollment->id]) }}"
                                                 class="text-decoration-none text-danger"
-                                                onclick="return confirm('Remove this enrollment?')">
+                                                data-confirm="Remove this enrollment?">
                                                 <i class="bx bx-trash"></i> Delete
                                             </a>
                                         </td>
@@ -195,5 +179,10 @@
             </div>
         </div>
     </div>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.student') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Students
+    </a>
 </div>
 @endsection

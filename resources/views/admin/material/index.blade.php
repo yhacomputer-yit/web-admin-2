@@ -162,7 +162,7 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
-            <h4 class="mb-1">Subject Materials</h4>
+            <h4 class="mb-1">Subject Resource</h4>
             <div class="text-muted small">
                 {{ $fileCount }} file(s) across {{ $subjectCount }} subject(s). Students see
                 these on their Courses page.
@@ -173,19 +173,7 @@
         </a>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bx bx-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bx bx-error-circle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     {{-- filters: the subject list follows the chosen course --}}
     <form method="GET" action="{{ route('material.index') }}" class="mat-card mb-3">
@@ -285,7 +273,7 @@
                                 </a>
                                 <a href="{{ route('material.delete', ['id' => $material->id]) }}"
                                     class="btn btn-sm btn-outline-danger" title="Delete this file"
-                                    onclick="return confirm('Delete {{ $label }}? The uploaded file is removed with it.')">
+                                    data-confirm="Delete {{ $label }}? The uploaded file is removed with it.">
                                     <i class="bx bx-trash"></i>
                                 </a>
                             </div>
@@ -315,14 +303,14 @@
         </div>
     @endforelse
 
-    @if ($grouped->isNotEmpty())
+    {{-- @if ($grouped->isNotEmpty())
         <p class="text-muted small mt-2 mb-0">
             <i class="bx bx-info-circle me-1"></i>
             A subject can hold any number of files: add one for each book, each
             recording and each archive. Deleting a file also removes it from
             storage, so only ever delete the copy you meant to.
         </p>
-    @endif
+    @endif --}}
 @endsection
 
 @push('scripts')

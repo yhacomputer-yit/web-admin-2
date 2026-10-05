@@ -3,8 +3,6 @@
 @section('content')
 
 <main>
-      
-    <a href="{{route('admin.course')}}"><button class="btn btn-secondary">Back</button></a>
 
       <h2>Monthly Course Add</h2>
   <form action="{{route('monthly.update', $monthly->id)}}" method="POST"  enctype="multipart/form-data">
@@ -72,8 +70,11 @@
     <button type="submit" class="btn btn-outline-primary">Submit</button>
   </form>
 
+  {{-- Back button at bottom --}}
+  <a href="{{route('admin.course')}}" class="btn btn-back">
+    <i class="bx bx-left-arrow-alt"></i> Back to Courses
+  </a>
 
-  
   </main>
 
 @endsection

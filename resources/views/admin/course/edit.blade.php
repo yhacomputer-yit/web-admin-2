@@ -6,10 +6,6 @@
     <div class="container-fluid p-2 p-md-4">
         <div class="row d-flex justify-content-center">
             <div class="col-12 col-md-8">
-                <a href="{{ route('admin.course') }}" class="btn btn-secondary">
-                    <i class="bx bx-left-arrow-alt"></i> Back
-                </a>
-
                 <div class="card my-3 border-warning shadow">
                     {{-- Card Header  --}}
                     <div class="card-header border-primary">
@@ -106,7 +102,8 @@
                             <button style="background-color: #ff6c0f; color:white;" class="btn mt-3">
                                 <i class="bx bx-up-arrow-alt"></i> Update
                             </button>
-                            <a href="{{ route('course.delete', $data->id) }}" class="btn btn-danger mt-3">
+                            <a href="{{ route('course.delete', $data->id) }}" class="btn btn-danger mt-3"
+                                data-confirm="Delete {{ $data->name }}? Its subjects, classes and enrollments go with it.">
                                 <i class="bx bx-trash"></i> Delete
                             </a>
                         </form>
@@ -116,5 +113,10 @@
         </div>
     </div>
 </main>
+
+{{-- Back button at bottom --}}
+<a href="{{ route('admin.course') }}" class="btn btn-back">
+    <i class="bx bx-left-arrow-alt"></i> Back to Courses
+</a>
 
 {{-- @endsection --}}

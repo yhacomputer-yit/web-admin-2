@@ -20,10 +20,7 @@
                     @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        What the school calls this band. Names are unique, because a mark is
-                        graded by picking one.
-                    </div>
+
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -35,9 +32,6 @@
                     @error('score')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        The highest mark that falls in this band, not a mark of its own.
-                    </div>
                 </div>
             </div>
         </div>

@@ -7,8 +7,6 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-12 col-md-6 ">
 
-                    <a href="{{ route('admin.teacher') }}" class="btn btn-secondary"> <i class="bx bx-left-arrow-alt"></i> Back</a>
-
                     <div class="card my-3 border-warning shadow">
                         {{-- Card Header  --}}
                         <div class="card-header border-warning">
@@ -103,7 +101,8 @@
                                         <button style="background-color: #ff6c0f; color:white;" class="btn mt-3"><i class="bx bx-up-arrow-alt"></i> Update</button>
                                         <span class="mx-1"></span>
                                         <a href="{{ route('teacher.delete', $teacher->id) }}"
-                                            class="btn  btn-danger mt-3"><i class="bx bx-trash"></i> Delete</a>
+                                            class="btn  btn-danger mt-3"
+                                            data-confirm="Delete {{ $teacher->name }}? Their classes and the marks recorded in them go with it."><i class="bx bx-trash"></i> Delete</a>
                                     </div>
                                 </div>
 
@@ -116,4 +115,9 @@
 
         </div>
     </main>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.teacher') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Teachers
+    </a>
 @endsection

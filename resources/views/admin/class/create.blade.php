@@ -7,9 +7,6 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-12 col-md-6 ">
 
-                    <a href="{{ route('admin.course') }}" class="btn btn-secondary"> <i class="bx bx-left-arrow-alt"></i>
-                        Back</a>
-
                     <div class="card my-3 border-warning shadow">
                         {{-- Card Header  --}}
                         <div class="card-header border-warning">
@@ -137,4 +134,9 @@
             });
         });
     </script>
+
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.course') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Courses
+    </a>
 @endsection

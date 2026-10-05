@@ -673,75 +673,13 @@
 }
 
 /* ==========================================================================
-   Toasts (self-contained so they do not depend on which Bootstrap wins)
+   Toasts moved to notifications.css
+
+   They were defined here and only the attendance pages loaded this file, so no
+   other admin page could have one. They are not attendance's - they are loaded
+   for every page from the admin layout, and the confirmation box that sits
+   beside them is styled in the same file.
    ========================================================================== */
-.yha-toast-host {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1090;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    max-width: min(24rem, calc(100vw - 2rem));
-    pointer-events: none;
-}
-
-.yha-toast {
-    display: flex;
-    align-items: flex-start;
-    gap: .6rem;
-    padding: .7rem .85rem;
-    border-radius: .5rem;
-    border: 1px solid var(--att-line);
-    border-left-width: 3px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(16, 24, 40, .12);
-    font-size: .8125rem;
-    color: var(--att-ink);
-    pointer-events: auto;
-    opacity: 0;
-    transform: translateX(1rem);
-    transition: opacity .2s ease, transform .2s ease;
-}
-
-.yha-toast.is-in { opacity: 1; transform: translateX(0); }
-
-.yha-toast-ico {
-    font-size: 1.1rem;
-    line-height: 1.2;
-    flex: 0 0 auto;
-}
-
-.yha-toast-body { flex: 1 1 auto; }
-
-.yha-toast-close {
-    border: 0;
-    background: none;
-    color: var(--att-muted);
-    font-size: 1.1rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 .1rem;
-    flex: 0 0 auto;
-}
-
-.yha-toast-success { border-left-color: var(--att-present); }
-.yha-toast-success .yha-toast-ico { color: var(--att-present); }
-.yha-toast-error { border-left-color: var(--att-absent); }
-.yha-toast-error .yha-toast-ico { color: var(--att-absent); }
-.yha-toast-info { border-left-color: var(--att-orange); }
-.yha-toast-info .yha-toast-ico { color: var(--att-orange); }
-
-@media (max-width: 575.98px) {
-    .yha-toast-host {
-        top: auto;
-        bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
-        max-width: none;
-    }
-}
 
 /* ==========================================================================
    Loading states

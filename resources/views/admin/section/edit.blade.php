@@ -9,11 +9,8 @@
             <div class="row d-flex align-items-center justify-content-center">
                 <div class="col-md-5 ">
                     <div class="border p-3 border-rounded bg-white shadow">
-    
-                        <div class="d-flex align-items-end justify-content-between">
-                            <h4 class="d-inline mb-0"> <i class="bx bx-hourglass fs-4 mb-1"></i> Edit Section</h4>
-                            <a href="{{ route('admin.section') }}" class="btn btn-danger btn-sm"> <i class="bx bx-x"></i> </a>
-                        </div>
+
+                        <h4 class="d-inline mb-0"> <i class="bx bx-hourglass fs-4 mb-1"></i> Edit Section</h4>
                         <hr>
     
                         <form action="{{ route('section.update') }}" method="POST">
@@ -71,5 +68,9 @@
         </div>
     </main>
 
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.section') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Sections
+    </a>
 
 @endsection

@@ -30,4 +30,9 @@
           </div>
     </main>
 
+    {{-- Back button at bottom --}}
+    <a href="{{ route('admin.home') }}" class="btn btn-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to Home
+    </a>
+
 @endsection

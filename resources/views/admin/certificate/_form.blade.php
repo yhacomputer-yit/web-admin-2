@@ -30,10 +30,6 @@
                     @error('complete_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        Leave this empty and the finish date is taken from the student's own
-                        completed enrollment.
-                    </div>
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -47,10 +43,7 @@
                     @error('remark')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        A certificate is either collected or still waiting to be. Change this
-                        when the student comes back for it.
-                    </div>
+
                 </div>
             </div>
         </div>

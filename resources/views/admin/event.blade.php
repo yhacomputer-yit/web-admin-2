@@ -4,11 +4,6 @@
 
     <div class="container-fluid">
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
 
         <a href="{{route("event.create")}}" class="btn btn-primary mb-4">
             <i class="fa-solid fa-plus"></i>
@@ -40,7 +35,8 @@
                             <td><img width="50px" src="{{ asset('storage/'.$res->image) }}" alt=""></td>
                             <td>
                                 <a href="{{route("events.update", $res->id)}}" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <a href="{{route("event.delete", $res->id)}}" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                                <a href="{{route("event.delete", $res->id)}}" class="btn btn-danger"
+                                    data-confirm="Delete this event?"><i class="fa-solid fa-trash"></i></a>
                             </td>
                         </tr>
                         @endforeach

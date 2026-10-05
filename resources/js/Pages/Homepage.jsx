@@ -14,6 +14,8 @@ export default function Homepage({
     homeReviews,
     sliders,
     teacher,
+    totalStudents,
+    csStudents,
 }) {
     const [typedText, setTypedText] = useState("");
     const [typingKey, setTypingKey] = useState(0);
@@ -335,7 +337,7 @@ export default function Homepage({
                                     <i className="fas fa-user-group"></i>
                                 </div>
                                 <h3 className="stat-label">Total Students</h3>
-                                <div className="stat-number">909,999+</div>
+                                <div className="stat-number">{totalStudents?.toLocaleString() || 0}+</div>
                                 <div className="stat-description">
                                     Learning and growing with us
                                 </div>
@@ -347,7 +349,7 @@ export default function Homepage({
                                     <i className="fas fa-laptop-code"></i>
                                 </div>
                                 <h3 className="stat-label">CS Students</h3>
-                                <div className="stat-number">99,999+</div>
+                                <div className="stat-number">{csStudents?.toLocaleString() || 0}+</div>
                                 <div className="stat-description">
                                     Building the future of tech
                                 </div>

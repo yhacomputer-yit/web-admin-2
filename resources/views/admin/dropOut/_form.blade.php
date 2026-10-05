@@ -34,10 +34,7 @@
                     @error('course_id')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        A student is in several courses at once, so this is the class the
-                        drop-out applies to. Their enrollment in it is closed.
-                    </div>
+
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -50,10 +47,7 @@
                     @error('drop_out_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">
-                        The day the student actually left. It is also written to the
-                        enrollment's complete date, and the list is ordered by it.
-                    </div>
+
                 </div>
 
                 <div class="col-12">
@@ -71,10 +65,11 @@
                 <i class="bx bx-info-circle me-1"></i>
                 Saving closes the student's enrollment in this course &mdash; status
                 <strong>dropped</strong>, complete date set to the drop-out date &mdash; so the
-                class list and this record cannot disagree. Deleting the record reopens it
-                again. This does not change the student's own status on the
+                class list and this record cannot disagree. Deleting the record reopens that
+                one enrollment again and leaves the rest of their classes alone. Neither
+                action touches the student's own status on the
                 <a href="{{ route('admin.student') }}" class="text-decoration-none">Student</a>
-                page.
+                page, and nothing at all is written until you press Save.
             </div>
         </div>
     </div>

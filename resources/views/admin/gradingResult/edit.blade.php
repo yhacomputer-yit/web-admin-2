@@ -12,7 +12,6 @@
         </div>
     </div>
 
-    @include('admin.partials.feedback')
 
     @include('admin.gradingResult._form', ['action' => route('gradingResult.update', ['id' => $result->id])])
 @endsection

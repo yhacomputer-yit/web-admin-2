@@ -17,7 +17,6 @@
         </a>
     </div>
 
-    @include('admin.partials.feedback')
 
     {{-- filters: the course narrows through the student's own enrollments --}}
     <form method="GET" action="{{ route('dropOut.index') }}" class="card mb-3">
@@ -119,7 +118,7 @@
                                     </a>
                                     <a href="{{ route('dropOut.delete', ['id' => $dropOut->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this drop-out"
-                                        onclick="return confirm('Delete the drop-out for {{ $student?->name ?? 'this student' }}?')">
+                                        data-confirm="Delete the drop-out for {{ $student?->name ?? 'this student' }}? They go back into {{ $dropOut->course?->name ?? 'the course' }}."
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

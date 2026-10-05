@@ -47,12 +47,6 @@
     }
 </style>
 <div class="container-fluid">
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
     <div class="row mb-2">
         <div class="fs-4 mb-4"> <i class="fa-solid fa-star fs-3 mb-1"></i> Student Reviews</div>
         <div class="col-12 mb-3">
@@ -116,7 +110,7 @@
                                 <form action="{{ route('admin.review.destroy', $review->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-danger" data-confirm="Delete this review?" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

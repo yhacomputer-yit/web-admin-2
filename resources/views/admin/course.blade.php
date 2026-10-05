@@ -8,14 +8,6 @@
             {{-- Message Box  --}}
             <div class="row">
                 <div class="col">
-                    @if (session('success'))
-                        <div class="alert-message">
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <span>{{ session('success') }}</span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
 
@@ -54,7 +46,8 @@
                                                         href="{{ route('courseType.edit', $courseType->id) }}"><i
                                                             class="bx bx-edit-alt me-1"></i> Edit</a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('courseType.delete', $courseType->id) }}"><i
+                                                        href="{{ route('courseType.delete', $courseType->id) }}"
+                                                        data-confirm="Delete the course type {{ $courseType->name }}?"><i
                                                             class="bx bx-trash me-1"></i> Delete</a>
                                                 </div>
                                             </div>
@@ -105,7 +98,8 @@
                                                         href="{{ route('subject.edit', $subject->id) }}"><i
                                                             class="bx bx-edit-alt me-1"></i> Edit</a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('subject.delete', $subject->id) }}"><i
+                                                        href="{{ route('subject.delete', $subject->id) }}"
+                                                        data-confirm="Delete {{ $subject->name }}? Every course linked to it loses this subject."><i
                                                             class="bx bx-trash me-1"></i> Delete</a>
                                                 </div>
                                             </div>
@@ -161,7 +155,8 @@
                                                         href="{{ route('course.edit', $course->id) }}"><i
                                                             class="bx bx-edit-alt me-1"></i> Edit</a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('course.delete', $course->id) }}"><i
+                                                        href="{{ route('course.delete', $course->id) }}"
+                                                        data-confirm="Delete {{ $course->name }}? Its subjects, classes and enrollments go with it."><i
                                                             class="bx bx-trash me-1"></i> Delete</a>
                                                 </div>
                                             </div>
@@ -273,7 +268,8 @@
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="{{ route('class.edit', $class->id) }}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                    <a class="dropdown-item" href="{{ route('class.delete', $class->id) }}"><i class="bx bx-trash me-1"></i> Delete</a>
+                                                    <a class="dropdown-item" href="{{ route('class.delete', $class->id) }}"
+                                                        data-confirm="Delete {{ $class->name }}? Students enrolled in it lose their place."><i class="bx bx-trash me-1"></i> Delete</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -327,7 +323,8 @@
                                             <a class="dropdown-item" href="{{route('monthly.edit',$monthly->id)}}">
                                                 <i class="bx bx-edit-alt me-1"></i> Edit
                                             </a>
-                                            <a class="dropdown-item" href="{{route('monthly.delete',$monthly->id)}}">
+                                            <a class="dropdown-item" href="{{route('monthly.delete',$monthly->id)}}"
+                                                data-confirm="Delete the monthly schedule for {{ $monthly->course?->name ?? 'this course' }}?">
                                                 <i class="bx bx-trash me-1"></i> Delete
                                             </a>
                                         </div>
