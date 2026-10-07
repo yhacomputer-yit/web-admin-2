@@ -607,28 +607,6 @@
   border: 1px solid transparent;
 }
 
-.github-link {
-  background: #24292e;
-  color: #fff;
-}
-
-.github-link:hover {
-  background: #2f363d;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.demo-link {
-  background: #ff6b01;
-  color: #fff;
-}
-
-.demo-link:hover {
-  background: #e65b00;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
 /* Enhanced card hover effects */
 .event-card:hover .edu-card-img,
 .project-card:hover .edu-card-img {
@@ -656,6 +634,39 @@
 .project-links {
   margin-top: auto;
   min-height: 40px;
+}
+
+.project-student {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.project-student-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff6b01;
+}
+
+.project-student-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-student-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.project-student-edu {
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .project-link.disabled {
@@ -1128,38 +1139,24 @@
         <div class="mb-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
           <div class="edu-card project-card">
             <img src="{{ asset('storage/' . $project->image) }}" class="edu-card-img" alt="{{ $project->title ?? 'Student project image' }}">
-            <div class="edu-card-body">
-              <h5 class="edu-card-title">{{ $project->title }}</h5>
-              <div class="mb-2 project-course">
-                <i class="fa-solid fa-graduation-cap" style="color: #ff6b01;"></i>
-                <span style="color: #ff6b01; font-weight: 600;">{{ $project->course->name ?? 'Unknown Course' }}</span>
-              </div>
-              <p class="edu-card-desc clamped-text">{{ $project->desc }}</p>
-              <div class="gap-2 mb-3 project-links d-flex justify-content-center">
-                @if($project->github)
-                  <a href="{{ $project->github }}" class="project-link github-link btn-uiverse" target="_blank" aria-label="View GitHub source for {{ $project->title }}">
-                    <i class="fa-brands fa-github"></i>
-                    <span>GitHub</span>
-                  </a>
-                @else
-                  <span class="project-link github-link disabled" style="opacity: 0.5; cursor: not-allowed;">
-                    <i class="fa-brands fa-github"></i>
-                    <span>GitHub</span>
-                  </span>
-                @endif
-                @if($project->demo)
-                  <a href="{{ $project->demo }}" class="project-link demo-link btn-uiverse" target="_blank" aria-label="View live demo for {{ $project->title }}">
-                    <i class="fa-solid fa-play"></i>
-                    <span>Live Demo</span>
-                  </a>
-                @else
-                  <span class="project-link demo-link disabled" style="opacity: 0.5; cursor: not-allowed;">
-                    <i class="fa-solid fa-play"></i>
-                    <span>Live Demo</span>
-                  </span>
+              <div class="edu-card-body">
+                <h5 class="edu-card-title">{{ $project->title }}</h5>
+                <div class="mb-2 project-course">
+                  <i class="fa-solid fa-graduation-cap" style="color: #ff6b01;"></i>
+                  <span style="color: #ff6b01; font-weight: 600;">{{ $project->course->name ?? 'Unknown Course' }}</span>
+                </div>
+                <p class="edu-card-desc clamped-text">{{ $project->desc }}</p>
+
+                @if($project->student)
+                  <div class="project-student">
+                    <img src="{{ asset('storage/'.($project->student->image ?? 'image/logo/student-placeholder.svg')) }}" alt="{{ $project->student->name ?? 'Student' }}" class="project-student-img">
+                    <div class="project-student-info">
+                      <span class="project-student-name">{{ $project->student->name }}</span>
+                      <span class="project-student-edu">{{ $project->student->education }}</span>
+                    </div>
+                  </div>
                 @endif
               </div>
-            </div>
           </div>
         </div>
       @endforeach

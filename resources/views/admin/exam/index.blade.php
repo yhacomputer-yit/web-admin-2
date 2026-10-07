@@ -269,9 +269,6 @@
                                     {{ TimeOfDay::format($exam->end_time) ?? '—' }}
                                     <div class="ex-course">
                                         {{ ExamQuestion::SCHEDULE_STATUSES[$status] }}
-                                        @if ($status === ExamQuestion::ONGOING && ! $exam->isSubmitOpen($now))
-                                            &middot; uploads closed
-                                        @endif
                                     </div>
                                 </td>
 
@@ -308,13 +305,21 @@
                                 </td> --}}
 
                                 <td class="text-right text-nowrap">
+                                    <a href="{{ route('exam.scripts', ['id' => $exam->id]) }}"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        title="View and download the scripts handed in for {{ $exam->subject?->name ?? 'this subject' }}">
+                                        <i class="bx bx-download"></i>
+                                        <span class="badge rounded-pill ms-1 {{ $exam->answers_count ? 'text-bg-primary' : 'text-bg-secondary' }}">
+                                            {{ $exam->answers_count }}
+                                        </span>
+                                    </a>
                                     <a href="{{ route('exam.edit', ['id' => $exam->id]) }}"
                                         class="btn btn-sm btn-outline-secondary" title="Edit this exam">
                                         <i class="bx bx-edit-alt"></i>
                                     </a>
                                     <a href="{{ route('exam.delete', ['id' => $exam->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this exam"
-                                        data-confirm="Delete the {{ $exam->subject?->name }} exam on {{ $exam->exam_date?->format('d M Y') }}? The uploaded paper and every script handed in for it are removed with it.">
+                                        data-confirm="Delete the {{ $exam->subject?->name }} exam on {{ $exam->exam_date?->format('d M Y') }}? The uploaded paper is removed with it. The submitted scripts are kept, because they belong to the subject rather than to this sitting.">
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

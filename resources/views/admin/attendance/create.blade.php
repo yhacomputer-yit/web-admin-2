@@ -204,7 +204,7 @@
                                     <div class="att-card-head">
                                         @if ($row->student?->image)
                                             <img src="{{ Storage::url($row->student->image) }}"
-                                                onerror="this.onerror=null;this.src='/image/no-image.jpg';"
+                                                onerror="this.onerror=null;this.src='/image/logo/student-placeholder.svg';"
                                                 alt="{{ $row->student->name }}" class="att-avatar" width="40" height="40">
                                         @else
                                             <div class="att-avatar att-avatar-initials">{{ $row->initials }}</div>

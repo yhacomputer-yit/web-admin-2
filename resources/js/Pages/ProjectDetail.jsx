@@ -1,91 +1,204 @@
 import { Link } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
+import '../../css/pages/project-detail.css';
 
-export default function ProjectDetail({ project }) {
+export default function ProjectDetail({ project, relatedProjects = [], prog, graph, ict, address }) {
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     return (
         <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
-            
-            {/* Hero Section */}
-            <section className="project-detail-hero">
-                <div className="container">
-                    <h1>{project?.title || 'Project Details'}</h1>
-                    <p className="breadcrumb">
-                        <Link href="/">Home</Link> / 
-                        <Link href="/yha/project">Projects</Link> / 
-                        <span>{project?.title || 'Project'}</span>
-                    </p>
-                </div>
-            </section>
+            <Navigation prog={prog} graph={graph} ict={ict} />
 
-            {/* Project Content */}
-            <section className="project-content">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-8">
-                            <div className="project-main">
-                                {project?.image && (
-                                    <div className="project-image">
-                                        <img src={`/storage/${project.image}`} alt={project.title} />
-                                    </div>
-                                )}
-                                
-                                <div className="project-info">
-                                    <h2>{project?.title}</h2>
-                                    <p>{project?.desc}</p>
-                                    
-                                    {project?.course && (
-                                        <div className="project-course">
-                                            <h4>Course: {project.course.name}</h4>
-                                            <Link href={`/yha/course/${project.course.id}`} className="btn btn-primary">
-                                                View Course
-                                            </Link>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="col-lg-4">
-                            <div className="project-sidebar">
-                                <div className="sidebar-card">
-                                    <h4>Project Details</h4>
-                                    <ul>
-                                        <li>
-                                            <strong>Student:</strong> {project?.student_name || 'N/A'}
-                                        </li>
-                                        <li>
-                                            <strong>Category:</strong> {project?.course?.name || 'N/A'}
-                                        </li>
-                                        <li>
-                                            <strong>Completed:</strong> {project?.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                {(project?.github || project?.demo) && (
-                                    <div className="sidebar-card">
-                                        <h4>Links</h4>
-                                        {project?.github && (
-                                            <a href={project.github} className="btn btn-outline-primary mb-2" target="_blank" rel="noopener noreferrer">
-                                                <i className="fab fa-github"></i> View on GitHub
-                                            </a>
-                                        )}
-                                        {project?.demo && (
-                                            <a href={project.demo} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                                                <i className="fas fa-external-link-alt"></i> Live Demo
-                                            </a>
-                                        )}
-                                    </div>
-                                )}
+            {/* ========== Hero Section ========== */}
+            <section className="pd-hero">
+                <div className="container pd-container">
+                    <div className="pd-hero-inner">
+                        <div
+                            className="pd-hero-bg"
+                            style={{ backgroundImage: `url(/storage/${project?.image})` }}
+                        ></div>
+                        <div className="pd-hero-overlay"></div>
+                        <div className="pd-hero-content">
+                            <nav className="pd-breadcrumb" aria-label="Breadcrumb">
+                                <Link href="/" className="pd-breadcrumb-link">
+                                    <i className="fas fa-home"></i> Home
+                                </Link>
+                                <span className="pd-breadcrumb-separator">/</span>
+                                <Link href="/yha/project" className="pd-breadcrumb-link">Projects</Link>
+                                <span className="pd-breadcrumb-separator">/</span>
+                                <span className="pd-breadcrumb-current">{project?.title}</span>
+                            </nav>
+                            <h1 className="pd-title">{project?.title}</h1>
+                            <div className="pd-meta">
+                                <span className="pd-category">
+                                    <i className="fas fa-tag"></i>
+                                    {project?.course?.name || project?.category || 'Student Work'}
+                                </span>
+                                <span className="pd-date">
+                                    <i className="fas fa-calendar"></i>
+                                    {project?.created_at ? formatDate(project.created_at) : 'N/A'}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <Footer address={[]} />
+            {/* ========== Project Content ========== */}
+            <section className="pd-content">
+                <div className="container pd-container">
+                    <div className="row gy-5 align-items-start">
+                        {/* Left - Main Content */}
+                        <div className="col-lg-8">
+                            <div className="pd-main-card">
+                                {project?.image && (
+                                    <div className="pd-image-wrapper">
+                                        <img
+                                            src={`/storage/${project.image}`}
+                                            alt={project.title}
+                                            className="pd-main-image"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="pd-info">
+                                    <div className="pd-header">
+                                        <h2 className="pd-title-main">{project?.title}</h2>
+                                        {project?.course && (
+                                            <Link href={`/yha/course/${project.course.id}`} className="pd-course-link">
+                                                <i className="fas fa-book"></i>
+                                                Course: {project.course.name}
+                                            </Link>
+                                        )}
+                                    </div>
+
+                                    <div className="pd-description" dangerouslySetInnerHTML={{ __html: project?.desc || project?.description || '<p>No description available.</p>' }} />
+                                </div>
+
+                                {project?.technologies && (
+                                    <div className="pd-tech-stack">
+                                        <h3 className="pd-section-title">Technologies Used</h3>
+                                        <div className="pd-tech-tags">
+                                            {project.technologies.split(',').map((tech, index) => (
+                                                <span key={index} className="pd-tech-tag">{tech.trim()}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right - Sidebar */}
+                        <div className="col-lg-4">
+                            <div className="pd-sidebar">
+                                <div className="pd-sidebar-card">
+                                    <h3 className="pd-sidebar-title">Student Information</h3>
+                                    <div className="pd-student-info">
+                                        <div className="pd-student-avatar">
+                                            <img
+                                                        src={
+                                                            project.student?.image
+                                                                ? `/storage/${project.student.image}`
+                                                                : '/image/logo/student-placeholder.svg'
+                                                        }
+                                                alt={project?.student?.name || 'Student'}
+                                                onError={(e) => {
+                                                    e.target.src = '/image/logo/stud1.jpeg';
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="pd-student-details">
+                                            <h4>{project?.student?.name || 'Student'}</h4>
+                                            <p>{project?.student?.education || 'No education info'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pd-sidebar-card">
+                                    <h3 className="pd-sidebar-title">Project Details</h3>
+                                    <ul className="pd-detail-list">
+                                        <li>
+                                            <span className="pd-detail-label">Category</span>
+                                            <span className="pd-detail-value">{project?.course?.name || project?.category || 'Student Work'}</span>
+                                        </li>
+                                        <li>
+                                            <span className="pd-detail-label">Completed</span>
+                                            <span className="pd-detail-value">{project?.created_at ? formatDate(project.created_at) : 'N/A'}</span>
+                                        </li>
+                                        {project?.duration && (
+                                            <li>
+                                                <span className="pd-detail-label">Duration</span>
+                                                <span className="pd-detail-value">{project.duration}</span>
+                                            </li>
+                                        )}
+                                    </ul>
+                                </div>
+
+                                <div className="pd-sidebar-card">
+                                    <h3 className="pd-sidebar-title">Back to Projects</h3>
+                                    <Link href="/yha/project" className="pd-back-link">
+                                        <i className="fas fa-arrow-left"></i>
+                                        Browse All Projects
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ========== Related Projects ========== */}
+            {relatedProjects && relatedProjects.length > 0 && (
+                <section className="pd-related">
+                    <div className="container pd-container">
+                        <div className="pd-related-header">
+                            <div>
+                                <h2 className="pd-section-title">Related Projects</h2>
+                                <p className="pd-section-subtitle">Explore more student projects</p>
+                            </div>
+                        </div>
+
+                        <div className="pd-related-grid">
+                            {relatedProjects.map((item, index) => (
+                                <div key={item.id || index} className="pd-related-card">
+                                    <div className="pd-related-image-wrap">
+                                        <img
+                                            src={item.image ? `/storage/${item.image}` : '/placeholder.jpg'}
+                                            alt={item.title || 'Project'}
+                                            className="pd-related-image"
+                                            onError={(e) => { e.target.src = '/placeholder.jpg'; }}
+                                        />
+                                        <div className="pd-related-overlay">
+                                            <Link href={`/project-detail/${item.id}`} className="pd-related-view">
+                                                <i className="fas fa-eye"></i>
+                                                View Project
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div className="pd-related-body">
+                                        <div className="pd-related-category">
+                                            {item.course?.name || item.category || 'Student Work'}
+                                        </div>
+                                        <h3 className="pd-related-title">{item.title}</h3>
+                                        <p className="pd-related-desc">
+                                            {item.desc || item.description || 'Project description'}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            <Footer address={address} />
         </div>
     );
 }

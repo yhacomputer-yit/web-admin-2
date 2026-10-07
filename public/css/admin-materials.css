@@ -1,0 +1,184 @@
+/* Subject Resource (material) list.
+   The page is a set of course cards with subject headings and
+   one line per file, so these styles describe those three shapes
+   rather than a table. Loaded only by this page. */
+
+/* ---------- the cards ---------- */
+.mat-card {
+    border: 1px solid #eceef2;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+
+.mat-course-head {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+    padding: .85rem 1rem;
+    background: #fff8f2;
+    border-bottom: 1px solid #ffe0c2;
+}
+
+.mat-course-name {
+    font-weight: 600;
+    font-size: .95rem;
+    color: #0f172a;
+}
+
+.mat-subject {
+    padding: .85rem 1rem .6rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mat-subject:last-child {
+    border-bottom: 0;
+}
+
+.mat-line {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.mat-num {
+    flex: 0 0 auto;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #ff6c0f;
+    background: #fff1e6;
+    border-radius: 5px;
+    padding: .1rem .35rem;
+}
+
+.mat-name {
+    font-weight: 600;
+    font-size: .9rem;
+    color: #0f172a;
+    min-width: 0;
+}
+
+/* how many files the subject holds, said next to its name so a
+   card can be scanned without opening a single one of them */
+.mat-count {
+    flex: 0 0 auto;
+    font-size: .68rem;
+    font-weight: 600;
+    color: #64748b;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: .08rem .45rem;
+}
+
+/* the file lines sit inside the subject, so they are indented under it
+   rather than running the full width of the card */
+.mat-files {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    margin: .55rem 0 .6rem 2.1rem;
+}
+
+/* a chip wraps its own text instead of pushing the row wider, which is
+   what a table cell cannot do */
+.mat-chip {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    max-width: 100%;
+    padding: .35rem .6rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: .78rem;
+    color: #334155;
+    text-decoration: none;
+}
+
+.mat-chip:hover {
+    background: #fff1e6;
+    border-color: #ffc79a;
+    color: #0f172a;
+    text-decoration: none;
+}
+
+/* the row still holds a path but there is no file behind it */
+.mat-chip.is-missing {
+    background: #fef2f2;
+    border-color: #fecaca;
+    border-style: dashed;
+}
+
+.mat-chip.is-missing .mat-chip-name {
+    text-decoration: line-through;
+}
+
+.mat-chip.is-missing .mat-chip-size {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* the kind of file, so a list of books, recordings and archives can be
+   told apart at a glance without reading every name */
+.mat-kind-tag {
+    flex: 0 0 auto;
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: .12rem .4rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+.mat-chip-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mat-chip-size {
+    flex: 0 0 auto;
+    margin-left: auto;
+    font-size: .68rem;
+    color: #94a3b8;
+}
+
+.mat-remark {
+    font-size: .72rem;
+    color: #64748b;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mat-when {
+    flex: 0 0 auto;
+    font-size: .72rem;
+    color: #94a3b8;
+}
+
+/* a phone cannot hold a file line in one row: the note and the
+   time drop under the name, and the size keeps its place beside
+   it, so nothing is squeezed unreadable */
+@media (max-width: 767.98px) {
+    .mat-files {
+        margin-left: 1rem;
+    }
+
+    .mat-remark,
+    .mat-when {
+        flex: 1 0 100%;
+        padding-left: 1.6rem;
+    }
+
+    .mat-chip-size {
+        margin-left: 0;
+    }
+}

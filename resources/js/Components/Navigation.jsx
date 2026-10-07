@@ -54,7 +54,7 @@ export default function Navigation() {
             <Link className="logo-container" href="/">
                 <img
                     className="logo-img"
-                    src="/image/logo/logo.png"
+                    src="/image/logo/newlogo.png"
                     alt="YHA Logo"
                 />
                 <div className="logo-text">

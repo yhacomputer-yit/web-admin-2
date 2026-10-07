@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Project;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,8 @@ class ProjectController extends Controller
     // direct student project create page
     public function createPage(){
         $courses = Course::get();
-        return view('admin.project.create', compact('courses'));
+        $students = Student::orderBy('name')->get(['id', 'name']);
+        return view('admin.project.create', compact('courses', 'students'));
     }
     // create student project
     public function create(Request $request){
@@ -23,11 +25,12 @@ class ProjectController extends Controller
             'title' => 'required|min:3|unique:projects,title,'.$request->id,
             'image' => 'required|image|mimes:png,jpeg,jpg',
             'course' => 'required',
+            'student' => 'required|exists:students,id',
             'desc' => 'required|min:5',
         ];
         Validator::make($request->all(), $rule)->validate();
         if($request->hasfile('image')){
-            $filename = uniqid() .'_'. $request->file('image')->getClientOriginalName(); // filename with unique
+            $filename = uniqid() .'_'. $request->file('image')->getClientOriginalName();
             $request->file('image')->storeas('public', $filename);
             $data["image"] = $filename;
         }
@@ -44,43 +47,43 @@ class ProjectController extends Controller
     // edit student project
     public function edit($id){
         $courses = Course::get();
+        $students = Student::orderBy('name')->get(['id', 'name']);
         $data = Project::where('id', $id)->first();
-        return view('admin.project.edit', compact('data', 'courses'));
+        return view('admin.project.edit', compact('data', 'courses', 'students'));
     }
 
     // update student project
     public function update(Request $request, $id){
-        $rule = [   // validation rule
+        $rule = [
             'title' => 'required|min:3|unique:projects,title,'.$request->id,
             'image' => 'image|mimes:png,jpeg,jpg',
             'course' => 'required',
+            'student' => 'required|exists:students,id',
             'desc' => 'required|min:5', 
         ];
-        Validator::make($request->all(), $rule)->validate();  // validation action
-        $data = $this->get_request_data($request); // get data and turn into array
+        Validator::make($request->all(), $rule)->validate();
+        $data = $this->get_request_data($request);
         if($request->hasfile('image')){ 
-            // Delete Old image 
-            $old = Project::select('image')->where('id', $id)->first()->toArray(); // select old image
+            $old = Project::select('image')->where('id', $id)->first()->toArray();
             $old = $old['image'];
             if($old != null){
-                Storage::delete('public/'.$old);  // delete old image from storage
+                Storage::delete('public/'.$old);
             }
-            $filename = uniqid() .'_'. $request->file('image')->getClientOriginalName(); // filename with unique
-            $request->file('image')->storeas('public', $filename); // get new image
-            $data["image"] = $filename; // set new image
+            $filename = uniqid() .'_'. $request->file('image')->getClientOriginalName();
+            $request->file('image')->storeas('public', $filename);
+            $data["image"] = $filename;
         }
-        Project::where('id', $id)->update($data); // update the database
-        return redirect()->route('admin.project')->with(['success' => 'Updated student project successfully']); // redirect to project page
+        Project::where('id', $id)->update($data);
+        return redirect()->route('admin.project')->with(['success' => 'Updated student project successfully']);
     }
 
     // student project data
     private function get_request_data($request){
         $arr = [
             'title' => $request->title,
+            'student_id' => $request->student,
             'course_id' => $request->course,
             'desc' => $request->desc,
-            'github' => $request->github,
-            'demo' => $request->demo,
         ];
         return $arr;
     }

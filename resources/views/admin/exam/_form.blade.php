@@ -22,13 +22,6 @@
         && Storage::disk(ExamQuestion::PAPER_DISK)->exists($exam->question_file);
 
     $paperLabel = $isEdit ? StoredFile::label($exam->question_file) : null;
-
-    // what the upload will do to the students' portal, said before it is saved:
-    // the window is the whole contract between the two pages
-    $closesLabel = TimeOfDay::format(
-        $exam?->submissionClosesAt()
-            ?? \Illuminate\Support\Carbon::parse($currentDate . ' ' . $currentStart)->addMinutes(ExamQuestion::SUBMIT_WINDOW_MINUTES)
-    );
 @endphp
 
 <style>
@@ -126,7 +119,7 @@
 
                         <div class="col-12 col-sm-6 form-group">
                             <label for="start_time" class="form-label h6 my-2">Start time</label>
-                            <input type="time" name="start_time" id="start_time" required step="300"
+                            <input type="time" name="start_time" id="start_time" required step="60"
                                 value="{{ $currentStart }}"
                                 class="form-control form-control-sm @error('start_time') is-invalid @enderror">
                             @error('start_time')
@@ -136,7 +129,7 @@
 
                         <div class="col-12 col-sm-6 form-group">
                             <label for="end_time" class="form-label h6 my-2">End time</label>
-                            <input type="time" name="end_time" id="end_time" required step="300"
+                            <input type="time" name="end_time" id="end_time" required step="60"
                                 value="{{ $currentEnd }}"
                                 class="form-control form-control-sm @error('end_time') is-invalid @enderror">
                             @error('end_time')
@@ -144,15 +137,6 @@
                             @enderror
                         </div>
                     </div>
-
-                    {{-- <div class="form-text mb-3" id="window-hint">
-                        Students open the paper at the start time, and uploads close{" "}
-                        {{ ExamQuestion::SUBMIT_WINDOW_MINUTES }} minutes later
-                        <span id="closes-hint">({{ $closesLabel ?? 'after the start time' }})</span>.
-                        The paper itself stays readable until {{ TimeOfDay::format($exam?->end_time) ?? 'the end time' }},
-                        after which the link stops working for everyone. Move the start time and
-                        this deadline moves with it; nothing is written until you save.
-                    </div> --}}
 
                     <div class="form-group mb-0">
                         <label for="question_file" class="form-label h6 my-2">Question paper</label>
@@ -224,36 +208,6 @@
                         subjectSelect.appendChild(option);
                     });
                 });
-            }
-
-            /* The upload deadline is counted forward from the start time, so it is said
-               here rather than left to the admin to work out from the end time. */
-            const dateInput = document.getElementById('exam_date');
-            const startInput = document.getElementById('start_time');
-            const closesHint = document.getElementById('closes-hint');
-            const windowMinutes = @json(ExamQuestion::SUBMIT_WINDOW_MINUTES);
-
-            if (dateInput && startInput && closesHint) {
-                const syncCloses = () => {
-                    if (!dateInput.value || !startInput.value) {
-                        closesHint.textContent = '';
-                        return;
-                    }
-
-                    const [hours, minutes] = startInput.value.split(':').map(Number);
-                    if (Number.isNaN(hours) || Number.isNaN(minutes)) return;
-
-                    const closes = new Date(`${dateInput.value}T00:00:00`);
-                    closes.setHours(hours, minutes + windowMinutes, 0, 0);
-
-                    closesHint.textContent = '(' + closes.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    }) + ')';
-                };
-
-                dateInput.addEventListener('change', syncCloses);
-                startInput.addEventListener('change', syncCloses);
             }
         })();
     </script>

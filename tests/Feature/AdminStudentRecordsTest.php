@@ -348,6 +348,11 @@ class AdminStudentRecordsTest extends TestCase
             'drop_out_date' => '2026-07-14',
         ];
 
+        // a shared development database may already hold rows from
+        // earlier use: the point here is that none of the refused
+        // submissions adds one
+        $before = DropOut::count();
+
         $this->asAdmin()
             ->post(route('dropOut.create'), ['student_id' => $this->student->id, 'course_id' => $this->courseId])
             ->assertSessionHasErrors('drop_out_date');
@@ -364,7 +369,7 @@ class AdminStudentRecordsTest extends TestCase
             ->post(route('dropOut.create'), array_merge($base, ['course_id' => 999999]))
             ->assertSessionHasErrors('course_id');
 
-        $this->assertDatabaseCount('drop_outs', 0);
+        $this->assertSame($before, DropOut::count());
     }
 
     public function test_the_drop_out_list_narrows_by_course_and_by_student(): void
@@ -1031,18 +1036,20 @@ public function test_the_admin_pages_notify_at_the_top_right_instead_of_a_browse
 
         $tables = file_get_contents(base_path('public/css/admin-tables.css'));
 
-        $this->assertMatchesRegularExpression('/\.btn-back\s*\{[^}]*left:/', $tables);
-        $this->assertDoesNotMatchRegularExpression('/\.btn-back\s*\{[^}]*\bright:/', $tables);
+        // the floating button shares `.btn` with every other button, so it is styled as
+        // `.btn.btn-back` - otherwise the shared padding would shrink the pill
+        $this->assertMatchesRegularExpression('/\.btn\.btn-back\s*\{[^}]*left:/', $tables);
+        $this->assertDoesNotMatchRegularExpression('/\.btn\.btn-back\s*\{[^}]*\bright:/', $tables);
 
         // from 1200px the rail is position:fixed and reserves a 16.25rem gutter, so
         // a button pinned to the left edge of the viewport ends up behind it; it has
         // to track the rail, including the rail collapsing
         $this->assertMatchesRegularExpression(
-            '/@media\s*\(min-width:\s*1200px\)\s*\{[^@]*?\.btn-back\s*\{[^}]*--sidebar-width/',
+            '/@media\s*\(min-width:\s*1200px\)\s*\{[^@]*?\.btn\.btn-back\s*\{[^}]*--sidebar-width/',
             $tables,
             'The back button does not clear the fixed sidebar, so the rail covers it.'
         );
-        $this->assertMatchesRegularExpression('/html\.sidebar-collapsed \.btn-back/', $tables);
+        $this->assertStringContainsString('html.sidebar-collapsed .btn.btn-back', $tables);
 
         $this->assertDoesNotMatchRegularExpression(
             '/\.table-responsive\s*\{[^}]*overflow:\s*hidden/',

@@ -897,6 +897,96 @@ button.se-stretch {
     color: var(--sa-muted);
 }
 
+/* ---------- the grace period ---------- */
+/* Drawn where the paper was, because that is the part of the page
+   the student is looking at when the exam's own time runs out.
+   Amber rather than the exam clock's red: the exam is over, but
+   the sitting is not -- this is the door still open, not the one
+   that just shut. */
+.se-grace {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-height: min(50vh, 24rem);
+    padding: 1.5rem;
+    background: #fffbeb;
+}
+
+.se-grace-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    font-size: 1.5rem;
+    color: #b45309;
+}
+
+.se-grace-body {
+    min-width: 0;
+}
+
+.se-grace-title {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: #92400e;
+}
+
+.se-grace-sub {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: #78350f;
+}
+
+/* tabular figures, so the clock does not shuffle sideways on
+   every tick, and heavy enough to read at a glance */
+.se-grace-clock {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.se-grace-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #b45309;
+}
+
+.se-grace-time {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #92400e;
+}
+
+/* the last five minutes and the last minute move through the
+   same two shades the exam clock did, so a clock closing reads
+   the same way wherever it is on the page */
+.se-grace.is-urgent .se-grace-icon,
+.se-grace.is-urgent .se-grace-label,
+.se-grace.is-urgent .se-grace-time {
+    color: #b45309;
+}
+
+.se-grace.is-critical {
+    background: #fef2f2;
+}
+
+.se-grace.is-critical .se-grace-icon,
+.se-grace.is-critical .se-grace-label,
+.se-grace.is-critical .se-grace-title,
+.se-grace.is-critical .se-grace-sub,
+.se-grace.is-critical .se-grace-time {
+    color: #b91c1c;
+}
+
+.se-grace.is-critical .se-grace-sub {
+    color: #7f1d1d;
+}
+
 /* ---------- the submit band ---------- */
 .se-submit {
     padding: 1rem 1.1rem 1.1rem;
@@ -985,6 +1075,19 @@ button.se-stretch {
         flex: 1 0 100%;
         margin-left: 0;
         padding-left: 1.75rem;
+    }
+
+    /* the grace banner stacks on a phone: the icon above the words, and
+       the clock centered, because the clock is the part a student is
+       watching while they write theirs out */
+    .se-grace {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .se-grace-clock {
+        justify-content: center;
     }
 
     .se-filters-count {

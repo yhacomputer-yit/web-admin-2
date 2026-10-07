@@ -114,10 +114,6 @@
                         @error('subject_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        {{-- <div class="form-text">
-                            Only subjects linked to the chosen course are listed. Link more under
-                            <a href="{{ route('admin.course') }}" class="text-decoration-none">Course</a>.
-                        </div> --}}
                     </div>
 
                     <div class="mb-2 form-group">
@@ -139,12 +135,6 @@
                     <span class="fw-semibold"><i class="bx bx-cloud-upload me-1"></i> File</span>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted small">
-                        One file per row. A subject can hold as many books, recordings
-                        and archives as it needs &mdash; add another file to the same
-                        subject whenever you need one.
-                    </p>
-
                     <div class="form-group">
                         <label class="form-label h6 my-2">Kind of file</label>
                         <div class="row g-2">
@@ -163,17 +153,6 @@
                         </div>
                         @error('type')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3 form-group">
-                        <label for="title" class="form-label h6 my-2">Title</label>
-                        <input type="text" name="title" id="title" maxlength="120"
-                            value="{{ old('title', $material->title ?? '') }}"
-                            class="form-control form-control-sm @error('title') is-invalid @enderror"
-                            placeholder="Optional &mdash; the file name is used when this is empty">
-                        @error('title')
-                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -225,11 +204,28 @@
         <a href="{{ route('material.index') }}" class="btn btn-outline-secondary">
             <i class="bx bx-left-arrow-alt me-1"></i> Back
         </a>
-        <button type="submit" class="btn" style="background-color: #ff6c0f; color: white;">
+        <button type="submit" class="btn" style="background-color: #ff6c0f; color: white;" data-loading="Saving...">
             <i class="bx bx-down-arrow-alt me-1"></i> {{ $isEdit ? 'Save Changes' : 'Save' }}
         </button>
     </div>
 </form>
+
+{{-- Upload loading modal --}}
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Uploading...</span>
+                    </div>
+                </div>
+                <h5 class="modal-title mb-2">Uploading file</h5>
+                <p class="text-muted small mb-0" id="uploadStatus">Preparing upload...</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 @push('scripts')
     <script>
@@ -252,8 +248,6 @@
                 courseSelect.addEventListener('change', renderSubjects);
             }
 
-            // the kind of file decides what the picker accepts, so the accept
-            // filter and the hint follow whichever card is ticked
             const kinds = @json($kinds);
             const fileInput = document.getElementById('file');
             const fileHint = document.getElementById('file-hint');
@@ -280,6 +274,35 @@
                 });
 
                 syncFileRules();
+            }
+
+            const form = document.querySelector('form[enctype="multipart/form-data"]');
+            const modal = document.getElementById('uploadModal');
+            const statusEl = document.getElementById('uploadStatus');
+
+            if (form && modal && statusEl) {
+                const messages = [
+                    'Reading file...',
+                    'Uploading to server...',
+                    'Saving file info...',
+                    'Finishing up...',
+                ];
+
+                form.addEventListener('submit', function () {
+                    modal.classList.add('show');
+                    modal.style.display = 'block';
+                    let i = 0;
+                    statusEl.textContent = messages[0];
+                    const timer = setInterval(function () {
+                        i++;
+                        if (i < messages.length) {
+                            statusEl.textContent = messages[i];
+                        } else {
+                            clearInterval(timer);
+                            statusEl.textContent = 'Almost done...';
+                        }
+                    }, 800);
+                });
             }
         })();
     </script>

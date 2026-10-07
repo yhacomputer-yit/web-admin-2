@@ -9,7 +9,7 @@ export default function Footer({ address }) {
                 <div className="text-center row gy-4 align-items-stretch text-lg-start">
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
                         <div className="mb-3 footer-brand">
-                            <img src="/image/logo/logo.png" alt="Logo" style={{height: '200px'}} />
+                            <img className='ms-5' src="/image/logo/newlogo.png" alt="Logo" style={{height: '200px'}} />
                         </div>
                     </div>
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
@@ -35,9 +35,11 @@ export default function Footer({ address }) {
                     <div className="col-lg-3 col-md-6 d-flex flex-column align-items-center align-items-lg-start justify-content-center h-100">
                         <h5 className="footer-title">Follow Us</h5>
                         <div className="mb-3 footer-social">
+                            <a href="https://www.tiktok.com/@yhaacademytechhledan" aria-label="TikTok" target="_blank"><i className="fa-brands fa-tiktok"></i></a>
                             <a href="https://t.me/yha202" aria-label="Telegram" target="_blank"><i className="fa-brands fa-telegram"></i></a>
-                            <a href="https://www.facebook.com/yhacomputerhledan" aria-label="Facebook" target="_blank"><i className="fa-brands fa-facebook-f"></i></a>
+                            <a href="https://www.facebook.com/yhacomputerforyou/" aria-label="Facebook" target="_blank"><i className="fa-brands fa-facebook-f"></i></a>
                             <a href="https://www.youtube.com/channel/UCTwXsN1TMJuEiCuFXacQbkA" aria-label="YouTube" target="_blank"><i className="fa-brands fa-youtube"></i></a>
+                            <a href="https://www.facebook.com/yhaacademytech" aria-label="Facebook" target="_blank"><i className="fa-brands fa-facebook-f"></i></a>
                         </div>
                         <a href="#contact" className="footer-cta">Join Our Classes</a>
                     </div>

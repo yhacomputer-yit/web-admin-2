@@ -456,7 +456,7 @@ export default function Homepage({
                                                 )}
                                             </div> */}
                                             <Link
-                                                href={`/course/`}
+                                                href={`/project-detail/${project.id}`}
                                                 className=""
                                             >
                                                 <span className="learnmore">

@@ -26,7 +26,7 @@
         <input type="hidden" name="student_id" id="student_id"
             value="{{ old('student_id', $selectedStudent?->id) }}">
 
-        <div id="studentResults" class="list-group position-absolute w-100 shadow d-none"
+        <div id="studentResults" class="list-group position-absolute top-full left-0 w-100 bg-white shadow-lg d-none"
             style="z-index: 1050; max-height: 320px; overflow-y: auto;" role="listbox"></div>
 
         <div id="studentEmpty" class="small text-muted mt-1 d-none">No student matches that search.</div>
@@ -39,7 +39,7 @@
     {{-- Selected student preview  --}}
     <div id="studentSelected" class="d-none mt-2">
         <div class="d-flex align-items-center gap-3 border rounded p-2 bg-light">
-            <img id="spImage" src="/image/no-image.jpg" width="46" height="46"
+            <img id="spImage" src="/image/logo/student-placeholder.svg" width="46" height="46"
                 class="rounded-circle object-fit-cover border" alt="">
             <div class="flex-grow-1">
                 <div class="fw-semibold" id="spName"></div>
@@ -91,7 +91,7 @@
         }
 
         function showSelected(s) {
-            spImage.src = s.image || '/image/no-image.jpg';
+            spImage.src = s.image || '/image/logo/student-placeholder.svg';
             spName.textContent = s.name;
             spUsername.textContent = s.username ? '@' + s.username : '';
             spPhone.textContent = s.phone ? ' · ' + s.phone : '';
@@ -168,7 +168,7 @@
                     a.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
                     a.setAttribute('role', 'option');
                     a.innerHTML =
-                        '<img src="' + (s.image || '/image/no-image.jpg') + '" width="32" height="32"' +
+                        '<img src="' + (s.image || '/image/logo/student-placeholder.svg') + '" width="32" height="32"' +
                         ' class="rounded-circle object-fit-cover border" alt="">' +
                         '<span class="flex-grow-1">' +
                         '<span class="fw-semibold d-block">' + esc(s.name) + '</span>' +

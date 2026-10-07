@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\ExamAnswer;
 use App\Models\ExamQuestion;
 use App\Models\StudentEnrollment;
 use App\Models\Subject;
@@ -11,6 +12,7 @@ use App\Support\StoredFile;
 use App\Support\TimeOfDay;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 /**
@@ -76,6 +78,41 @@ class ExamController extends Controller
             'selectedCourseId' => $selectedCourseId,
             'selectedSubjectId' => $selectedSubjectId,
             'selectedState' => $state,
+        ]);
+    }
+
+    /**
+     * The scripts handed in for a sitting's course and subject.
+     *
+     * A script is filed against the pair rather than against the
+     * sitting, so this page is the subject's inbox rather than this
+     * day's: every student who turned something in, newest first,
+     * with the file linked from the public disk it was stored on.
+     * A row can outlive its upload, so a filled-in path is not the
+     * same as a readable file, and the list says "missing" instead
+     * of offering a download that will not come.
+     */
+    public function scripts($id)
+    {
+        $exam = ExamQuestion::with(['course:id,name', 'subject:id,name'])->findOrFail($id);
+
+        $answers = ExamAnswer::with('student:id,name,username,status')
+            ->where('course_id', $exam->course_id)
+            ->where('subject_id', $exam->subject_id)
+            ->orderByDesc('submitted_date')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('admin.exam.scripts', [
+            'exam' => $exam,
+            'answers' => $answers,
+            // the denominator for the footer: how many could have
+            // handed something in, so the count on the list reads as
+            // "in, out of how many could be"
+            'enrolled' => StudentEnrollment::query()
+                ->where('course_id', $exam->course_id)
+                ->distinct()
+                ->count('student_id'),
         ]);
     }
 
@@ -168,6 +205,47 @@ class ExamController extends Controller
         return redirect()
             ->route('exam.index')
             ->with('success', 'Deleted the ' . $this->describe($exam) . ' The submitted scripts were kept, because they belong to the subject rather than to this sitting.');
+    }
+
+    /**
+     * Delete a student's exam answer script.
+     */
+    public function deleteScript($id)
+    {
+        $answer = ExamAnswer::with('student:id,name')->findOrFail($id);
+
+        $studentName = $answer->student->name ?? 'Student #' . $answer->student_id;
+
+        // delete the file from storage
+        StoredFile::delete($answer->answer_file, 'public');
+
+        $answer->delete();
+
+        return redirect()
+            ->back()
+            ->with('success', "Deleted the script for {$studentName}.");
+    }
+
+    /**
+     * Download a student's exam answer script with student name in filename.
+     */
+    public function downloadScript($id)
+    {
+        $answer = ExamAnswer::with('student:id,name')->findOrFail($id);
+
+        $path = $answer->answer_file;
+
+        abort_if(blank($path) || ! Storage::disk('public')->exists($path), 404);
+
+        $originalName = StoredFile::label($path) ?? 'answer';
+        $studentName = $answer->student->name ?? 'Student';
+        // sanitize student name for filename
+        $safeStudentName = preg_replace('/[^a-zA-Z0-9\-_ ]/', '', $studentName);
+        $safeStudentName = str_replace(' ', '_', $safeStudentName);
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $downloadName = $safeStudentName . '_' . $originalName;
+
+        return Storage::disk('public')->download($path, $downloadName);
     }
 
     // ---- helpers ----------------------------------------------------------

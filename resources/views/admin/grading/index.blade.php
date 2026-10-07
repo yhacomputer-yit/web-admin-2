@@ -58,7 +58,7 @@
                                     </a>
                                     <a href="{{ route('grading.delete', ['id' => $grading->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this band"
-                                        data-confirm="Delete the {{ $grading->name }} band?{{ $grading->results_count > 0 ? ' It is used by ' . $grading->results_count . ' mark(s), so this will be refused.' : '' }}"
+                                        data-confirm="Delete the {{ $grading->name }} band?{{ $grading->results_count > 0 ? ' It is used by ' . $grading->results_count . ' mark(s), so this will be refused.' : '' }}">
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

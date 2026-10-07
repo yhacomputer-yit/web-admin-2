@@ -179,6 +179,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [ExamController::class, 'edit'])->name('exam.edit');
             Route::post('/update/{id}', [ExamController::class, 'update'])->name('exam.update');
             Route::get('/delete/{id}', [ExamController::class, 'delete'])->name('exam.delete');
+            Route::get('/scripts/{id}', [ExamController::class, 'scripts'])->name('exam.scripts');
+            Route::post('/scripts/{id}/delete', [ExamController::class, 'deleteScript'])->name('exam.scripts.delete');
+            Route::get('/scripts/{id}/download', [ExamController::class, 'downloadScript'])->name('exam.scripts.download');
         });
 
         // students who left a class before it finished: the event is recorded
@@ -386,6 +389,7 @@ Route::middleware(['student_auth'])->prefix('student-portal')->group(function ()
     Route::get('/courses/{courseId}', [StudentPortalController::class, 'courseDetail'])
         ->name('student.courseDetail')
         ->whereNumber('courseId');
+    Route::get('/exam-results', [StudentPortalController::class, 'examResults'])->name('student.examResults');
     Route::post('/logout', [StudentPortalController::class, 'logout'])->name('student.logout');
 });
 

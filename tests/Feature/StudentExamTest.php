@@ -134,9 +134,8 @@ class StudentExamTest extends TestCase
     private function sitting(string $state): ExamQuestion
     {
         [$day, $start, $end] = match ($state) {
-            // opened a few minutes ago, not an hour: the upload window is a
-            // fixed short run from the start, so a fixture opened an hour ago is
-            // a sitting whose upload is already shut
+            // opened a few minutes ago, not an hour: a fixture opened
+            // long enough ago is one whose window may already have shut
             'open' => [Carbon::now(), Carbon::now()->subMinutes(5), Carbon::now()->addHours(2)],
             // a window that is still ahead of us, on a day that is too
             default => [Carbon::now()->addDay(), Carbon::now()->addHours(9), Carbon::now()->addHours(12)],
@@ -192,11 +191,9 @@ class StudentExamTest extends TestCase
     }
 
     /**
-     * A running sitting whose window opened a given number of minutes ago.
-     *
-     * This is the shape the submission cutoff is about: the paper is readable
-     * until the window shuts, but whether a script can be handed in depends only
-     * on how long ago the sitting opened.
+     * A running sitting whose window opened a given number of minutes
+     * ago, with its end an hour ahead: a point at a chosen distance
+     * into a window that is still comfortably open.
      */
     private function sittingOpenedFor(int $minutes): ExamQuestion
     {
@@ -207,9 +204,30 @@ class StudentExamTest extends TestCase
         $sitting->update([
             'exam_date' => $now->toDateString(),
             'start_time' => $now->copy()->subMinutes($minutes)->format('H:i:s'),
-            // a window long enough that the paper outlives the upload window
-            // every one of these cases needs
+            // an end an hour ahead, so every distance into
+            // the window is still comfortably inside it
             'end_time' => $now->copy()->addHour()->format('H:i:s'),
+        ]);
+
+        return $sitting->fresh();
+    }
+
+    /**
+     * A sitting whose own time ended a given number of minutes
+     * ago. Under the grace period's length that is the state the
+     * grace period is about: the questions gone, the upload still
+     * open. Past it, the sitting is closed in every way at once.
+     */
+    private function sittingEndedFor(int $minutes): ExamQuestion
+    {
+        $sitting = $this->sitting('open');
+
+        $now = Carbon::now();
+
+        $sitting->update([
+            'exam_date' => $now->toDateString(),
+            'start_time' => $now->copy()->subMinutes($minutes + 30)->format('H:i:s'),
+            'end_time' => $now->copy()->subMinutes($minutes)->format('H:i:s'),
         ]);
 
         return $sitting->fresh();
@@ -374,9 +392,9 @@ class StudentExamTest extends TestCase
                 ->component('StudentExamTake')
                 ->where('exam.id', $sitting->id)
                 // the countdown is built from the server's own clock against the
-                // sitting's own deadline, not the end of its window, so this is
-                // what the page counts down to
-                ->where('exam.submit_closes_at', $sitting->submissionClosesAt()->toIso8601String())
+                // sitting's own end time, so this is what the page
+                // counts down to
+                ->where('exam.ends_at', $sitting->endsAt()->toIso8601String())
                 ->where('exam.submit_open', true)
                 ->where('exam.paper_url', route('student.exam.paper', ['examId' => $sitting->id]))
                 ->has('server_time')
@@ -439,7 +457,9 @@ public function test_times_are_shown_in_twelve_hour_form(): void
             ->get(route('student.exam.show', ['examId' => $sitting->id]))
             ->assertRedirect(route('student.exam'))
             ->assertSessionHas('error', 'Exam time is over. It closed at '
-                . \App\Support\TimeOfDay::format($sitting->end_time) . '.');
+                . \App\Support\TimeOfDay::format($sitting->end_time)
+                . ', and submissions stopped at '
+                . \App\Support\TimeOfDay::format($sitting->submissionClosesAt()) . '.');
     }
 
     public function test_a_sitting_of_a_course_the_student_is_not_enrolled_in_is_not_found(): void
@@ -484,27 +504,6 @@ public function test_times_are_shown_in_twelve_hour_form(): void
             $response->baseResponse->getFile()->getPathname()
         );
         $this->assertStringStartsWith('%PDF', file_get_contents($response->baseResponse->getFile()->getPathname()));
-    }
-
-    /**
-     * The paper stops with the sitting's own time, not with its window.
-     *
-     * A student whose minutes are up must be refused by the URL as well as by the
-     * page: the countdown closing the viewer on screen would otherwise be a
-     * courtesy the bookmarked URL did not keep, and a paper still readable after
-     * the upload refused is not a closed exam.
-     */
-    public function test_the_paper_is_refused_once_the_sittings_own_time_is_up(): void
-    {
-        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 1);
-
-        // still inside the window an admin published, so only the sitting's own
-        // deadline can be what refuses this
-        $this->assertTrue($sitting->isOpen());
-
-        $this->asStudent()
-            ->get(route('student.exam.paper', ['examId' => $sitting->id]))
-            ->assertForbidden();
     }
 
     public function test_the_paper_is_refused_before_the_start_time(): void
@@ -599,13 +598,82 @@ public function test_times_are_shown_in_twelve_hour_form(): void
     }
 
     /**
-     * The upload shuts once the sitting has been open long enough, so a script
-     * handed in after that is refused even though the window is still running and
-     * the paper is still readable.
+     * The page is handed the sitting's own end time, the moment
+     * the grace period ends, and the server's clock, so its two
+     * countdowns, the paper and the upload form all run on the
+     * deadlines the endpoints also draw. A student whose time has
+     * run out is not even handed the paper's URL.
      */
-    public function test_a_submission_after_the_upload_window_shuts_is_refused(): void
+    public function test_the_sitting_page_is_told_the_deadline_and_the_clock(): void
     {
-        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 5);
+        $open = $this->sittingOpenedFor(2);
+
+        $this->asStudent()
+            ->get(route('student.exam.show', ['examId' => $open->id]))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('exam.can_open', true)
+                ->where('exam.ends_at', $open->endsAt()->toIso8601String())
+                ->where('exam.submit_closes_at', $open->submissionClosesAt()->toIso8601String())
+                ->where('exam.submit_open', true)
+                ->where('exam.paper_url', route('student.exam.paper', ['examId' => $open->id]))
+                ->where('exam.seconds_remaining', fn ($seconds) => $seconds > 0)
+                ->where('exam.submit_seconds_remaining', fn ($seconds) => $seconds > 0)
+            );
+    }
+
+    /**
+     * The grace period: the exam's own time has run out, so the
+     * questions are gone -- the paper is refused even by URL -- but
+     * the page still renders and a script can still be handed in
+     * until the grace period ends.
+     */
+    public function test_the_grace_period_hides_the_paper_but_keeps_the_upload_open(): void
+    {
+        $sitting = $this->sittingEndedFor(5);
+
+        // the exam itself is over, so only the grace period can be
+        // what keeps the page reachable and the paper refused
+        $this->assertTrue($sitting->isSubmitOpen());
+        $this->assertFalse($sitting->isPaperOpen());
+
+        $this->asStudent()
+            ->get(route('student.exam.paper', ['examId' => $sitting->id]))
+            ->assertForbidden();
+
+        $this->asStudent()
+            ->get(route('student.exam.show', ['examId' => $sitting->id]))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('exam.paper_url', null)
+                ->where('exam.submit_open', true)
+                ->where('exam.submit_closes_at', $sitting->submissionClosesAt()->toIso8601String())
+                ->where('exam.submit_seconds_remaining', fn ($seconds) => $seconds > 0)
+            );
+
+        $this->asStudent()
+            ->from(route('student.exam'))
+            ->post(route('student.exam.submit', ['examId' => $sitting->id]), [
+                'file' => UploadedFile::fake()->create('grace.pdf', 40, 'application/pdf'),
+            ])
+            ->assertRedirect(route('student.exam'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('exam_answers', [
+            'course_id' => $this->courseId,
+            'subject_id' => $this->subjectId,
+            'student_id' => $this->student->id,
+        ]);
+    }
+
+    /**
+     * Once the grace period is gone the sitting is closed in every
+     * way at once: the page sends the student back to the list and
+     * the submit endpoint refuses the script.
+     */
+    public function test_a_submission_after_the_grace_period_is_refused(): void
+    {
+        $sitting = $this->sittingEndedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 5);
 
         $this->asStudent()
             ->from(route('student.exam'))
@@ -621,59 +689,9 @@ public function test_times_are_shown_in_twelve_hour_form(): void
             'student_id' => $this->student->id,
         ]);
 
-        // the paper itself is untouched: only the upload is closed
-        $this->assertTrue($sitting->fresh()->isOpen());
-    }
-
-    public function test_a_submission_inside_the_upload_window_is_accepted(): void
-    {
-        $sitting = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES - 10);
-
         $this->asStudent()
-            ->post(route('student.exam.submit', ['examId' => $sitting->id]), [
-                'file' => UploadedFile::fake()->create('ontime.pdf', 40, 'application/pdf'),
-            ])
-            ->assertRedirect(route('student.exam'))
-            ->assertSessionHas('success');
-
-        $this->assertDatabaseHas('exam_answers', [
-            'course_id' => $this->courseId,
-            'subject_id' => $this->subjectId,
-            'student_id' => $this->student->id,
-        ]);
-    }
-
-    /**
-     * The page is told about the sitting's own deadline separately from its
-     * window, so it can close the paper and the form on one clock without ever
-     * offering either the submit endpoint would refuse. A student whose time has
-     * run out is not even handed the paper's URL.
-     */
-    public function test_the_sitting_page_is_told_when_the_upload_closes(): void
-    {
-        $closing = $this->sittingOpenedFor(ExamQuestion::SUBMIT_WINDOW_MINUTES + 2);
-
-        $this->asStudent()
-            ->get(route('student.exam.show', ['examId' => $closing->id]))
-            ->assertOk()
-            ->assertInertia(fn (AssertableInertia $page) => $page
-                ->where('exam.can_open', true)
-                ->where('exam.paper_url', null)
-                ->where('exam.submit_open', false)
-                ->where('exam.submit_window_minutes', ExamQuestion::SUBMIT_WINDOW_MINUTES)
-                ->where('exam.submit_closes_at', $closing->submissionClosesAt()->toIso8601String())
-            );
-
-        $open = $this->sittingOpenedFor(2);
-
-        $this->asStudent()
-            ->get(route('student.exam.show', ['examId' => $open->id]))
-            ->assertOk()
-            ->assertInertia(fn (AssertableInertia $page) => $page
-                ->where('exam.submit_open', true)
-                ->where('exam.paper_url', route('student.exam.paper', ['examId' => $open->id]))
-                ->where('exam.submit_seconds_remaining', fn ($seconds) => $seconds > 0)
-            );
+            ->get(route('student.exam.show', ['examId' => $sitting->id]))
+            ->assertRedirect(route('student.exam'));
     }
 
     public function test_a_file_that_is_not_a_script_is_refused(): void

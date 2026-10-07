@@ -6,6 +6,7 @@ import '../../css/pages/project.css';
 
 export default function Projects({
     projects,
+    courses = [],
     prog,
     graph,
     ict,
@@ -13,6 +14,7 @@ export default function Projects({
     subjects = [],
     courseCounts = {},
     subjectCourseMap = {},
+    courseSubjects = {},
 }) {
     const [search, setSearch] = useState('');
     const [courseId, setCourseId] = useState('all');
@@ -22,7 +24,7 @@ export default function Projects({
     const projectsPerPage = 9;
 
     const projectsData = Array.isArray(projects) ? projects : (projects?.data || []);
-    const allCourses = [...(prog || []), ...(graph || []), ...(ict || [])];
+    const allCourses = courses.length ? courses : [...(prog || []), ...(graph || []), ...(ict || [])];
 
     const getCourseCount = (id) => {
         const key = String(id);
@@ -51,7 +53,6 @@ export default function Projects({
                 const desc = (project.desc || project.description || '').toLowerCase();
                 const courseName = (project.course?.name || '').toLowerCase();
                 const student = (
-                    project.student_name ||
                     project.student?.name ||
                     ''
                 ).toLowerCase();
@@ -321,35 +322,39 @@ export default function Projects({
                                                         {project.title || 'Project Title'}
                                                     </Link>
                                                 </h3>
-                                                <p className="ps-row-student">
-                                                    <i className="fas fa-user"></i>
-                                                    {project.student_name ||
-                                                        project.student?.name ||
-                                                        project.author ||
-                                                        'Student'}
-                                                </p>
+                                                 <p className="ps-row-student">
+                                                     <i className="fas fa-user"></i>
+                                                     {project.student?.name || 'Unassigned'}
+                                                 </p>
                                                 <p className="ps-row-desc">
                                                     {project.desc ||
                                                         project.description ||
                                                         'No description available.'}
                                                 </p>
                                                 <div className="ps-row-tech">
-                                                    {(
-                                                        project.tech_stack ||
-                                                        project.technologies ||
-                                                        'HTML, CSS'
-                                                    )
+                                                    {(project.tech_stack || project.technologies || '')
                                                         .toString()
                                                         .split(',')
                                                         .filter(Boolean)
                                                         .map((tech, i) => (
                                                             <span
-                                                                key={i}
+                                                                key={`tech-${i}`}
                                                                 className="ps-tech-tag"
                                                             >
                                                                 {tech.trim()}
                                                             </span>
                                                         ))}
+                                                    {!(project.tech_stack || project.technologies) &&
+                                                        (courseSubjects[project.course_id] || courseSubjects[String(project.course?.id)]) &&
+                                                        [...new Set((courseSubjects[project.course_id] || courseSubjects[String(project.course?.id)] || []))].map((subject, i) => (
+                                                            <span
+                                                                key={`subj-${i}`}
+                                                                className="ps-tech-tag"
+                                                            >
+                                                                {subject}
+                                                            </span>
+                                                        ))
+                                                    }
                                                 </div>
                                             </div>
 
@@ -357,23 +362,19 @@ export default function Projects({
                                                 <div className="ps-avatar-img-wrap">
                                                     <img
                                                         src={
-                                                            project.student_photo
-                                                                ? `/storage/${project.student_photo}`
-                                                                : project.student?.photo
-                                                                ? `/storage/${project.student.photo}`
-                                                                : '/image/logo/stud1.jpeg'
+                                                            project.student?.image
+                                                                ? `/storage/${project.student.image}`
+                                                                : '/image/logo/student-placeholder.svg'
                                                         }
-                                                        alt="Student"
+                                                        alt={project.student?.name || 'Student avatar'}
                                                         onError={(e) => {
                                                             e.target.src =
-                                                                '/image/logo/stud1.jpeg';
+                                                                '/image/logo/student-placeholder.svg';
                                                         }}
                                                     />
                                                 </div>
                                                 <p className="ps-avatar-uni">
-                                                    {project.university ||
-                                                        project.student?.university ||
-                                                        project.school ||
+                                                    {project.student?.education ||
                                                         'YHA ACADEMY OF TECHNOLOGY'}
                                                 </p>
                                             </div>

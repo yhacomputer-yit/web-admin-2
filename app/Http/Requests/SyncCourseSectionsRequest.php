@@ -19,7 +19,10 @@ class SyncCourseSectionsRequest extends FormRequest
     {
         return [
             'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'section_ids' => ['present', 'array'],
+            // a form with no box ticked sends no section_ids field at
+            // all, so the field has to be allowed to be absent: clearing
+            // every section is a save, not a validation error
+            'section_ids' => ['nullable', 'array'],
             'section_ids.*' => ['integer', 'exists:sections,id'],
         ];
     }

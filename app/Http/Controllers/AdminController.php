@@ -162,8 +162,9 @@ class AdminController extends Controller
 
     // direct project page
     public function project(){
-        $projects = Project::select('projects.*', 'courses.name as course')
+        $projects = Project::select('projects.*', 'courses.name as course', 'students.name as student')
                     ->leftJoin('courses', 'projects.course_id', '=', 'courses.id')
+                    ->leftJoin('students', 'projects.student_id', '=', 'students.id')
                     ->paginate(5);
         return view('admin.project', compact('projects'));
     }

@@ -8,6 +8,7 @@ use App\Models\ExamQuestion;
 use App\Models\Subject;
 use App\Models\SubjectDetail;
 use App\Models\User;
+use App\Support\StoredFile;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
@@ -401,6 +402,59 @@ public function test_the_create_and_edit_pages_render_with_usable_time_values():
                 'student_id' => $studentId,
             ]);
         }
+    }
+
+    /**
+     * The inbox a sitting's scripts are read from: the students who
+     * turned something in for the sitting's course and subject, with
+     * the file itself linked from the disk it was stored on.
+     */
+    public function test_the_scripts_page_lists_each_student_and_their_file(): void
+    {
+        $exam = $this->asAdmin()->createSitting();
+
+        $studentId = ExamAnswer::query()->value('student_id');
+
+        if ($studentId === null) {
+            $this->markTestSkipped('No student to hand in a script.');
+        }
+
+        $path = 'exam/answers/scripts-page.pdf';
+        Storage::disk('public')->put($path, self::PDF);
+
+        ExamAnswer::updateOrCreate(
+            [
+                'course_id' => $exam->course_id,
+                'subject_id' => $exam->subject_id,
+                'student_id' => $studentId,
+            ],
+            ['answer_file' => $path, 'submitted_date' => now()]
+        );
+
+        $this->asAdmin()
+            ->get(route('exam.scripts', ['id' => $exam->id]))
+            ->assertOk()
+            ->assertSee(StoredFile::label($path))
+            ->assertSee(Storage::url($path));
+    }
+
+    /**
+     * A sitting nothing has been handed in for says so, rather than
+     * rendering a table with nothing in it.
+     */
+    public function test_the_scripts_page_says_so_when_nothing_is_handed_in(): void
+    {
+        $exam = $this->asAdmin()->createSitting();
+
+        ExamAnswer::query()
+            ->where('course_id', $exam->course_id)
+            ->where('subject_id', $exam->subject_id)
+            ->delete();
+
+        $this->asAdmin()
+            ->get(route('exam.scripts', ['id' => $exam->id]))
+            ->assertOk()
+            ->assertSee('No scripts handed in yet');
     }
 
     // ------------------------------------- the effect on the student portal

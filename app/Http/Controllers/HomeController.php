@@ -188,7 +188,7 @@ class HomeController extends Controller
         $address = \App\Models\Address::all();
         $monthies = \App\Models\Monthly::with('course')->latest()->get();
         $events = \App\Models\Event::latest()->get();
-        $projects = \App\Models\Project::with('course')->latest()->get();
+        $projects = \App\Models\Project::with(['course', 'student:id,name,image,education'])->latest()->get();
         $homeReviews = Review::where('status', 1)->orderByDesc('created_at')->take(3)->get();
         $sliders = \App\Models\Welcome::latest()->get();
         $teacher = \App\Models\Teacher::with('position')->latest()->get();

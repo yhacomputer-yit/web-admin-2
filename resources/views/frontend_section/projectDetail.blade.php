@@ -26,20 +26,8 @@
                 <p class="project-description">{{ $project->desc }}</p>
 
                 <div class="project-actions">
-                    @if($project->github)
-                        <a href="{{ $project->github }}" class="btn-primary" target="_blank">
-                            <i class="fab fa-github"></i>
-                            View on GitHub
-                        </a>
-                    @endif
-                    @if($project->demo)
-                        <a href="{{ $project->demo }}" class="btn-secondary" target="_blank">
-                            <i class="fas fa-play"></i>
-                            Live Demo
-                        </a>
-                    @endif
                     <a href="{{ route('user.project') }}" class="btn-back">
-                        <i class="fas fa-arrow-left"></i>
+                        <i className="fas fa-arrow-left"></i>
                         Back to Projects
                     </a>
                 </div>
@@ -55,6 +43,23 @@
         </div>
     </div>
 </section>
+
+<!-- Student Information Section -->
+@if($project->student)
+<section class="project-student-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-3 text-center">
+                <img src="{{ asset('storage/'.($project->student->image ?? 'image/logo/student-placeholder.svg')) }}" alt="{{ $project->student->name ?? 'Student' }}" class="project-student-avatar">
+            </div>
+            <div class="col-lg-9">
+                <h2 class="project-student-name">{{ $project->student->name }}</h2>
+                <p class="project-student-education">{{ $project->student->education }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- Project Details Section -->
 <section class="project-details">
@@ -136,47 +141,7 @@
     </div>
 </section>
 
-<!-- Project Links Section -->
-@if($project->github || $project->demo)
-<section class="project-links-section">
-    <div class="container">
-        <div class="section-header text-center">
-            <h2 class="section-title">Project Links</h2>
-            <p class="section-subtitle">Explore the project source code and live demo</p>
-        </div>
-
-        <div class="links-grid">
-            @if($project->github)
-                <div class="link-card github-card">
-                    <div class="link-icon">
-                        <i class="fab fa-github"></i>
-                    </div>
-                    <h3>Source Code</h3>
-                    <p>View the complete source code on GitHub</p>
-                    <a href="{{ $project->github }}" class="link-btn" target="_blank">
-                        <i class="fab fa-github"></i>
-                        View on GitHub
-                    </a>
-                </div>
-            @endif
-
-            @if($project->demo)
-                <div class="link-card demo-card">
-                    <div class="link-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <h3>Live Demo</h3>
-                    <p>Experience the project in action</p>
-                    <a href="{{ $project->demo }}" class="link-btn" target="_blank">
-                        <i class="fas fa-external-link-alt"></i>
-                        View Live Demo
-                    </a>
-                </div>
-            @endif
-        </div>
-    </div>
-</section>
-@endif
+<!-- Project Links Section removed -->
 
 <!-- Call to Action -->
 <section class="cta-section">
@@ -481,108 +446,32 @@
     font-weight: 600;
 }
 
-/* Project Links Section */
-.project-links-section {
-    padding: 80px 0;
-    background: white;
+/* Project Student Section */
+.project-student-section {
+    padding: 60px 0;
+    background: #f8f9fa;
 }
 
-.section-header {
-    margin-bottom: 3rem;
-}
-
-.section-subtitle {
-    color: #666;
-    font-size: 1.1rem;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.links-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.link-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid #eee;
-}
-
-.link-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(255, 107, 1, 0.15);
-}
-
-.link-icon {
-    width: 80px;
-    height: 80px;
+.project-student-avatar {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2rem;
-}
-
-.github-card .link-icon {
-    background: linear-gradient(45deg, #24292e, #2f363d);
-    color: white;
-}
-
-.demo-card .link-icon {
-    background: linear-gradient(45deg, #ff6b01, #ffb347);
-    color: white;
-}
-
-.link-card h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
+    object-fit: cover;
+    border: 4px solid #ff6c0f;
     margin-bottom: 1rem;
 }
 
-.link-card p {
+.project-student-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.project-student-education {
+    font-size: 1.1rem;
     color: #666;
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    border-radius: 30px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.github-card .link-btn {
-    background: #24292e;
-    color: white;
-}
-
-.github-card .link-btn:hover {
-    background: #2f363d;
-    transform: translateY(-2px);
-}
-
-.demo-card .link-btn {
-    background: #ff6b01;
-    color: white;
-}
-
-.demo-card .link-btn:hover {
-    background: #e65b00;
-    transform: translateY(-2px);
+    margin-bottom: 0;
 }
 
 /* CTA Section */
@@ -659,12 +548,8 @@
         padding: 1.5rem;
     }
 
-    .project-links-section {
+    .project-student-section {
         padding: 60px 0;
-    }
-
-    .links-grid {
-        grid-template-columns: 1fr;
     }
 
     .cta-content h2 {
@@ -685,8 +570,9 @@
         font-size: 1.6rem;
     }
 
-    .link-card {
-        padding: 1.5rem;
+    .project-student-avatar {
+        width: 80px;
+        height: 80px;
     }
 
     .cta-content h2 {

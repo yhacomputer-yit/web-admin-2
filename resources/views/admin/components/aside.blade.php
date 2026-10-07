@@ -153,7 +153,7 @@
         <li class="menu-item" data-group="result">
             <a href="{{ route('gradingResult.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-note"></i>
-                <div data-i18n="Dashboards">Marks</div>
+                <div data-i18n="Dashboards">Grading result</div>
             </a>
         </li>
         {{-- the grade bands, then the marks filed against them --}}

@@ -56,7 +56,9 @@ class FrontendSectionController extends Controller
         $teacher = Teacher::with('position')->get();
         $events = Event::orderBy('edate', 'desc')->get();
         $monthies = Monthly::all();
-        $projects = Project::with('course')->orderBy('created_at', 'desc')->get();
+        $projects = Project::with(['course', 'student'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         $address = \App\Models\Address::get();
         // dd($address);
 
@@ -116,7 +118,7 @@ public function course(Request $request, $id)
 {
     $data = $this->share();
 
-    $projects = Project::with('course:id,name')
+    $projects = Project::with(['course:id,name', 'student:id,name,image,education'])
         ->orderBy('created_at', 'desc')
         ->get();
 
@@ -138,8 +140,16 @@ public function course(Request $request, $id)
             return $items->pluck('course_id')->unique()->values();
         });
 
+    $courseSubjects = SubjectDetail::with('subject:id,name')
+        ->get()
+        ->groupBy('course_id')
+        ->map(function ($items) {
+            return $items->pluck('subject.name')->unique()->values();
+        });
+
     return inertia('Projects', [
         'projects'          => $projects,
+        'courses'           => $data['courses'],
         'prog'              => $data['prog'],
         'graph'             => $data['graph'],
         'ict'               => $data['ict'],
@@ -147,6 +157,7 @@ public function course(Request $request, $id)
         'subjects'          => $subjects,
         'courseCounts'      => $courseCounts,
         'subjectCourseMap'  => $subjectCourseMap,
+        'courseSubjects'    => $courseSubjects,
     ]);
 }
 
@@ -248,7 +259,7 @@ public function course(Request $request, $id)
 
         $courses = Course::whereNotIn('id', [2, 3, 4])->get();
         $projects = Project::where('course_id', $c_id)
-                          ->with('course')
+                          ->with(['course', 'student:id,name,image,education'])
                           ->orderBy('created_at', 'desc')
                           ->paginate(9);
 
@@ -260,10 +271,10 @@ public function course(Request $request, $id)
 
     public function fetchProjects($courseId)
     {
-        // Fetch projects related to the selected course
-        $projects = Project::where('course_id', $courseId)->with('course')->get();
+        $projects = Project::where('course_id', $courseId)
+            ->with(['course', 'student:id,name,image,education'])
+            ->get();
 
-        // Return projects as JSON response
         return response()->json($projects);
     }
 
@@ -271,13 +282,22 @@ public function course(Request $request, $id)
     {
         $data = $this->share();
 
-        $project = Project::with('course')->findOrFail($id);
+        $project = Project::with(['course', 'student:id,name,image,education'])->findOrFail($id);
+
+        $relatedProjects = Project::with(['course', 'student:id,name,image,education'])
+            ->where('id', '!=', $id)
+            ->where('course_id', $project->course_id)
+            ->latest()
+            ->take(4)
+            ->get();
 
         return inertia('ProjectDetail', [
             'project' => $project,
+            'relatedProjects' => $relatedProjects,
             'prog' => $data['prog'],
             'graph' => $data['graph'],
             'ict' => $data['ict'],
+            'address' => $data['address'],
         ]);
     }
 

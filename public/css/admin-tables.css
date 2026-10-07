@@ -169,7 +169,10 @@ body {
 }
 
 /* ==================== Back Button ==================== */
-.btn-back {
+/* doubled up on purpose: the Controls block above sets padding on every .btn and
+   comes later in this file, so the floating button needs the extra class to keep
+   the pill padding rather than shrinking to a normal button. */
+.btn.btn-back {
     position: fixed;
     bottom: 30px;
     left: 30px;
@@ -183,7 +186,7 @@ body {
     transition: all 0.3s ease, left 0.25s ease;
 }
 
-.btn-back:hover {
+.btn.btn-back:hover {
     background-color: #1a252f;
     color: #fff;
     transform: translateY(-2px);
@@ -195,11 +198,11 @@ body {
    rail instead - and follow it collapsing too, on the same 0.25s the rail uses,
    so the two move as one. */
 @media (min-width: 1200px) {
-    .btn-back {
+    .btn.btn-back {
         left: calc(var(--sidebar-width, 16.25rem) + 1.5rem);
     }
 
-    html.sidebar-collapsed .btn-back {
+    html.sidebar-collapsed .btn.btn-back {
         left: calc(var(--sidebar-collapsed-width, 5.25rem) + 1.5rem);
     }
 }
@@ -223,11 +226,41 @@ body {
     text-transform: uppercase;
 }
 
-/* ==================== Form Controls ==================== */
-/* brand-orange focus ring, Bootstrap 5 handles the sizing */
+/* ==================== Controls ====================
+   Buttons, inputs, selects and input-group add-ons share one scale, defined once
+   here and applied to both sides of a row. Bootstrap sizes `.btn` and `.form-control`
+   separately, and the admin mixes a full-size `.btn` next to a `.form-control-sm`,
+   which is why a Save button sat visibly taller than the field above it. */
+:root {
+    --yha-control-font-size: 0.875rem;
+    --yha-control-padding-y: 0.375rem;
+    --yha-control-padding-x: 0.75rem;
+    --yha-control-radius: 8px;
+
+    --yha-control-sm-font-size: 0.8125rem;
+    --yha-control-sm-padding-y: 0.25rem;
+    --yha-control-sm-padding-x: 0.5rem;
+    --yha-control-sm-radius: 6px;
+}
+
+.btn,
 .form-control,
-.form-select {
-    border-radius: 8px;
+.form-select,
+.input-group-text {
+    border-radius: var(--yha-control-radius);
+    font-size: var(--yha-control-font-size);
+    line-height: 1.5;
+    padding: var(--yha-control-padding-y) var(--yha-control-padding-x);
+}
+
+/* the -sm half of the scale, matched to the same four selectors */
+.btn-sm,
+.form-control-sm,
+.form-select-sm,
+.input-group-sm .input-group-text {
+    border-radius: var(--yha-control-sm-radius);
+    font-size: var(--yha-control-sm-font-size);
+    padding: var(--yha-control-sm-padding-y) var(--yha-control-sm-padding-x);
 }
 
 .form-control:focus,

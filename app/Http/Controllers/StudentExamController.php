@@ -101,13 +101,17 @@ class StudentExamController extends Controller
     /**
      * The sitting itself: the two info cards, the paper and the submit panel.
      *
-     * Reachable only while the window is open. Before it opens there is nothing
-     * to read, and after it closes a script would not be marked, so both are
-     * sent back to the list with the reason rather than rendered as a page that
-     * cannot do its job.
+     * Reachable while the upload is open: the window itself, plus the
+     * grace period after it, because a student whose time ran out
+     * mid-sitting still has to reach the page to hand their script in.
+     * Before the window opens there is nothing to read, and once the
+     * grace period is gone a script would not be marked, so both are
+     * sent back to the list with the reason rather than rendered as a
+     * page that cannot do its job.
      *
-     * The paper URL handed to the page is the streaming endpoint rather than a
-     * file path, so the time gate keeps applying after the page has loaded.
+     * The paper URL handed to the page is the streaming endpoint rather
+     * than a file path, so the time gate keeps applying after the page
+     * has loaded.
      */
     public function show(Request $request, $examId)
     {
@@ -117,7 +121,7 @@ class StudentExamController extends Controller
         $now = now();
         $status = $exam->scheduleStatus($now);
 
-        if ($status !== ExamQuestion::ONGOING) {
+        if (! $exam->isSubmitOpen($now)) {
             return redirect()
                 ->route('student.exam')
                 ->with('error', $this->closedMessage($exam, $status));
@@ -158,8 +162,8 @@ class StudentExamController extends Controller
         $student = Auth::guard('student')->user();
         $exam = $this->portalExam($student, (int) $examId);
 
-        if (! $exam->isSubmitOpen()) {
-            abort(403, 'This exam paper is only available while you have time left to answer.');
+        if (! $exam->isPaperOpen()) {
+            abort(403, 'This exam paper is only available while the exam is running.');
         }
 
         $path = $exam->paperPath();
@@ -394,9 +398,10 @@ class StudentExamController extends Controller
             'time_label' => $start && $end ? $start . ' - ' . $end : ($start ?? $end),
             'status' => $status,
             'status_label' => ExamQuestion::SCHEDULE_STATUSES[$status],
-            // only while it is running, so the list never offers a card the
-            // server is going to refuse
-            'can_open' => $status === ExamQuestion::ONGOING,
+            // only while the upload is open -- the window itself plus
+            // the grace period after it -- so the list never offers a
+            // card the server is going to refuse
+            'can_open' => $sitting->isSubmitOpen($now),
             'submitted' => (bool) $answer?->isSubmitted(),
         ];
     }
@@ -404,11 +409,12 @@ class StudentExamController extends Controller
     /**
      * The sitting itself: a card plus what only the sitting page needs.
      *
-     * The two absolute timestamps are what the page's countdown is built on:
-     * `ends_at` is the deadline, and `server_now` is this server's clock at the
-     * moment the page was rendered. The browser subtracts its own clock from that
-     * pair, so a student whose machine is minutes out still gets a countdown that
-     * agrees with the database.
+     * Three absolute timestamps are what the page is built on:
+     * `ends_at` is when the questions go away, `submit_closes_at` is
+     * when the grace period ends, and `server_now` is this server's
+     * clock at the moment the page was rendered. The browser subtracts
+     * its own clock from that pair, so a student whose machine is
+     * minutes out still gets a countdown that agrees with the database.
      *
      * @return array<string, mixed>
      */
@@ -421,19 +427,20 @@ class StudentExamController extends Controller
             'starts_at' => $sitting->startsAt()?->toIso8601String(),
             'ends_at' => $sitting->endsAt()?->toIso8601String(),
             'seconds_remaining' => $sitting->secondsRemaining($now),
-            // the upload has its own, earlier deadline: the page closes the form
-            // and counts down to this one, so what it shows and what the submit
-            // endpoint accepts cannot disagree
+            // the grace period: the questions are gone by now, but a
+            // script can still be handed in until this instant, so
+            // what the page shows and what the submit endpoint
+            // accepts cannot disagree
             'submit_open' => $sitting->isSubmitOpen($now),
             'submit_closes_at' => $sitting->submissionClosesAt()?->toIso8601String(),
             'submit_seconds_remaining' => $sitting->secondsUntilSubmitCloses($now),
-            'submit_window_minutes' => ExamQuestion::SUBMIT_WINDOW_MINUTES,
-            'submit_closes_label' => TimeOfDay::format($sitting->submissionClosesAt()),
             'has_paper' => $hasPaper,
-            // the streaming endpoint, which re-checks the sitting's own time on
-            // every hit; null whenever there is no paper or the student is past
-            // it, so the viewer is never pointed at a request that would 403
-            'paper_url' => $hasPaper && $status === ExamQuestion::ONGOING && $sitting->isSubmitOpen($now)
+            // the streaming endpoint, which re-checks the sitting's own
+            // time on every hit; null whenever there is no paper or the
+            // exam itself has ended -- the grace period is for handing
+            // the script in, not for reading the paper again -- so the
+            // viewer is never pointed at a request that would 403
+            'paper_url' => $hasPaper && $sitting->isPaperOpen($now)
                 ? route('student.exam.paper', ['examId' => $sitting->id])
                 : null,
             // the moment the script was accepted, and only that: the page says
@@ -452,30 +459,29 @@ class StudentExamController extends Controller
      */
     private function closedMessage(ExamQuestion $exam, string $status): string
     {
-        return $status === ExamQuestion::UPCOMING
-            ? 'Exam time has not started yet. It opens at '
-                . (TimeOfDay::format($exam->start_time) ?? 'the scheduled time') . '.'
-            : 'Exam time is over. It closed at '
-                . (TimeOfDay::format($exam->end_time) ?? 'the scheduled time') . '.';
+        if ($status === ExamQuestion::UPCOMING) {
+            return 'Exam time has not started yet. It opens at '
+                . (TimeOfDay::format($exam->start_time) ?? 'the scheduled time') . '.';
+        }
+
+        return 'Exam time is over. It closed at '
+            . (TimeOfDay::format($exam->end_time) ?? 'the scheduled time')
+            . ', and submissions stopped at '
+            . (TimeOfDay::format($exam->submissionClosesAt()) ?? 'the same time') . '.';
     }
 
     /**
      * What to tell a student whose upload arrived too late.
      *
-     * Two sentences, because there are two reasons and they are not the same
-     * thing to a student: the window can be shut, or the upload can have closed
-     * while the paper is still readable. Saying which one it was is the
-     * difference between "come to this one sooner" and "you are late".
+     * The window is the whole contract: the paper, the countdown and
+     * the upload stop together, so a late script is always a closed
+     * window rather than a closed upload, and the message names the
+     * end of it, because "not accepted" without a time leaves
+     * nothing to act on.
      */
     private function submitClosedMessage(ExamQuestion $exam, Carbon $now): string
     {
-        if (! $exam->isOpen($now)) {
-            return $this->closedMessage($exam, $exam->scheduleStatus($now));
-        }
-
-        return 'Submissions are closed. Uploads stayed open for '
-            . ExamQuestion::SUBMIT_WINDOW_MINUTES . ' minutes after the exam opened at '
-            . (TimeOfDay::format($exam->start_time) ?? 'the scheduled time') . '.';
+        return $this->closedMessage($exam, $exam->scheduleStatus($now));
     }
 
     /**

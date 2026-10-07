@@ -1,0 +1,209 @@
+/* Course -> Section Linking.
+   The page previously pushed css/student-profile.css, which was never
+   checked in, so every class it used - the panels, the buttons, the empty
+   states - had no rule behind it and rendered bare. These are the page's
+   own components, in its own vocabulary, so nothing depends on a
+   student-facing stylesheet. */
+
+/* ---------- Panels ---------- */
+.cs-panel {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.cs-panel-header {
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    color: #2c3e50;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    padding: 0.9rem 1.25rem;
+}
+
+.cs-panel-header .bx {
+    color: #ff6c0f;
+}
+
+/* ---------- Course list ---------- */
+/* the list is the thing that scrolls on a short screen, not the page */
+.cs-course-list {
+    max-height: 28rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.cs-course-row {
+    align-items: center;
+    border-bottom: 1px solid #eef2f6;
+    cursor: pointer;
+    display: flex;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.7rem 1rem;
+    transition: background-color 0.15s ease;
+}
+
+.cs-course-row:last-child {
+    border-bottom: 0;
+}
+
+.cs-course-row:hover {
+    background-color: #f8fafc;
+}
+
+.cs-course-row--active {
+    background-color: #fff8f2;
+    box-shadow: inset 3px 0 0 #ff6c0f;
+}
+
+/* ---------- Section cards ---------- */
+.cs-card {
+    border: 1px solid #eceef2;
+    cursor: pointer;
+    display: flex;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.8rem 1rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.cs-card:hover {
+    border-color: #cbd5e1;
+}
+
+/* the linked state is a class, not an inline style, so the script can
+   move a card in and out of it and what you see is what will be saved */
+.cs-card--linked {
+    background-color: #fff8f2;
+    border-color: #ff6c0f;
+}
+
+.cs-card-check {
+    color: #ff6c0f;
+    flex: 0 0 auto;
+    visibility: hidden;
+}
+
+.cs-card--linked .cs-card-check {
+    visibility: visible;
+}
+
+/* ---------- Empty states ---------- */
+.cs-empty {
+    align-items: center;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.cs-empty-icon {
+    align-items: center;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    color: #94a3b8;
+    display: flex;
+    font-size: 1.75rem;
+    height: 3.5rem;
+    justify-content: center;
+    width: 3.5rem;
+}
+
+.cs-empty-title {
+    color: #334155;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.cs-empty-text {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* ---------- Buttons ---------- */
+.cs-btn-primary {
+    align-items: center;
+    background-color: #ff6c0f;
+    border: 1px solid #ff6c0f;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.875rem;
+    font-weight: 600;
+    gap: 0.4rem;
+    line-height: 1.5;
+    padding: 0.375rem 0.75rem;
+    text-decoration: none;
+}
+
+.cs-btn-primary:hover {
+    background-color: #e65a00;
+    border-color: #e65a00;
+    color: #fff;
+}
+
+.cs-btn-primary:focus-visible {
+    outline: 2px solid #ff6c0f;
+    outline-offset: 2px;
+}
+
+.cs-btn-ghost {
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 0.4rem;
+    line-height: 1.5;
+    padding: 0.375rem 0.75rem;
+    text-decoration: none;
+}
+
+.cs-btn-ghost:hover {
+    border-color: #ff6c0f;
+    color: #ff6c0f;
+}
+
+/* ---------- Busy overlay ---------- */
+/* switching the course is a full reload; the overlay says so instead of
+   the page just flashing */
+.cs-panel-body {
+    position: relative;
+}
+
+.cs-busy {
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.75);
+    color: #2c3e50;
+    display: flex;
+    font-size: 0.85rem;
+    font-weight: 600;
+    gap: 0.6rem;
+    inset: 0;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+}
+
+.is-busy .cs-busy {
+    opacity: 1;
+    pointer-events: auto;
+}

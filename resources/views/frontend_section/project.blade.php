@@ -147,6 +147,39 @@
   justify-content: center;
 }
 
+.project-student {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.project-student-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff6c0f;
+}
+
+.project-student-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-student-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.project-student-edu {
+  font-size: 0.8rem;
+  color: #666;
+}
+
 .project-link {
   display: inline-flex;
   align-items: center;
@@ -162,27 +195,6 @@
   justify-content: center;
 }
 
-.github-link {
-  background: #24292e;
-  color: #fff;
-}
-
-.github-link:hover {
-  background: #2f363d;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.demo-link {
-  background: #ff6b01;
-  color: #fff;
-}
-
-.demo-link:hover {
-  background: #e65b00;
-  color: #fff;
-  transform: translateY(-2px);
-}
 
 .project-link.disabled {
   pointer-events: none;
@@ -340,30 +352,16 @@
                   <span>{{ $project->course->name }}</span>
                 </div>
                 <p class="project-description">{{ $project->desc }}</p>
-                <div class="project-links">
-                  @if($project->github)
-                    <a href="{{ $project->github }}" class="project-link github-link" target="_blank">
-                      <i class="fa-brands fa-github"></i>
-                      <span>GitHub</span>
-                    </a>
-                  @else
-                    <span class="project-link github-link disabled" style="opacity: 0.5; cursor: not-allowed;">
-                      <i class="fa-brands fa-github"></i>
-                      <span>GitHub</span>
-                    </span>
-                  @endif
-                  @if($project->demo)
-                    <a href="{{ $project->demo }}" class="project-link demo-link" target="_blank">
-                      <i class="fa-solid fa-play"></i>
-                      <span>Live Demo</span>
-                    </a>
-                  @else
-                    <span class="project-link demo-link disabled" style="opacity: 0.5; cursor: not-allowed;">
-                      <i class="fa-solid fa-play"></i>
-                      <span>Live Demo</span>
-                    </span>
-                  @endif
-                </div>
+
+                @if($project->student)
+                  <div class="project-student">
+                    <img src="{{ asset('storage/'.($project->student->image ?? 'image/logo/student-placeholder.svg')) }}" alt="{{ $project->student->name ?? 'Student' }}" class="project-student-img">
+                    <div class="project-student-info">
+                      <span class="project-student-name">{{ $project->student->name }}</span>
+                      <span class="project-student-edu">{{ $project->student->education }}</span>
+                    </div>
+                  </div>
+                @endif
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,16 +11,20 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
+        'student_id',
         'course_id',
-        'desc', 
+        'title',
+        'desc',
         'image',
-        'github',
-        'demo',
     ];
 
-    public function course() 
+    public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
     }
 }

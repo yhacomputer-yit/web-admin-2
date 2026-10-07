@@ -24,7 +24,7 @@
         <div class="card-body">
             <div class="row align-items-center g-3">
                 <div class="col-auto">
-                    <img src="{{ $student->image ? Storage::url($student->image) : '/image/no-image.jpg' }}"
+                    <img src="{{ $student->image ? Storage::url($student->image) : '/image/logo/student-placeholder.svg' }}"
                         width="110" height="110" alt=""
                         class="rounded-circle object-fit-cover border">
                 </div>

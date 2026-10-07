@@ -156,7 +156,6 @@ class MaterialController extends Controller
             'subject_id.exists' => 'That subject no longer exists.',
             'type.required' => 'Choose what kind of file this is.',
             'type.in' => 'Choose a book, a lecture recording or an archive.',
-            'title.max' => 'The title may not be longer than 120 characters.',
             'remark.max' => 'The remark may not be longer than 500 characters.',
         ];
 
@@ -186,11 +185,8 @@ class MaterialController extends Controller
                 },
             ],
             'type' => ['required', Rule::in(array_keys(Material::KINDS))],
-            'title' => ['nullable', 'string', 'max:120'],
             'remark' => ['nullable', 'string', 'max:500'],
             'file' => array_values(array_filter([
-                // create always needs the file, because a row is a file; edit
-                // leaves it alone so the other fields can be corrected on their own
                 $material === null ? 'required' : 'nullable',
                 'file',
                 $kind['mimes'] ?? null,
@@ -200,7 +196,7 @@ class MaterialController extends Controller
 
         // only the columns the form owns; the file itself is stored by the
         // caller through storeFile() and never written as an attribute
-        return array_intersect_key($validated, array_flip(['course_id', 'subject_id', 'type', 'title', 'remark']));
+        return array_intersect_key($validated, array_flip(['course_id', 'subject_id', 'type', 'remark']));
     }
 
     /**

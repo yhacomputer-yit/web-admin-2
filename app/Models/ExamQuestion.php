@@ -85,14 +85,13 @@ class ExamQuestion extends Model
     public const PAPER_MAX_KILOBYTES = 20480;
 
     /**
-     * How long the upload stays open once the paper does.
+     * How long the upload stays open after the exam itself has ended.
      *
-     * Measured from the start of the window, not backwards from its end: a
-     * student is given this long to download the paper, write their answers and
-     * upload the script, and after that the upload is gone even though the paper
-     * itself stays readable until the window shuts.
-     *
-     * Two deadlines rather than one, and both are the same instant to everyone.
+     * The grace period: the questions go away the moment the window
+     * shuts, but a student who was mid-sitting still gets this long
+     * to hand their script in. Counted backwards from the end of the
+     * window, not forwards from its start, because the grace belongs
+     * to the end of the sitting, not to its middle.
      */
     public const SUBMIT_WINDOW_MINUTES = 15;
 
@@ -210,37 +209,56 @@ class ExamQuestion extends Model
     }
 
     /**
-     * When the upload stops, which is long before the paper does.
-     *
-     * Counted forward from the start of the window, so it is the same length of
-     * time for every sitting rather than a slice of whatever the admin happened
-     * to make the window. Null when the window cannot be read, in which case
-     * there is nothing to submit into anyway and the upload is closed.
+     * When the upload stops: the sitting's own end time plus the
+     * grace period. Null when the window cannot be read, in which
+     * case there is nothing to submit into anyway and the upload
+     * is closed.
      */
     public function submissionClosesAt(): ?Carbon
     {
-        return $this->startsAt()?->copy()->addMinutes(self::SUBMIT_WINDOW_MINUTES);
+        return $this->endsAt()?->copy()->addMinutes(self::SUBMIT_WINDOW_MINUTES);
     }
 
     /**
      * Whether a script can still be handed in.
      *
-     * Deliberately not the same question as isOpen(): a student past the upload
-     * window may still read the paper, and must still be able to leave the page,
-     * but the server will not take a script off them. Checked on the submission
-     * itself rather than only on the page, because the page is only a page.
+     * The upload runs from the start of the window to the end of
+     * the grace period, so a student whose time ran out mid-sitting
+     * still has the grace period to hand their script in. Checked
+     * on the submission itself rather than only on the page,
+     * because the page is only a page.
      */
     public function isSubmitOpen(?Carbon $now = null): bool
     {
         $now ??= now();
 
-        if (! $this->isOpen($now)) {
+        $start = $this->startsAt();
+
+        if ($start === null || $now->lt($start)) {
             return false;
         }
 
         $closes = $this->submissionClosesAt();
 
-        return $closes === null || $now->lt($closes);
+        return $closes !== null && $now->lt($closes);
+    }
+
+    /**
+     * Whether the question paper is still readable, which is the
+     * window itself: the questions go away the moment the exam
+     * ends, and the grace period that follows is for handing the
+     * script in, not for reading the paper again.
+     */
+    public function isPaperOpen(?Carbon $now = null): bool
+    {
+        $now ??= now();
+
+        $start = $this->startsAt();
+        $end = $this->endsAt();
+
+        return $start !== null && $end !== null
+            && ! $now->lt($start)
+            && $now->lt($end);
     }
 
     /**

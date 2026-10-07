@@ -50,15 +50,43 @@ function Timer({ seconds, expired }) {
     );
 }
 
+
+function GracePeriod({ seconds, expired }) {
+    const urgent = !expired && seconds <= 300;
+    const critical = !expired && seconds <= 60;
+
+    const tone = critical ? "is-critical" : urgent ? "is-urgent" : "";
+
+    return (
+        <div className={`se-grace ${tone}`} role="alert">
+            <div className="se-grace-icon">
+                <i className="fas fa-hourglass-end"></i>
+            </div>
+
+            <div className="se-grace-body">
+                <div className="se-grace-title">Exam time has ended</div>
+                <div className="se-grace-sub">
+                    Please click the Submit button below to upload your answers.
+                </div>
+                <div className="se-grace-clock" role="timer" aria-live="off">
+                    <span className="se-grace-label">Submission Time Remaining</span>
+                    <span className="se-grace-time">
+                        {expired ? "00:00" : formatCountdown(seconds)}
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
     const { url, props } = usePage();
 
-    /* The countdown runs to the sitting's own deadline rather than to the end of its
-       window: a student is given SUBMIT_WINDOW_MINUTES to read the paper, answer
-       it and upload the script, and that is what "time remaining" means here. When
-       it reaches zero the paper is gone and the upload is refused, which is the
-       same instant the server draws. */
-    const { seconds, expired } = useCountdown(exam.submit_closes_at, server_time);
+
+    const { seconds, expired } = useCountdown(exam.ends_at, server_time);
+    const submission = useCountdown(exam.submit_closes_at, server_time);
+
+    const questionsOpen = !expired;
 
     const input = useRef(null);
     const [picked, setPicked] = useState(null);
@@ -67,12 +95,9 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
 
     const { flash } = props;
 
-    const showPaper = Boolean(exam.paper_url) && !expired;
+    const showPaper = Boolean(exam.paper_url) && questionsOpen;
 
-    /* the server's own reading on arrival, then the local clock. The pair matters
-       at the boundary: a page rendered one second inside the sitting arrives with
-       submit_open false and must not offer a form the endpoint would refuse. */
-    const submitClosed = !exam.submit_open || expired;
+    const submitClosed = !exam.submit_open || submission.expired;
 
     const submit = (e) => {
         e.preventDefault();
@@ -125,42 +150,45 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                     <Timer seconds={seconds} expired={expired} />
                 </div>
 
-                {/* band 2: the paper */}
                 <section className="se-paper" aria-label="Exam paper">
-                    <div className="se-paper-bar">
-                        <span className="se-paper-name">
-                            <i className="fas fa-file-pdf"></i>
-                            {exam.subject_name} question paper
-                        </span>
+                    {questionsOpen ? (
+                        <>
+                            <div className="se-paper-bar">
+                                <span className="se-paper-name">
+                                    <i className="fas fa-file-pdf"></i>
+                                    {exam.subject_name} question paper
+                                </span>
 
-                        {showPaper && (
-                            <span className="se-paper-links">
-                                <a href={exam.paper_url} target="_blank" rel="noopener">
-                                    <i className="fas fa-up-right-from-square"></i> Open in a new tab
-                                </a>
-                            </span>
-                        )}
-                    </div>
+                                {showPaper && (
+                                    <span className="se-paper-links">
+                                        <a href={exam.paper_url} target="_blank" rel="noopener">
+                                            <i className="fas fa-up-right-from-square"></i> Open in a new tab
+                                        </a>
+                                    </span>
+                                )}
+                            </div>
 
-                    {showPaper ? (
-                        <iframe
-                            key={exam.paper_url}
-                            className="se-paper-frame"
-                            src={exam.paper_url}
-                            title={`${exam.subject_name} question paper`}
-                        />
+                            {showPaper ? (
+                                <iframe
+                                    key={exam.paper_url}
+                                    className="se-paper-frame"
+                                    src={exam.paper_url}
+                                    title={`${exam.subject_name} question paper`}
+                                />
+                            ) : (
+                                <div className="se-paper-gone">
+                                    <i className="fas fa-file-circle-question"></i>
+                                    <div className="se-paper-gone-title">
+                                        No paper has been uploaded
+                                    </div>
+                                    <div className="se-paper-gone-sub">
+                                        Ask your teacher to upload the question paper for this exam.
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     ) : (
-                        <div className="se-paper-gone">
-                            <i className={`fas ${expired ? "fa-lock" : "fa-file-circle-question"}`}></i>
-                            <div className="se-paper-gone-title">
-                                {expired ? "The paper is closed" : "No paper has been uploaded"}
-                            </div>
-                            <div className="se-paper-gone-sub">
-                                {expired
-                                    ? `Your ${exam.submit_window_minutes ?? 15} minutes ran out, so the paper is no longer available.`
-                                    : "Ask your teacher to upload the question paper for this exam."}
-                            </div>
-                        </div>
+                        <GracePeriod seconds={submission.seconds} expired={submission.expired} />
                     )}
                 </section>
 
@@ -178,11 +206,6 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                             </span>
                         )}
                     </div>
-
-                    {/* what the panel says and nothing else: the student came to check that their
-                        script is in, and the moment it was accepted answers that. A
-                        filename and a note about replacing it turn that into a file
-                        manager on a page whose job is submitting one. */}
                     {exam.submitted && (
                         <div className="se-current">
                             <i className="fas fa-circle-check"></i>
@@ -193,10 +216,7 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                     )}
 
                     {submitClosed ? (
-                        /* one dark box for the whole closed state. The page only
-                           renders while the exam is still listed, so reaching here
-                           means the student's own time ran out -- the paper and the
-                           upload stopped together. */
+
                         <div className="se-dark" role="alert">
                             <div className="se-dark-icon">
                                 <i className="fas fa-door-closed"></i>
@@ -206,20 +226,14 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                                 <div className="se-dark-title">Time is over — this exam is closed</div>
 
                                 <div className="se-dark-sub">
-                                    You had {exam.submit_window_minutes ?? 15} minutes from{" "}
-                                    {exam.start_time || "the scheduled time"}. The paper and the upload are both
-                                    closed, and nothing more can be submitted.
+                                    The exam ran from {exam.start_time || "the scheduled time"}{" "}
+                                    to {exam.end_time || "the scheduled time"}. The paper and the
+                                    upload are both closed, and nothing more can be submitted.
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <form onSubmit={submit} className="se-drop">
-                            {/* a real file input rather than a styled drop zone
-                                that fakes one: a student on a phone gets the
-                                native picker, and one who drags a file onto the
-                                box gets the same thing. Kept to one compact row:
-                                the questions above are what the page is for, and
-                                the upload is a step at the end of them. */}
                             <label className="se-drop-label" htmlFor="file">
                                 <i className="fas fa-cloud-arrow-up"></i>
                                 <span className="se-drop-title">Choose your answer script</span>
@@ -280,9 +294,7 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
                     )}
                 </section>
 
-                {/* the way out sits under everything else rather than above it: a
-                    student reading the paper has not finished with the page, and
-                    a link at the top invites a click before the reading starts */}
+               
                 <div className="se-foot">
                     <Link href="/student-portal/exam" className="sa-breadcrumb">
                         <i className="fas fa-chevron-left"></i> Back to exams

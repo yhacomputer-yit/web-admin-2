@@ -50,6 +50,24 @@
                                 @enderror
                             </div>
 
+                            {{-- student  --}}
+                            <div class="mb-3 form-group">
+                                <label for="student" class="form-label h6 my-2">Student</label>
+                                <select name="student" id="" class="form-select @error('student')
+                                    is-invalid
+                                @enderror">
+                                    <option value="" selected>Open this select box</option>
+                                    @foreach ($students as $student)
+                                        <option value="{{ $student->id }}">{{ $student->name }}</option>  
+                                    @endforeach
+                                </select>
+                                @error('student')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
                             {{-- description  --}}
                             <div class="mb-3 form-group">
                                 <label for="desc" class="form-label h6 my-2">Description</label>
@@ -60,35 +78,6 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12 col-md-6">
-                                    {{-- link  --}}
-                                    <div class="mb-3 form-group">
-                                        <label for="demo" class="form-label h6 my-2">Demo</label>
-                                        <input type="text" name="demo" value="{{ old('demo') }}"
-                                            class="form-control @error('demo') is-invalid  @enderror" id="demo" placeholder="Demo Link">
-                                        @error('demo')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>  
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {{-- link  --}}
-                                    <div class="mb-3 form-group">
-                                        <label for="github" class="form-label h6 my-2">GitHub</label>
-                                        <input type="text" name="github" value="{{ old('github') }}"
-                                            class="form-control @error('github') is-invalid  @enderror" id="github" placeholder="GitHub Link">
-                                        @error('github')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>  
-                                </div>
                             </div>
 
                             {{-- Image  --}}

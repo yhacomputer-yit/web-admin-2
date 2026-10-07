@@ -20,7 +20,7 @@ const formatDate = (value) => {
     return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 };
 
-const avatar = (src) => (src ? `/storage/${src}` : "/image/no-image.jpg");
+const avatar = (src) => (src ? `/storage/${src}` : "/image/logo/student-placeholder.svg");
 
 
 const pct = (value, total) => (total > 0 ? Math.round((value / total) * 1000) / 10 : 0);
@@ -67,7 +67,7 @@ export default function StudentDashboard({ student, enrollments, attendance }) {
                         <div className="col-12 col-sm-auto">
                             <img
                                 src={avatar(student.image)}
-                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/no-image.jpg"; }}
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/image/logo/student-placeholder.svg"; }}
                                 alt={student.name}
                                 className="stu-hero-avatar"
                             />

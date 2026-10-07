@@ -408,11 +408,6 @@ function PreviewPanel({ material, onBack, canGoBack, paneRef, isFullscreen, onFu
 export default function StudentCourses({ enrollments, references }) {
     const { url } = usePage();
 
-    /* Three keys, one per level of the tree. courseKey decides which accordion
-       is open, subjectKey which subject's files are dropped out, materialKey
-       which file the preview column is showing. Resetting one always resets the
-       levels below it, so the panel can never show a file from a subject that is
-       no longer open. */
     const [courseKey, setCourseKey] = useState(null);
     const [subjectKey, setSubjectKey] = useState(null);
     const [materialKey, setMaterialKey] = useState(null);

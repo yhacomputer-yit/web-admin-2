@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
-            <h4 class="mb-1">Marks</h4>
+            <h4 class="mb-1">Grading Result</h4>
             <div class="text-muted small">
                 {{ $results->count() }} mark(s) shown{{ $ungradedOnly ? ', ungraded only' : '' }},
                 newest first. A mark without a band is waiting to be graded.
@@ -138,7 +138,7 @@
                                     </a>
                                     <a href="{{ route('gradingResult.delete', ['id' => $result->id]) }}"
                                         class="btn btn-sm btn-outline-danger" title="Delete this mark"
-                                        data-confirm="Delete {{ $result->student?->name ?? 'this student' }}&#39;s mark for {{ $result->subject?->name ?? 'this subject' }}?"
+                                        data-confirm="Delete {{ $result->student?->name ?? 'this student' }}&#39;s mark for {{ $result->subject?->name ?? 'this subject' }}?">
                                         <i class="bx bx-trash"></i>
                                     </a>
                                 </td>

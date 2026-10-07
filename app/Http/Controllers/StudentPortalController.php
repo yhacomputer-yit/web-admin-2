@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\GradingResult;
 use App\Models\Material;
 use App\Models\Student;
 use App\Support\TimeOfDay;
@@ -433,5 +434,62 @@ class StudentPortalController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    // student exam results: marks per subject per course
+    public function examResults(Request $request)
+    {
+        $student = Auth::guard('student')->user();
+
+        $courseId = $request->integer('course_id') ?: null;
+
+        $enrollments = $student->enrollments()
+            ->with('course:id,name')
+            ->orderBy('enroll_date')
+            ->get();
+
+        $courseIds = $enrollments->pluck('course_id')->unique()->all();
+
+        $query = GradingResult::with(['course:id,name', 'subject:id,name', 'grade:id,name,score'])
+            ->where('student_id', $student->id)
+            ->whereIn('course_id', $courseIds)
+            ->when($courseId, fn ($q) => $q->where('course_id', $courseId))
+            ->orderBy('date', 'desc')
+            ->orderBy('course_id')
+            ->orderBy('subject_id')
+            ->paginate(15)
+            ->withQueryString()
+            ->through(fn (GradingResult $result) => [
+                'id' => $result->id,
+                'course_id' => $result->course_id,
+                'course_name' => $result->course?->name,
+                'subject_id' => $result->subject_id,
+                'subject_name' => $result->subject?->name,
+                'score' => $result->score,
+                'score_label' => $result->scoreLabel(),
+                'date' => $result->date?->toDateString(),
+                'date_label' => $result->date?->format('d M Y'),
+                'grade' => $result->grade ? [
+                    'id' => $result->grade->id,
+                    'name' => $result->grade->name,
+                    'score_ceiling' => $result->grade->scoreLabel(),
+                    'label' => $result->grade->label(),
+                ] : null,
+            ]);
+
+        $courses = $enrollments
+            ->pluck('course')
+            ->filter()
+            ->unique('id')
+            ->values()
+            ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name]);
+
+        return Inertia::render('StudentExamResults', [
+            'results' => $query,
+            'courses' => $courses,
+            'filters' => [
+                'course_id' => $courseId,
+            ],
+        ]);
     }
 }
