@@ -108,7 +108,7 @@ jobs:
           REMOTE_PATH="$(printf '%s' "$REMOTE_PATH" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           test "${REMOTE_PATH#/}" != "$REMOTE_PATH" || { echo "HOSTINGER_REMOTE_PATH must be an absolute path"; exit 1; }
           ssh -i ~/.ssh/hostinger_deploy_key -p "$SSH_PORT" -o BatchMode=yes "$SSH_USER@$SSH_HOST" \
-            "cd '$REMOTE_PATH' && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && php artisan optimize:clear && php artisan config:cache"
+            "cd '$REMOTE_PATH' && rm -f public/hot && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && if [ ! -e public/storage ] && [ ! -L public/storage ]; then php artisan storage:link; fi && php artisan optimize:clear && php artisan config:cache"
 
       - name: Verify live site and print Laravel error log on failure
         env:
