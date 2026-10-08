@@ -11,10 +11,20 @@ In **Repository → Settings → Secrets and variables → Actions**, add these 
 | `HOSTINGER_SSH_HOST` | Hostinger SSH hostname or IP from hPanel |
 | `HOSTINGER_SSH_PORT` | SSH port from hPanel, commonly `65002` |
 | `HOSTINGER_SSH_USERNAME` | Hostinger SSH username |
-| `HOSTINGER_SSH_PRIVATE_KEY` | The complete private key used by GitHub Actions |
+| `HOSTINGER_SSH_PRIVATE_KEY` | Base64-encoded private key; instructions below |
 | `HOSTINGER_REMOTE_PATH` | Absolute project path, for example `/home/u123456789/domains/example.com/public_html/` |
 
-Create a dedicated deployment SSH key locally, add its **public** key to Hostinger hPanel → SSH Access, and put only the **private** key into the GitHub secret. Do not commit either key. If the account uses a different SSH port or path, use the exact values shown by Hostinger.
+### Encode the private key for GitHub
+
+The workflow expects the private key as one Base64 line. This avoids Windows line-ending and multiline secret formatting issues. In PowerShell, run:
+
+```powershell
+[Convert]::ToBase64String(
+  [IO.File]::ReadAllBytes("$env:USERPROFILE\.ssh\hostinger_github_actions")
+) | Set-Clipboard
+```
+
+Update the GitHub secret named `HOSTINGER_SSH_PRIVATE_KEY` and paste the clipboard value as-is. It should be one long line. Do **not** paste the `ssh-ed25519 ...` public key into this secret. Do not add quotes, spaces, or code fences.
 
 ## One-time Hostinger setup
 
