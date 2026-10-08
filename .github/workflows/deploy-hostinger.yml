@@ -75,6 +75,8 @@ jobs:
           test -n "$SSH_HOST"
           test -n "$SSH_USER"
           test -n "$REMOTE_PATH"
+          REMOTE_PATH="$(printf '%s' "$REMOTE_PATH" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          test "${REMOTE_PATH#/}" != "$REMOTE_PATH" || { echo "HOSTINGER_REMOTE_PATH must be an absolute path"; exit 1; }
           rsync -az --checksum \
             -e "ssh -i ~/.ssh/hostinger_deploy_key -p $SSH_PORT -o BatchMode=yes" \
             --exclude='.git/' \
@@ -100,5 +102,7 @@ jobs:
           SSH_USER: ${{ secrets.HOSTINGER_SSH_USERNAME }}
           REMOTE_PATH: ${{ secrets.HOSTINGER_REMOTE_PATH }}
         run: |
+          REMOTE_PATH="$(printf '%s' "$REMOTE_PATH" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          test "${REMOTE_PATH#/}" != "$REMOTE_PATH" || { echo "HOSTINGER_REMOTE_PATH must be an absolute path"; exit 1; }
           ssh -i ~/.ssh/hostinger_deploy_key -p "$SSH_PORT" -o BatchMode=yes "$SSH_USER@$SSH_HOST" \
             "cd '$REMOTE_PATH' && php artisan optimize:clear && php artisan config:cache"
