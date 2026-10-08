@@ -83,7 +83,8 @@
                         <tr>
                             <th scope="col">Student</th>
                             <th scope="col">Completed</th>
-                            <th scope="col">Certificate</th>
+                            <th scope="col">Certificate File</th>
+                            <th scope="col">Remark</th>
                             <th scope="col" class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -104,11 +105,16 @@
                                     {{ $certificate->complete_date?->format('j M Y') ?? '—' }}
                                 </td>
                                 <td>
-                                    @if ($certificate->isReceived())
-                                        <span class="badge text-bg-success">Received</span>
+                                    @if ($certificate->certificate_file)
+                                        <img src="{{ asset('storage/' . $certificate->certificate_file) }}" alt="Certificate" style="max-height: 60px; cursor: pointer;" onclick="window.open(this.src, '_blank')">
                                     @else
-                                        <span class="badge text-bg-secondary">Not received</span>
+                                        <span class="text-muted">—</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <span class="badge {{ $certificate->isReceived() ? 'text-bg-success' : 'text-bg-secondary' }}">
+                                        {{ $certificate->remark }}
+                                    </span>
                                 </td>
                                 <td class="text-end text-nowrap">
                                     <a href="{{ route('certificate.edit', ['id' => $certificate->id]) }}"

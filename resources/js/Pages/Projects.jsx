@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 import '../../css/pages/project.css';
@@ -25,6 +26,34 @@ export default function Projects({
 
     const projectsData = Array.isArray(projects) ? projects : (projects?.data || []);
     const allCourses = courses.length ? courses : [...(prog || []), ...(graph || []), ...(ict || [])];
+
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `Student Projects - ${siteName}`;
+    const description = 'Explore student projects from YHA ACADEMY OF TECHNOLOGY. Programming, Graphic Design, and ICT projects showcasing hands-on learning and practical skills.';
+    const ogImage = '/image/logo/logo.png';
+
+    const keywords = [
+        'student projects Myanmar',
+        'YHA ACADEMY OF TECHNOLOGY projects',
+        'programming projects',
+        'graphic design portfolio',
+        'ICT projects Yangon',
+        'Data Science projects',
+        'AI projects',
+        'Machine Learning projects',
+        'Mobile Development projects',
+        'Flutter projects',
+        'Dart projects',
+        'React projects',
+        'Vue projects',
+        'Laravel projects',
+        'PHP projects',
+        'JavaScript projects',
+        'MERN Stack projects',
+        'Web Development projects',
+        'MySQL projects',
+        'MongoDB projects'
+    ].join(', ');
 
     const getCourseCount = (id) => {
         const key = String(id);
@@ -118,8 +147,25 @@ export default function Projects({
     const hasFilters = search || courseId !== 'all' || subjectId !== 'all';
 
     return (
-        <div className="frontend-page">
-            <Navigation prog={prog} graph={graph} ict={ict} />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page">
+                <Navigation prog={prog} graph={graph} ict={ict} />
 
             <section className="ps-section">
                 <div className="ps-container">
@@ -441,5 +487,6 @@ export default function Projects({
 
             <Footer address={address} />
         </div>
+    </>
     );
 }

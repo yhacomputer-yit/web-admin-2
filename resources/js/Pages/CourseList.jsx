@@ -1,12 +1,61 @@
 import { Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 import '../../css/pages/courselist.css';
 
 export default function CourseList({ courses, prog, graph, ict, address }) {
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `All Courses - ${siteName}`;
+    const description = 'Explore our complete course catalog at YHA ACADEMY OF TECHNOLOGY. Programming, Graphic Design, ICT and more. Flexible schedules, hands-on training, expert instructors.';
+    const ogImage = '/image/logo/logo.png';
+
+    const keywords = [
+        'all courses Myanmar',
+        'course catalog',
+        siteName,
+        'programming courses',
+        'graphic design classes',
+        'ICT training Yangon',
+        'Data Science',
+        'AI',
+        'Machine Learning',
+        'Python',
+        'R',
+        'Mobile Development',
+        'Flutter',
+        'Dart',
+        'React',
+        'Vue',
+        'Laravel',
+        'PHP',
+        'JavaScript',
+        'MERN Stack',
+        'Web Development',
+        'MySQL',
+        'MongoDB'
+    ].join(', ');
+
     return (
-        <div className="frontend-page">
-            <Navigation prog={prog} graph={graph} ict={ict} />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page">
+                <Navigation prog={prog} graph={graph} ict={ict} />
             
             {/* Course List Section */}
             <section className="course-list-section">
@@ -78,5 +127,6 @@ export default function CourseList({ courses, prog, graph, ict, address }) {
 
             <Footer address={address} />
         </div>
+    </>
     );
 }

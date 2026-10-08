@@ -168,6 +168,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [MaterialController::class, 'edit'])->name('material.edit');
             Route::post('/update/{id}', [MaterialController::class, 'update'])->name('material.update');
             Route::get('/delete/{id}', [MaterialController::class, 'delete'])->name('material.delete');
+            Route::post('/upload-chunk', [MaterialController::class, 'uploadChunk'])->name('material.uploadChunk');
+            Route::post('/merge-chunks', [MaterialController::class, 'mergeChunks'])->name('material.mergeChunks');
         });
 
         // exam sittings: the day, the window, the question paper and whether a

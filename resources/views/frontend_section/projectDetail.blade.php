@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', $project->title . ' - Student Project - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', $project->desc ?? 'View ' . $project->title . ' student project from ' . ($project->course->name ?? 'YHA ACADEMY OF TECHNOLOGY') . ' course. Programming, Graphic Design, and ICT projects by our students.')
+
+@section('seo_keywords', $project->title . ', student project, ' . ($project->course->name ?? 'course') . ', YHA ACADEMY OF TECHNOLOGY projects, student portfolio')
+
+@section('og_title', $project->title . ' - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', $project->desc ?? 'Student project from YHA ACADEMY OF TECHNOLOGY.')
+
+@section('og_image', $project->image ? asset('storage/' . $project->image) : asset('image/logo/logo.png'))
+
+@section('og_url', url()->current())
+
+@section('twitter_title', $project->title . ' - Student Project')
+
+@section('twitter_description', $project->desc ?? 'Student project from YHA ACADEMY OF TECHNOLOGY.')
+
+@section('twitter_image', $project->image ? asset('storage/' . $project->image) : asset('image/logo/logo.png'))
+
+@section('canonical_url', url()->current())
+
 @section('content')
 
 <!-- Hero Section -->

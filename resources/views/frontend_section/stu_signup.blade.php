@@ -2,11 +2,32 @@
 <html lang="en">
 
 <head>
-    <!-- Other head elements -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign Up - YHA ACADEMY OF TECHNOLOGY</title>
+    <meta name="description" content="Register as a student at YHA ACADEMY OF TECHNOLOGY. Join our programming, graphic design, and ICT courses today.">
+    <meta name="keywords" content="student registration, sign up, YHA ACADEMY OF TECHNOLOGY, course enrollment Myanmar">
+    <meta name="robots" content="noindex, follow">
+
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Student Sign Up - YHA ACADEMY OF TECHNOLOGY">
+    <meta property="og:description" content="Register as a student at YHA ACADEMY OF TECHNOLOGY. Join our courses today.">
+    <meta property="og:image" content="{{ asset('image/logo/logo.png') }}">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Student Sign Up - YHA ACADEMY OF TECHNOLOGY">
+    <meta name="twitter:description" content="Register as a student at YHA ACADEMY OF TECHNOLOGY.">
+    <meta name="twitter:image" content="{{ asset('image/logo/logo.png') }}">
+
+    <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Add this meta tag to include the CSRF token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <!-- Add this to your layout file -->
     <link rel="stylesheet" href="{{ asset('css/login.css') }}" />
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

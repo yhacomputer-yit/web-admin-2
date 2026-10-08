@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', 'Monthly Course Details - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'View detailed information about our monthly courses at YHA ACADEMY OF TECHNOLOGY. Programming, Graphic Design, ICT courses with schedules, pricing, and enrollment details.')
+
+@section('seo_keywords', 'monthly course details Myanmar, YHA ACADEMY OF TECHNOLOGY monthly courses, course schedule, pricing, enrollment')
+
+@section('og_title', 'Monthly Courses - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Explore our monthly course programs with detailed schedules, pricing, and enrollment information.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url()->current())
+
+@section('twitter_title', 'Monthly Course Details - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'View course schedules, pricing, and enrollment details for our monthly programs.')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url()->current())
+
 @section('content')
     <!-- Hero/Header Section -->
     <section class="course-hero" style="background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%); color: white; padding: 60px 0 30px 0; text-align: center;">

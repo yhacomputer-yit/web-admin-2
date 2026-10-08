@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Student;
+use App\Support\StoredFile;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class CertificateController extends Controller
@@ -64,7 +66,13 @@ class CertificateController extends Controller
 
     public function create(Request $request)
     {
-        Certificate::create($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->hasFile('certificate_file')) {
+            $data['certificate_file'] = $this->storeFile($request->file('certificate_file'));
+        }
+
+        Certificate::create($data);
 
         return redirect()
             ->route('certificate.index')
@@ -85,7 +93,14 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
 
-        $certificate->fill($this->validated($request))->save();
+        $data = $this->validated($request);
+
+        if ($request->hasFile('certificate_file')) {
+            $this->deleteFile($certificate->certificate_file);
+            $data['certificate_file'] = $this->storeFile($request->file('certificate_file'));
+        }
+
+        $certificate->fill($data)->save();
 
         return redirect()
             ->route('certificate.index')
@@ -99,11 +114,24 @@ class CertificateController extends Controller
         $name = $certificate->student?->name ?? 'this student';
         $state = $certificate->statusLabel();
 
+        $this->deleteFile($certificate->certificate_file);
         $certificate->delete();
 
         return redirect()
             ->route('certificate.index')
             ->with('success', 'Deleted the ' . strtolower($state) . ' certificate for ' . $name . '.');
+    }
+
+    // ---- helpers ----------------------------------------------------------
+
+    private function storeFile(UploadedFile $file): string
+    {
+        return StoredFile::store($file, 'certificate', ['jpeg', 'jpg']);
+    }
+
+    private function deleteFile(?string $path): void
+    {
+        StoredFile::delete($path);
     }
 
     /**
@@ -126,15 +154,18 @@ class CertificateController extends Controller
         $validated = $request->validate([
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'complete_date' => ['nullable', 'date'],
-            'remark' => ['nullable', Rule::in(array_keys(Certificate::STATUSES))],
+            'remark' => ['nullable', 'string', 'max:255'],
+            'certificate_file' => ['nullable', 'file', 'image', 'mimes:jpeg,jpg', 'max:2048'],
         ], [
             'student_id.required' => 'Choose the student the certificate is for.',
             'student_id.exists' => 'That student no longer exists.',
             'complete_date.date' => 'Enter the completion date as a real date.',
-            'remark.in' => 'A certificate is either collected or not collected yet.',
+            'certificate_file.image' => 'The certificate file must be an image.',
+            'certificate_file.mimes' => 'The certificate file must be a JPEG or JPG.',
+            'certificate_file.max' => 'The certificate file may not be larger than 2 MB.',
         ]);
 
-        $data = array_intersect_key($validated, array_flip(['student_id', 'complete_date', 'remark']));
+        $data = array_intersect_key($validated, array_flip(['student_id', 'complete_date', 'remark', 'certificate_file']));
 
         $data['remark'] = ($validated['remark'] ?? null) ?: Certificate::NOT_RECEIVED;
 

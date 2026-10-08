@@ -123,7 +123,22 @@ export default function StudentExamTake({ exam, server_time, accept, max_kb }) {
 
     return (
         <StudentLayout active="exams" title="Exam" key={url}>
-            <Head title={`${exam.subject_name} - Exam`} />
+            <Head>
+                <title>{exam?.subject_name || 'Exam'} - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content={`Take the ${exam?.subject_name || 'exam'} for ${exam?.course_name || 'your course'} at YHA ACADEMY OF TECHNOLOGY Student Portal.`} />
+                <meta name="keywords" content="exam, student portal, YHA ACADEMY OF TECHNOLOGY, online exam, test, assessment" />
+                <meta property="og:title" content={`${exam?.subject_name || 'Exam'} - YHA ACADEMY OF TECHNOLOGY`} />
+                <meta property="og:description" content={`Take the ${exam?.subject_name || 'exam'} at YHA ACADEMY OF TECHNOLOGY Student Portal.`} />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content={`${exam?.subject_name || 'Exam'} - YHA ACADEMY OF TECHNOLOGY`} />
+                <meta name="twitter:description" content={`Take the ${exam?.subject_name || 'exam'} at YHA ACADEMY OF TECHNOLOGY Student Portal.`} />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
 
             <div className="se-page">
                 {flash?.error && (

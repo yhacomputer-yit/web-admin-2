@@ -1,4 +1,27 @@
 @extends("layout.front_layout")
+
+@section('seo_title', $course->name . ' Course - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', $course->description ?? 'Learn ' . $course->name . ' at YHA ACADEMY OF TECHNOLOGY. Professional training with hands-on practice and expert instructors.')
+
+@section('seo_keywords', $course->name . ' course, ' . $course->name . ' training Myanmar, YHA ACADEMY OF TECHNOLOGY ' . strtolower($course->name) . ', learn ' . strtolower($course->name) . ' Yangon')
+
+@section('og_title', $course->name . ' Course at YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', $course->description ?? 'Professional ' . $course->name . ' training with hands-on practice.')
+
+@section('og_image', $course->image ? asset('storage/' . $course->image) : asset('image/logo/logo.png'))
+
+@section('og_url', url()->current())
+
+@section('twitter_title', $course->name . ' Course - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', $course->description ?? 'Learn ' . $course->name . ' at YHA ACADEMY OF TECHNOLOGY.')
+
+@section('twitter_image', $course->image ? asset('storage/' . $course->image) : asset('image/logo/logo.png'))
+
+@section('canonical_url', url()->current())
+
 @section('content')
 
 <!-- Hero Section -->

@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', $event->title . ' - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', $event->description ?? 'Join ' . $event->title . ' at YHA ACADEMY OF TECHNOLOGY. Tech events, workshops, and seminars for students and professionals.')
+
+@section('seo_keywords', $event->title . ', events Myanmar, tech workshops Yangon, YHA ACADEMY OF TECHNOLOGY events')
+
+@section('og_title', $event->title . ' - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', $event->description ?? 'Join our tech event at YHA ACADEMY OF TECHNOLOGY.')
+
+@section('og_image', $event->image ? asset('storage/' . $event->image) : asset('image/logo/logo.png'))
+
+@section('og_url', url()->current())
+
+@section('twitter_title', $event->title . ' - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', $event->description ?? 'Join our tech event at YHA ACADEMY OF TECHNOLOGY.')
+
+@section('twitter_image', $event->image ? asset('storage/' . $event->image) : asset('image/logo/logo.png'))
+
+@section('canonical_url', url()->current())
+
 @section('content')
 
 <!-- Hero Section -->

@@ -43,6 +43,7 @@ class Certificate extends Model
     protected $fillable = [
         'student_id',
         'complete_date',
+        'certificate_file',
         'remark',
     ];
 

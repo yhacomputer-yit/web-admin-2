@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import Navigation from "../Components/Navigation";
 import Footer from "../Components/Footer";
 import "../../css/pages/homepage.css";
@@ -148,9 +149,60 @@ export default function Homepage({
 
     // Get address data
     const addr = address && address.length > 0 ? address[0] : null;
+
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `${siteName} - Programming, Graphic Design & ICT Courses in Myanmar`;
+    const description = 'Learn Programming, Graphic Design, ICT and more at YHA ACADEMY OF TECHNOLOGY. Professional courses with hands-on training, expert instructors, and career support. Join us today!';
+    const ogImage = '/image/logo/logo.png';
+
+    const keywords = [
+        'computer training Myanmar',
+        'programming courses Yangon',
+        'graphic design course',
+        'ICT training',
+        siteName,
+        'web development',
+        'python',
+        'java',
+        'Data Science',
+        'AI',
+        'Machine Learning',
+        'Python',
+        'R',
+        'Mobile Development',
+        'Flutter',
+        'Dart',
+        'React',
+        'Vue',
+        'Laravel',
+        'PHP',
+        'JavaScript',
+        'MERN Stack',
+        'Web Development',
+        'MySQL',
+        'MongoDB'
+    ].join(', ');
+
     return (
-        <div className="frontend-page" key={url}>
-            <Navigation />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page" key={url}>
+                <Navigation />
             {/* Modern Tech University Hero Section */}
             <section id="home" className="tech-university-hero">
                 {/* Video Background */}
@@ -295,8 +347,7 @@ export default function Homepage({
                                                 href={`/course/${course.id}`}
                                                 className="learnmore"
                                             >
-                                                <span>Learn More</span>
-                                                <i className="fas fa-arrow-right ms-2 learnmore"></i>
+                                                Learn More
                                             </Link>
                                         </div>
                                     </div>
@@ -456,14 +507,10 @@ export default function Homepage({
                                                 )}
                                             </div> */}
                                             <Link
-                                                href={`/project-detail/${project.id}`}
-                                                className=""
+                                                href={`/project`}
+                                                className="learnmore"
                                             >
-                                                <span className="learnmore">
-                                                    Learn More
-                                                </span>
-
-                                                <i className="fas fa-arrow-right learnmore"></i>
+                                                Learn More
                                             </Link>
                                         </div>
                                     </div>
@@ -699,5 +746,6 @@ YHA Academy ကို ၂၀၁၇ ခုနှစ်၊ ဇွန်လတွ�
             </button>
             <Footer address={address} />
         </div>
+    </>
     );
 }

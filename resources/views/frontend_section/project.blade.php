@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', 'Student Projects - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'Explore student projects from YHA ACADEMY OF TECHNOLOGY. Programming, Graphic Design, and ICT projects showcasing hands-on learning and practical skills.')
+
+@section('seo_keywords', 'student projects Myanmar, YHA ACADEMY OF TECHNOLOGY projects, programming projects, graphic design portfolio, ICT projects Yangon')
+
+@section('og_title', 'Student Projects - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Browse student projects from YHA ACADEMY OF TECHNOLOGY courses. Real-world applications built by our students.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/project'))
+
+@section('twitter_title', 'Student Projects - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Explore programming, graphic design, and ICT student projects')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/project'))
+
 @section('content')
 <!-- Add this in your HTML head section -->
 {{-- <head>

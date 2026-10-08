@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', 'Student Reviews - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'Read reviews from students at YHA ACADEMY OF TECHNOLOGY. See what our students say about our programming, graphic design, and ICT courses.')
+
+@section('seo_keywords', 'reviews Myanmar, YHA ACADEMY OF TECHNOLOGY reviews, student testimonials, course reviews Yangon')
+
+@section('og_title', 'Student Reviews - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'See what our students say about our courses. Real reviews from real students.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/reviews'))
+
+@section('twitter_title', 'Student Reviews - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Real student reviews and testimonials')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/reviews'))
+
 @section('content')
 <style>
 .review-list-section {

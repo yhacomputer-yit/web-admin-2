@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 import '../../css/pages/project-detail.css';
@@ -12,9 +13,55 @@ export default function ProjectDetail({ project, relatedProjects = [], prog, gra
         });
     };
 
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `${project?.title || 'Student Project'} - ${siteName}`;
+    const description = project?.desc || `View ${project?.title || 'this student project'} from ${project?.course?.name || 'YHA ACADEMY OF TECHNOLOGY'} course. Programming, Graphic Design, and ICT projects by our students.`;
+    const ogImage = project?.image ? `/storage/${project.image}` : '/image/logo/logo.png';
+
+    const keywords = [
+        project?.title || 'student project',
+        'student project',
+        project?.course?.name || 'course',
+        siteName,
+        'projects',
+        'student portfolio',
+        'Data Science',
+        'AI',
+        'Machine Learning',
+        'Mobile Development',
+        'Flutter',
+        'Dart',
+        'React',
+        'Vue',
+        'Laravel',
+        'PHP',
+        'JavaScript',
+        'MERN Stack',
+        'Web Development',
+        'MySQL',
+        'MongoDB'
+    ].filter(Boolean).join(', ');
+
     return (
-        <div className="frontend-page">
-            <Navigation prog={prog} graph={graph} ict={ict} />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page">
+                <Navigation prog={prog} graph={graph} ict={ict} />
 
             {/* ========== Hero Section ========== */}
             <section className="pd-hero">
@@ -200,5 +247,6 @@ export default function ProjectDetail({ project, relatedProjects = [], prog, gra
 
             <Footer address={address} />
         </div>
+    </>
     );
 }

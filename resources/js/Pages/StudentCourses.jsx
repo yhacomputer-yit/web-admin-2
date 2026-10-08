@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import StudentLayout from "../Layouts/StudentLayout";
 
 
@@ -533,6 +534,22 @@ export default function StudentCourses({ enrollments, references }) {
         // fill: the shell hands the page its own scrolling, so the document never
         // scrolls and each column scrolls on its own
         <StudentLayout active="courses" title="My Courses" fill key={url}>
+            <Head>
+                <title>My Courses - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content="View your enrolled courses at YHA ACADEMY OF TECHNOLOGY Student Portal. Access course materials, PDF books, lecture videos, and ZIP folders." />
+                <meta name="keywords" content="my courses, student portal, YHA ACADEMY OF TECHNOLOGY, enrolled courses, course materials, PDF books, videos, ZIP folders" />
+                <meta property="og:title" content="My Courses - YHA ACADEMY OF TECHNOLOGY" />
+                <meta property="og:description" content="View your enrolled courses at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="My Courses - YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:description" content="View your enrolled courses at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
             <div className="mc-root">
                 {/* two columns and no third: the whole course tree on the left,
                     the preview of one file on the right */}

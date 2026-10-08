@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn(['demo', 'github']);
+        Schema::table('certificates', function (Blueprint $table) {
+            $table->string('certificate_file')->nullable()->after('complete_date');
         });
     }
 
     public function down(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->string('demo')->nullable();
-            $table->string('github')->nullable();
+        Schema::table('certificates', function (Blueprint $table) {
+            $table->dropColumn('certificate_file');
         });
     }
 };

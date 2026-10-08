@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import StudentLayout from "../Layouts/StudentLayout";
 import { prettyDate } from "../lib/dates";
 import '../../css/pages/student-exam-results.css';
@@ -39,6 +40,22 @@ export default function StudentExamResults({ results, courses, filters }) {
 
     return (
         <StudentLayout active="examResults" title="Exam Result" key={url}>
+            <Head>
+                <title>Exam Results - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content="View your exam results and grades at YHA ACADEMY OF TECHNOLOGY Student Portal. Track your academic performance across all subjects." />
+                <meta name="keywords" content="exam results, grades, student portal, YHA ACADEMY OF TECHNOLOGY, academic performance, scores, marks" />
+                <meta property="og:title" content="Exam Results - YHA ACADEMY OF TECHNOLOGY" />
+                <meta property="og:description" content="View your exam results and grades at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="Exam Results - YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:description" content="View your exam results and grades at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
             <div className="ser-page">
                 {flash?.success && (
                     <div className="ser-flash ser-flash-ok" role="status">

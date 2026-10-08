@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', 'Monthly Courses - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'Browse our monthly courses at YHA ACADEMY OF TECHNOLOGY. Programming, Graphic Design, ICT and more. Flexible schedules, hands-on training, expert instructors.')
+
+@section('seo_keywords', 'monthly courses Myanmar, programming courses, graphic design classes, ICT training Yangon, YHA ACADEMY OF TECHNOLOGY courses')
+
+@section('og_title', 'Monthly Courses at YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Discover our comprehensive monthly course programs. Master new skills with hands-on training and expert instructors.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/courses'))
+
+@section('twitter_title', 'Monthly Courses - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Programming, Graphic Design, ICT monthly courses with practical learning')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/courses'))
+
 @section('content')
 
 <!-- Hero Section -->

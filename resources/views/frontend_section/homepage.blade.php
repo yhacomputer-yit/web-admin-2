@@ -1,5 +1,27 @@
 @extends('layout.front_layout')
 
+@section('seo_title', 'YHA ACADEMY OF TECHNOLOGY - Programming, ICT Courses in Myanmar')
+
+@section('seo_description', 'Learn Programming, ICT and more at YHA ACADEMY OF TECHNOLOGY. Professional courses with hands-on training, expert instructors, and career support. Join us today!')
+
+@section('seo_keywords', 'computer training Myanmar, programming courses Yangon, ICT training, YHA ACADEMY OF TECHNOLOGY, web development, python,')
+
+@section('og_title', 'YHA ACADEMY OF TECHNOLOGY - Professional IT Courses')
+
+@section('og_description', 'Learn Programming, Graphic Design, ICT and more at YHA ACADEMY OF TECHNOLOGY. Professional courses with hands-on training and career support.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/'))
+
+@section('twitter_title', 'YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Professional IT training in Myanmar - Programming, Graphic Design, ICT courses')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/'))
+
 @section('content')
 
 <style>

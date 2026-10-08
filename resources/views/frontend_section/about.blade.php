@@ -1,4 +1,27 @@
 @extends('layout.front_layout')
+
+@section('seo_title', 'About YHA ACADEMY OF TECHNOLOGY - Computer Training Center in Myanmar')
+
+@section('seo_description', 'Learn about YHA ACADEMY OF TECHNOLOGY - our mission to empower individuals with technology skills, our vision for the future, and our core values of integrity, creativity, collaboration, and customer focus.')
+
+@section('seo_keywords', 'about YHA ACADEMY OF TECHNOLOGY, computer training center Myanmar, YHA mission, IT education Yangon')
+
+@section('og_title', 'About YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Our mission is to empower individuals with technology skills. Learn about our vision, values, and commitment to excellence in IT education.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/about'))
+
+@section('twitter_title', 'About YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Learn about YHA ACADEMY OF TECHNOLOGY - mission, vision, and values')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/about'))
+
 @section('content')
 <!-- Hero Section -->
 <section class="about-hero" style="background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%); color: white; padding: 60px 0 40px 0; text-align: center;">

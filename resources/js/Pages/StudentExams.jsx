@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import StudentLayout from "../Layouts/StudentLayout";
 import { dateParts, prettyDate } from "../lib/dates";
 
@@ -182,6 +183,22 @@ export default function StudentExams({ groups, filters, options, summary }) {
 
     return (
         <StudentLayout active="exams" title="Exam" key={url}>
+            <Head>
+                <title>Exams - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content="View your upcoming and past exams at YHA ACADEMY OF TECHNOLOGY Student Portal. Track exam schedules, results, and performance." />
+                <meta name="keywords" content="exams, student portal, YHA ACADEMY OF TECHNOLOGY, exam schedule, test dates, exam results, assessment" />
+                <meta property="og:title" content="Exams - YHA ACADEMY OF TECHNOLOGY" />
+                <meta property="og:description" content="View your upcoming and past exams at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="Exams - YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:description" content="View your upcoming and past exams at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
             <div className="se-page">
                 {flash?.success && (
                     <div className="se-flash se-flash-ok" role="status">

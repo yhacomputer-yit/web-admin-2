@@ -1,11 +1,55 @@
 import { Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 import Footer from '../Components/Footer';
 
 export default function Events({ events, name, phone, prog, graph, ict, address }) {
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `Events & Workshops - ${siteName}`;
+    const description = 'Join upcoming events and workshops at YHA ACADEMY OF TECHNOLOGY. Tech seminars, coding bootcamps, design workshops, and networking events for students and professionals.';
+    const ogImage = '/image/logo/logo.png';
+
+    const keywords = [
+        'events Myanmar',
+        'tech workshops Yangon',
+        'coding bootcamp',
+        siteName,
+        'events',
+        'tech seminars',
+        'IT workshops',
+        'Data Science events',
+        'AI events',
+        'Machine Learning workshops',
+        'Mobile Development events',
+        'Flutter events',
+        'React events',
+        'Vue events',
+        'Laravel events',
+        'Web Development events',
+        'MySQL events',
+        'MongoDB events'
+    ].join(', ');
+
     return (
-        <div className="frontend-page">
-            <Navigation prog={prog} graph={graph} ict={ict} />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page">
+                <Navigation prog={prog} graph={graph} ict={ict} />
 
             <style jsx>{`
                 /* Modern Event Page Styles */
@@ -364,5 +408,6 @@ export default function Events({ events, name, phone, prog, graph, ict, address 
             </section>
             <Footer address={address} />
         </div>
+    </>
     );
 }

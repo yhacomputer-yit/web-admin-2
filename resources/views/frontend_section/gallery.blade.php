@@ -1,4 +1,27 @@
 @extends('layout.front_layout')
+
+@section('seo_title', 'Gallery - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'View our photo gallery from YHA ACADEMY OF TECHNOLOGY. Campus life, events, student activities, and training sessions.')
+
+@section('seo_keywords', 'gallery Myanmar, YHA ACADEMY OF TECHNOLOGY photos, campus life, student activities, training photos')
+
+@section('og_title', 'Gallery - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Browse our photo gallery showing campus life, events, and student activities.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/gallery'))
+
+@section('twitter_title', 'Gallery - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Campus photos, events, and student activities at YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/gallery'))
+
 @section('content')
 
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import StudentLayout from "../Layouts/StudentLayout";
 
 
@@ -34,6 +35,22 @@ export default function StudentAttendance({ recent, courses, filters }) {
 
     return (
         <StudentLayout active="attendance" title="My Attendance" key={url}>
+            <Head>
+                <title>My Attendance - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content="View your attendance records at YHA ACADEMY OF TECHNOLOGY Student Portal. Track your presence, absences, and leave across all courses." />
+                <meta name="keywords" content="attendance, student portal, YHA ACADEMY OF TECHNOLOGY, attendance records, presence tracking, absences, leave" />
+                <meta property="og:title" content="My Attendance - YHA ACADEMY OF TECHNOLOGY" />
+                <meta property="og:description" content="View your attendance records at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="My Attendance - YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:description" content="View your attendance records at YHA ACADEMY OF TECHNOLOGY Student Portal." />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
             <div className="sa-page">
                 <div className="sa-toolbar">
                     <div className="sa-filters">

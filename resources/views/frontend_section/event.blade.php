@@ -1,4 +1,27 @@
 @extends('layout.front_layout')
+
+@section('seo_title', 'Events & Workshops - YHA ACADEMY OF TECHNOLOGY')
+
+@section('seo_description', 'Join upcoming events and workshops at YHA ACADEMY OF TECHNOLOGY. Tech seminars, coding bootcamps, design workshops, and networking events for students and professionals.')
+
+@section('seo_keywords', 'events Myanmar, tech workshops Yangon, coding bootcamp, YHA ACADEMY OF TECHNOLOGY events, tech seminars, IT workshops')
+
+@section('og_title', 'Events & Workshops - YHA ACADEMY OF TECHNOLOGY')
+
+@section('og_description', 'Join our upcoming tech events, workshops, and seminars. Learn from industry experts and network with peers.')
+
+@section('og_image', asset('image/logo/logo.png'))
+
+@section('og_url', url('/event'))
+
+@section('twitter_title', 'Events - YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_description', 'Tech workshops, coding bootcamps, design seminars at YHA ACADEMY OF TECHNOLOGY')
+
+@section('twitter_image', asset('image/logo/logo.png'))
+
+@section('canonical_url', url('/event'))
+
 @section('content')
 
 <style>

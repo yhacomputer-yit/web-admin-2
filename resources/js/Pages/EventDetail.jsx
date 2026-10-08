@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Navigation from '../Components/Navigation';
 
 export default function EventDetail({ event, details }) {
@@ -10,9 +11,54 @@ export default function EventDetail({ event, details }) {
         });
     };
 
+    const siteName = 'YHA ACADEMY OF TECHNOLOGY';
+    const title = `${event?.title || 'Event'} - ${siteName}`;
+    const description = event?.description || `Join ${event?.title || 'this event'} at ${siteName}. Tech events, workshops, and seminars for students and professionals.`;
+    const ogImage = event?.image ? `/storage/${event.image}` : '/image/logo/logo.png';
+
+    const keywords = [
+        event?.title || 'event',
+        'events Myanmar',
+        'tech workshops Yangon',
+        siteName,
+        'events',
+        'Data Science',
+        'AI',
+        'Machine Learning',
+        'Mobile Development',
+        'Flutter',
+        'Dart',
+        'React',
+        'Vue',
+        'Laravel',
+        'PHP',
+        'JavaScript',
+        'MERN Stack',
+        'Web Development',
+        'MySQL',
+        'MongoDB'
+    ].filter(Boolean).join(', ');
+
     return (
-        <div className="frontend-page">
-            <Navigation prog={[]} graph={[]} ict={[]} />
+        <>
+            <Head>
+                <title>{title}</title>
+                <meta name="description" content={description} />
+                <meta name="keywords" content={keywords} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImage} />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
+            <div className="frontend-page">
+                <Navigation prog={[]} graph={[]} ict={[]} />
             
             <style jsx>{`
                 /* Hero Section */
@@ -428,5 +474,6 @@ export default function EventDetail({ event, details }) {
                 </section>
             )}
         </div>
+    </>
     );
 }

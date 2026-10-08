@@ -1,4 +1,5 @@
 import { router, usePage } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 import StudentLayout from "../Layouts/StudentLayout";
 
 
@@ -60,6 +61,22 @@ export default function StudentDashboard({ student, enrollments, attendance }) {
 
     return (
         <StudentLayout active="dashboard" title="Dashboard" status={student.status} key={url}>
+            <Head>
+                <title>Dashboard - Student Portal - YHA ACADEMY OF TECHNOLOGY</title>
+                <meta name="description" content="Student dashboard at YHA ACADEMY OF TECHNOLOGY. View your courses, attendance, assignments, exams, and progress." />
+                <meta name="keywords" content="student dashboard, student portal, YHA ACADEMY OF TECHNOLOGY, courses, attendance, assignments, exams, progress tracking" />
+                <meta property="og:title" content="Dashboard - YHA ACADEMY OF TECHNOLOGY" />
+                <meta property="og:description" content="Student dashboard at YHA ACADEMY OF TECHNOLOGY. View your courses, attendance, assignments, exams, and progress." />
+                <meta property="og:image" content="/image/logo/logo.png" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="Dashboard - YHA ACADEMY OF TECHNOLOGY" />
+                <meta name="twitter:description" content="Student dashboard at YHA ACADEMY OF TECHNOLOGY. View your courses, attendance, assignments, exams, and progress." />
+                <meta name="twitter:image" content="/image/logo/logo.png" />
+                <link rel="canonical" href={window.location.href} />
+            </Head>
             {/* Profile summary */}
             <div className="stu-hero mb-3">
                 <div className="p-3 p-md-4">

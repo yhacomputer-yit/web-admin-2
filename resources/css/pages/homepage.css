@@ -8,16 +8,25 @@
 }
 
 .learnmore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #ff6b35;
   text-decoration: none;
   font-weight: 600;
   font-size: clamp(0.75rem, 1.4vw, 0.84rem);
-  transition: color 0.2s;
+  padding: 0.3rem 1rem;
+  border: 2px solid #ff6b35;
+  border-radius: 30px;
+  transition: all 0.3s ease;
   white-space: nowrap;
+  background: transparent;
 }
 
 .learnmore:hover {
-  color: #e55a25;
+  color: #fff;
+  background: #ff6b35;
+  border-color: #ff6b35;
 }
 
 /* ========== HERO ========== */

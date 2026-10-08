@@ -5,7 +5,30 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YHA - Computer Training Center</title>
+    <title>@yield('seo_title', 'YHA ACADEMY OF TECHNOLOGY - Computer Training Center')</title>
+    <meta name="description" content="@yield('seo_description', 'YHA ACADEMY OF TECHNOLOGY - Learn Programming, Graphic Design, ICT and more. Professional courses with hands-on training.')">
+    <meta name="keywords" content="@yield('seo_keywords', 'computer training, programming courses, graphic design, ICT, YHA ACADEMY OF TECHNOLOGY, Myanmar')">
+    <meta name="author" content="YHA ACADEMY OF TECHNOLOGY">
+    <meta name="robots" content="@yield('seo_robots', 'index, follow')">
+
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="@yield('og_url', url()->current())">
+    <meta property="og:title" content="@yield('og_title', 'YHA ACADEMY OF TECHNOLOGY - Computer Training Center')">
+    <meta property="og:description" content="@yield('og_description', 'YHA ACADEMY OF TECHNOLOGY - Learn Programming, Graphic Design, ICT and more.')">
+    <meta property="og:image" content="@yield('og_image', asset('image/logo/logo.png'))">
+    <meta property="og:site_name" content="YHA ACADEMY OF TECHNOLOGY">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
+    <meta name="twitter:url" content="@yield('twitter_url', url()->current())">
+    <meta name="twitter:title" content="@yield('twitter_title', 'YHA ACADEMY OF TECHNOLOGY - Computer Training Center')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'YHA ACADEMY OF TECHNOLOGY - Learn Programming, Graphic Design, ICT and more.')">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('image/logo/logo.png'))">
+
+    {{-- Canonical URL --}}
+    <link rel="canonical" href="@yield('canonical_url', url()->current())">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -20,6 +43,7 @@
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;500;900&display=swap" rel="stylesheet">
+    @stack('styles')
 </head>
 
 <style>
