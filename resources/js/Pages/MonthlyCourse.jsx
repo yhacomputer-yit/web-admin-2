@@ -60,13 +60,26 @@ export default function MonthlyCourse({ prog, graph, ict, address, monthies }) {
                 .course-hero {
                     background: linear-gradient(135deg, #ff6b01 0%, #ffb347 100%);
                     color: white;
-                    padding: 60px 0 30px 0;
+                    padding: 130px 0 30px 0;
                     text-align: center;
                 }
 
                 .main {
                     width: 100%;
                     margin-top: 0;
+                    padding-top: 20px;
+                }
+
+                @media (max-width: 991.98px) {
+                    .course-hero {
+                        padding: 110px 0 30px 0;
+                    }
+                }
+
+                @media (max-width: 575.98px) {
+                    .course-hero {
+                        padding: 95px 0 25px 0;
+                    }
                 }
 
                 .card { 
