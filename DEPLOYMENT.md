@@ -37,7 +37,7 @@ Update the GitHub secret named `HOSTINGER_SSH_PRIVATE_KEY` and paste the clipboa
 7. Enable Hostinger SSL for the domain. The committed `.htaccess` files redirect HTTP to HTTPS; the workflow does not issue or renew certificates.
 8. Run migrations manually when a release requires them: `php artisan migrate --force`.
 
-The workflow intentionally excludes `.env`, tests, Node modules, logs, and cache files. `vendor/` and `public/build/` are generated in GitHub Actions and synced over SSH, so they no longer need to be committed or manually uploaded.
+The workflow intentionally excludes `.env`, `storage/`, `public/storage/`, `.well-known/`, tests, Node modules, logs, and cache files. It also does **not** use rsync `--delete`. Therefore, files uploaded through the application, including `storage/app/public/*`, are never removed by a code deployment. `vendor/` and `public/build/` are generated in GitHub Actions and synced over SSH, so they no longer need to be committed or manually uploaded.
 
 ## SSH test
 

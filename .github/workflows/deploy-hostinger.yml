@@ -77,7 +77,9 @@ jobs:
           test -n "$REMOTE_PATH"
           REMOTE_PATH="$(printf '%s' "$REMOTE_PATH" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           test "${REMOTE_PATH#/}" != "$REMOTE_PATH" || { echo "HOSTINGER_REMOTE_PATH must be an absolute path"; exit 1; }
-          rsync -az --checksum --delete \
+          # Do not use --delete: Hostinger keeps user uploads and runtime data
+          # outside Git, especially storage/app/public and the public/storage link.
+          rsync -az --checksum \
             -e "ssh -i ~/.ssh/hostinger_deploy_key -p $SSH_PORT -o BatchMode=yes" \
             --exclude='.git/' \
             --exclude='.github/' \
