@@ -157,7 +157,8 @@ export default function ProjectDetail({ project, relatedProjects = [], prog, gra
                                                         }
                                                 alt={project?.student?.name || 'Student'}
                                                 onError={(e) => {
-                                                    e.target.src = '/image/logo/stud1.jpeg';
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = '/image/logo/student-placeholder.svg';
                                                 }}
                                             />
                                         </div>
@@ -217,10 +218,13 @@ export default function ProjectDetail({ project, relatedProjects = [], prog, gra
                                 <div key={item.id || index} className="pd-related-card">
                                     <div className="pd-related-image-wrap">
                                         <img
-                                            src={item.image ? `/storage/${item.image}` : '/placeholder.jpg'}
+                                            src={item.image ? `/storage/${item.image}` : '/image/no-image.jpg'}
                                             alt={item.title || 'Project'}
                                             className="pd-related-image"
-                                            onError={(e) => { e.target.src = '/placeholder.jpg'; }}
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = '/image/no-image.jpg';
+                                            }}
                                         />
                                         <div className="pd-related-overlay">
                                             <Link href={`/project-detail/${item.id}`} className="pd-related-view">

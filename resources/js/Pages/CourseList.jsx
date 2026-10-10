@@ -84,7 +84,8 @@ export default function CourseList({ courses, prog, graph, ict, address }) {
                                             alt={course.name} 
                                             className="course-image"
                                             onError={(e) => {
-                                                e.target.src = 'https://via.placeholder.com/350x220/ff6b35/ffffff?text=Course';
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = '/image/no-image.jpg';
                                             }}
                                         />
                                         <div className="course-overlay">

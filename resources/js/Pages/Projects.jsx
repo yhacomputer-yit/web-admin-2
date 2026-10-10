@@ -348,11 +348,12 @@ export default function Projects({
                                                     src={
                                                         project.image
                                                             ? `/storage/${project.image}`
-                                                            : '/placeholder.jpg'
+                                                            : '/image/no-image.jpg'
                                                     }
                                                     alt={project.title || 'Project'}
                                                     onError={(e) => {
-                                                        e.target.src = '/placeholder.jpg';
+                                                        e.currentTarget.onerror = null;
+                                                        e.currentTarget.src = '/image/no-image.jpg';
                                                     }}
                                                 />
                                                 <span className="ps-row-badge">
