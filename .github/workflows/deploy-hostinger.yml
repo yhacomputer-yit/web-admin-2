@@ -126,3 +126,14 @@ jobs:
               "cd '$REMOTE_PATH' && (tail -n 120 storage/logs/laravel.log 2>/dev/null || echo 'storage/logs/laravel.log was not found')" || true
             exit 1
           fi
+
+      - name: Verify storage directory and public link
+        env:
+          SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT || 65002 }}
+          SSH_USER: ${{ secrets.HOSTINGER_SSH_USERNAME }}
+          REMOTE_PATH: ${{ secrets.HOSTINGER_REMOTE_PATH }}
+        run: |
+          REMOTE_PATH="$(printf '%s' "$REMOTE_PATH" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          ssh -i ~/.ssh/hostinger_deploy_key -p "$SSH_PORT" -o BatchMode=yes "$SSH_USER@$SSH_HOST" \
+            "cd '$REMOTE_PATH' && printf '%s\n' '--- storage diagnostics ---' && ls -ld storage storage/app storage/app/public public/storage 2>&1 || true && if [ -L public/storage ]; then printf 'storage link: '; readlink public/storage; fi && printf 'uploaded file count: ' && find storage/app/public -type f 2>/dev/null | wc -l && printf '%s\n' '--- sample jpg files ---' && find storage/app/public -maxdepth 2 -type f -iname '*.jpg' 2>/dev/null | head -20"
